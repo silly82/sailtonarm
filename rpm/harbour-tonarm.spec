@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.4
+Version:    0.6
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -62,6 +62,23 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Sat Sep 19 2026 silly82 <siliwalker@gmail.com> - 0.6-1
+- Ausbaustufe 2: Bibliothek und Suche. Interpreten, Alben, Titel, Playlists
+  und Radio mit Anzahl, seitenweise nachgeladen und je Liste durchsuchbar.
+  Album- und Interpretenseiten mit Cover und Titel- bzw. Albumliste,
+  Playlists mit ihren Titeln.
+- Suche über alle Medientypen auf einer Seite, nach Typ gruppiert.
+- Abspielen aus jeder Liste per Kontextmenü: jetzt spielen, als Nächstes,
+  anhängen. Auf welchem Player das landet, wählt man einmal aus; ohne
+  eigene Wahl gilt der Player, der gerade spielt.
+
+* Sat Sep 19 2026 silly82 <siliwalker@gmail.com> - 0.5-1
+- Das Cover zeigt jetzt, was läuft: Albumbild als Hintergrund, Titel,
+  Interpret und den Namen des Players, dazu Play/Pause und Weiter als
+  Cover-Actions. Gezeigt wird der Player, der gerade spielt -- nicht
+  zwingend der zuletzt geöffnete. Damit lässt sich die Anlage bedienen,
+  ohne die App zu öffnen.
+
 * Sat Sep 19 2026 silly82 <siliwalker@gmail.com> - 0.4-1
 - Der Fortschrittsbalken in der Player-Liste lief aus seiner Zeile heraus in
   die darunter: die Zeilenhöhe war fest, obwohl der Balken zusätzlich Platz

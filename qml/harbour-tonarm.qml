@@ -47,7 +47,7 @@ ApplicationWindow {
         PlayersPage { mass: massConnection; store: playerStore }
     }
     cover: Component {
-        CoverPage { mass: massConnection }
+        CoverPage { mass: massConnection; store: playerStore }
     }
     allowedOrientations: defaultAllowedOrientations
 }

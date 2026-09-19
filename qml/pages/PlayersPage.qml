@@ -105,6 +105,18 @@ Page {
                 enabled: mass && mass.ready
                 onClicked: store.refresh()
             }
+            MenuItem {
+                text: qsTr("Suchen")
+                enabled: mass && mass.ready
+                onClicked: pageStack.push(Qt.resolvedUrl("SearchPage.qml"),
+                                          { mass: page.mass, store: page.store })
+            }
+            MenuItem {
+                text: qsTr("Bibliothek")
+                enabled: mass && mass.ready
+                onClicked: pageStack.push(Qt.resolvedUrl("LibraryPage.qml"),
+                                          { mass: page.mass, store: page.store })
+            }
         }
 
         ViewPlaceholder {

@@ -1,9 +1,9 @@
 # Konzept: Music-Assistant-Client für SailfishOS (Tonarm)
 
-Stand: 2026-09-19 -- **Ausbaustufe 1 fertig und auf dem Telefon bestätigt**
-(v0.4). Stufe 0 in Abschnitt 11, Zielserver vermessen in 12, Build und
-Harbour-Prüfung in 13, erster Gerätestart in 14, Stufe 1 in 15.
-Als Nächstes: Stufe 2 (Bibliothek und Suche).
+Stand: 2026-09-19 -- **Ausbaustufe 2 fertig** (v0.6), auf dem Telefon
+bestätigt. Stufe 0 in Abschnitt 11, Zielserver vermessen in 12, Build und
+Harbour-Prüfung in 13, erster Gerätestart in 14, Stufe 1 in 15, Cover-Page
+und Stufe 2 in 16. Als Nächstes: Stufe 3 (Warteschlange).
 
 ## 1. Ausgangslage und Ziel
 
@@ -638,3 +638,76 @@ Einzige beobachtete Warnung stammt aus Silica selbst
 ohne sichtbare Folge.
 
 **Offen für Stufe 2:** Bibliothek und Suche.
+
+## 16. Update 2026-09-19: Cover-Page (v0.5) und Ausbaustufe 2 (v0.6)
+
+### Cover-Page -- vorgezogen aus Stufe 4
+
+Das Cover zeigt jetzt laufenden Titel, Interpret und Player, mit dem Albumbild
+als abgedunkeltem Hintergrund, dazu Play/Pause und Weiter als Cover-Actions.
+Für eine Fernbedienung ist das die eigentliche Bedienfläche -- der teure Teil
+von Stufe 4 ist MPRIS, nicht das Cover, also durfte es vor.
+
+Gezeigt wird nicht der zuletzt geöffnete, sondern der gerade spielende Player
+(`PlayerStore.activePlayer`: spielend vor pausiert vor gemerkt). Ohne diese
+Reihenfolge zeigte das Cover den gemerkten Player auch dann, wenn nebenan
+Musik lief.
+
+### Stufe 2 -- Bibliothek und Suche
+
+Neue Seiten: `LibraryPage` (Einstieg mit Anzahl je Medientyp), `MediaListPage`
+(eine seitenweise geladene Liste, bedient alle fünf Typen), `AlbumPage`,
+`ArtistPage`, `PlaylistPage`, `SearchPage`, `PlayerPickerPage`. Neue
+Komponenten: `MediaListItem` (eine Zeile samt Kontextmenü zum Abspielen) und
+`StatusToast` (kurze Rückmeldung).
+
+**Vorher am laufenden Server geklärt:**
+
+- `music/<typ>/library_items` nimmt `limit`, `offset`, `search`, `order_by`,
+  `favorite` und mehr. Es liefert standardmässig **Summary-Objekte** --
+  schlanke Einträge für Listenansichten, deren `metadata` nur `images` trägt.
+  Genau das, was eine Liste braucht.
+- **`get_collection` ist eine Sackgasse**: sowohl für Alben als auch für
+  Interpreten antwortet der Zielserver mit `error_code 999, "list index out of
+  range"` -- ein interner Fehler, kein Bedienfehler. Die brauchbaren Kommandos
+  heissen `music/albums/album_tracks(item_id, provider_instance_id_or_domain)`
+  und `music/artists/artist_albums(...)`; Playlists entsprechend
+  `music/playlists/playlist_tracks`, das zusätzlich `limit`/`offset` kennt.
+- `music/search(search_query, media_types, limit, providers)` antwortet mit
+  einem Objekt, das je Medientyp eine Liste trägt. Achtung: der Schlüssel für
+  Radio heisst dort **`radio`** (Einzahl), während der Bibliotheks-Präfix
+  `radios` lautet.
+- `QueueOption`: `play`, `replace`, `next`, `replace_next`, `add`.
+- Bibliotheksbilder kommen über `metadata.images[].proxy_id` und
+  `MassApi.imageUrl()`; die fertige `image_url` gibt es nur bei
+  `current_media` (Now Playing).
+
+**Gegen Grössen ausgelegt, nicht gegen Beispiele:** die Bibliothek der
+Zielanlage hat 1913 Interpreten, 2960 Alben, 13847 Titel und 52 Playlists.
+Listen laden deshalb in Seiten zu 60 Einträgen und ziehen nach, sobald das
+Ende der geladenen Menge in Sicht kommt; Miniaturbilder werden mit `?size=`
+in Zeilengrösse angefordert, nicht im Original.
+
+**Ziel-Player:** wo etwas landet, das man in der Bibliothek antippt, ist eine
+eigene Einstellung (`PlayerStore.explicitTargetPlayerId`), getrennt vom zuletzt
+*angeschauten* Player. Ohne eigene Wahl gilt der gerade spielende. Jede
+Bibliotheksseite zeigt das Ziel im Pulley-Menü und lässt es dort ändern.
+
+**Auf dem Gerät bestätigt:** Bibliotheksübersicht mit allen fünf Zählungen,
+Titelliste (13847) mit Suchfeld, Albumseite mit geladenem Cover, „2002 · 9
+Titel" und Titelliste mit Nummer und Dauer. Keine QML-Warnung aus eigenem
+Code.
+
+Der Einreih-Pfad wurde gegen einen unbenutzten Browser-Player geprüft statt
+gegen einen Lautsprecher im Wohnzimmer: `player_queues/play_media` mit
+`option: "add"` brachte dessen Warteschlange von 0 auf 9 Einträge, ohne
+Wiedergabe zu starten -- genau das, was die Oberfläche verspricht. Die
+Testeinträge wurden danach wieder entfernt.
+
+**Nicht durchgeklickt:** Suchseite, Kontextmenü und Player-Auswahl auf dem
+Gerät selbst. Sie benutzen dieselben Code-Pfade wie das Geprüfte
+(`MediaListItem`, `PlayerStore.playMedia`), sind aber nicht einzeln
+verifiziert.
+
+**Offen für Stufe 3:** die Warteschlange -- ansehen, umsortieren, an einen
+anderen Player übergeben.

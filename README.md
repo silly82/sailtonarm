@@ -6,8 +6,8 @@ Silica-QML, spricht die WebSocket-API des MA-Servers direkt an.
 Nicht mit dem Music-Assistant-Projekt verbunden. Der Name "Music Assistant"
 gehört dessen Urhebern; diese App heisst deshalb Tonarm.
 
-**Stand: Ausbaustufe 1** (v0.4) -- Fernbedienung. Bibliothek, Suche und
-Warteschlange folgen; der Ausbauplan steht in [`KONZEPT.md`](KONZEPT.md).
+**Stand: Ausbaustufe 2** (v0.6) -- Fernbedienung, Bibliothek und Suche. Die
+Warteschlange folgt; der Ausbauplan steht in [`KONZEPT.md`](KONZEPT.md).
 
 Baut sauber für `SailfishOS-5.1.0.11-{armv7hl,aarch64}`, besteht `sfdk check`
 (harbour und rpmlint, je ohne Befund) und läuft auf einem Jolla Phone (2026)
@@ -21,6 +21,14 @@ gegen einen echten Server.
 - **Now Playing** je Player: Cover, Titel/Interpret/Album, Fortschrittsregler
   zum Springen, Weiter/Zurück, Lautstärke, Stummschaltung -- und einen
   Netzschalter, falls der Player einen hat
+- **Bibliothek**: Interpreten, Alben, Titel, Playlists und Radio mit Anzahl,
+  seitenweise nachgeladen und je Liste durchsuchbar; Album- und
+  Interpretenseiten mit Cover, Playlists mit ihren Titeln
+- **Suche** über alle Medientypen auf einer Seite, nach Typ gruppiert
+- **Abspielen aus jeder Liste** per Kontextmenü (jetzt spielen, als Nächstes,
+  anhängen); auf welchem Player das landet, wählt man einmal aus
+- **Cover-Page** mit laufendem Titel, Albumbild und Play/Pause -- bedienbar,
+  ohne die App zu öffnen
 - **Live-Aktualisierung** per Server-Events (`player_updated`, `queue_updated`,
   `queue_time_updated`) statt durch Nachfragen; zwischen zwei Meldungen zählt
   die Spielzeit lokal weiter
@@ -72,8 +80,17 @@ qml/components/MassConnection.qml  WebSocket, Handshake, Kommandos, Events, Reco
 qml/components/PlayerStore.qml     Player und Warteschlangen, per Events aktuell
 qml/lib/MassApi.js                 URL-Ableitung, Nachrichtenbau, /info-Probe
 qml/lib/MassModels.js              Fähigkeiten, Spielzeit, Now-Playing-Aufbereitung
+qml/components/MediaListItem.qml   Bibliothekszeile samt Abspiel-Kontextmenü
+qml/components/StatusToast.qml     kurze Rückmeldung am unteren Rand
 qml/pages/PlayersPage.qml          Startseite: die Player der Anlage
 qml/pages/NowPlayingPage.qml       Cover, Titel, Transport, Lautstärke
+qml/pages/LibraryPage.qml          Einstieg: Medientypen mit Anzahl
+qml/pages/MediaListPage.qml        seitenweise Liste je Medientyp, durchsuchbar
+qml/pages/AlbumPage.qml            Album mit Titelliste
+qml/pages/ArtistPage.qml           Interpret mit Alben
+qml/pages/PlaylistPage.qml         Playlist mit Titeln
+qml/pages/SearchPage.qml           Suche über alle Medientypen
+qml/pages/PlayerPickerPage.qml     Ziel-Player für die Bibliothek
 qml/pages/SettingsPage.qml         Adresse, Token, Erreichbarkeitstest, Serverangaben
 qml/cover/CoverPage.qml            Verbindungszustand (ab Stufe 4: laufendes Stück)
 ```
