@@ -45,7 +45,10 @@ Page {
         })
     }
 
-    function playPlaylist(option, label) {
+    // shuffle wirkt serverseitig nur bei Optionen, die sofort losspielen
+    // (play/replace) -- beim Anhängen wird es deshalb gar nicht erst
+    // mitgeschickt.
+    function playPlaylist(option, label, shuffle) {
         if (!store || store.targetPlayerId.length === 0) {
             pageToast.show(qsTr("Kein Player ausgewählt"), true)
             return
@@ -58,7 +61,7 @@ Page {
             } else {
                 pageToast.show(label.arg(where))
             }
-        })
+        }, shuffle)
     }
 
     function targetName() {
@@ -100,14 +103,22 @@ Page {
                 }
             }
 
-            Row {
-                anchors.horizontalCenter: parent.horizontalCenter
+            // Flow statt Row: drei Knöpfe passen je nach Schriftgrösse und
+            // Bildschirmbreite nicht zwingend nebeneinander.
+            Flow {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * Theme.horizontalPageMargin
                 spacing: Theme.paddingMedium
 
                 Button {
                     text: qsTr("Abspielen")
                     enabled: store && store.targetPlayerId.length > 0
-                    onClicked: page.playPlaylist("play", qsTr("Läuft auf %1"))
+                    onClicked: page.playPlaylist("play", qsTr("Läuft auf %1"), false)
+                }
+                Button {
+                    text: qsTr("Zufällig")
+                    enabled: store && store.targetPlayerId.length > 0
+                    onClicked: page.playPlaylist("play", qsTr("Zufällig auf %1"), true)
                 }
                 Button {
                     text: qsTr("Anhängen")

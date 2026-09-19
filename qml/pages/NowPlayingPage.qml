@@ -67,6 +67,13 @@ Page {
                 enabled: mass && mass.ready
                 onClicked: store.refresh()
             }
+            MenuItem {
+                text: qsTr("Warteschlange")
+                enabled: mass && mass.ready && page.queue !== null
+                onClicked: pageStack.push(Qt.resolvedUrl("QueuePage.qml"),
+                                          { mass: page.mass, store: page.store,
+                                            playerId: page.playerId })
+            }
         }
 
         Column {

@@ -6,8 +6,8 @@ Silica-QML, spricht die WebSocket-API des MA-Servers direkt an.
 Nicht mit dem Music-Assistant-Projekt verbunden. Der Name "Music Assistant"
 gehört dessen Urhebern; diese App heisst deshalb Tonarm.
 
-**Stand: Ausbaustufe 2** (v0.6) -- Fernbedienung, Bibliothek und Suche. Die
-Warteschlange folgt; der Ausbauplan steht in [`KONZEPT.md`](KONZEPT.md).
+**Stand: Ausbaustufe 3** (v0.8) -- Fernbedienung, Bibliothek, Suche und
+Warteschlange. Der Ausbauplan steht in [`KONZEPT.md`](KONZEPT.md).
 
 Baut sauber für `SailfishOS-5.1.0.11-{armv7hl,aarch64}`, besteht `sfdk check`
 (harbour und rpmlint, je ohne Befund) und läuft auf einem Jolla Phone (2026)
@@ -27,6 +27,10 @@ gegen einen echten Server.
 - **Suche** über alle Medientypen auf einer Seite, nach Typ gruppiert
 - **Abspielen aus jeder Liste** per Kontextmenü (jetzt spielen, als Nächstes,
   anhängen); auf welchem Player das landet, wählt man einmal aus
+- **Warteschlange**: sehen, was noch kommt, per Tippen dorthin springen,
+  Einträge verschieben oder entfernen; zufällige Reihenfolge, Überblenden und
+  Wiederholen; an einen anderen Player übergeben, als Playlist speichern oder
+  leeren
 - **Cover-Page** mit laufendem Titel, Albumbild und Play/Pause -- bedienbar,
   ohne die App zu öffnen
 - **Live-Aktualisierung** per Server-Events (`player_updated`, `queue_updated`,
@@ -90,7 +94,9 @@ qml/pages/AlbumPage.qml            Album mit Titelliste
 qml/pages/ArtistPage.qml           Interpret mit Alben
 qml/pages/PlaylistPage.qml         Playlist mit Titeln
 qml/pages/SearchPage.qml           Suche über alle Medientypen
-qml/pages/PlayerPickerPage.qml     Ziel-Player für die Bibliothek
+qml/pages/QueuePage.qml            Warteschlange ansehen und bearbeiten
+qml/pages/SavePlaylistDialog.qml   Name für die gespeicherte Warteschlange
+qml/pages/PlayerPickerPage.qml     Player auswählen (Ziel oder Übergabe)
 qml/pages/SettingsPage.qml         Adresse, Token, Erreichbarkeitstest, Serverangaben
 qml/cover/CoverPage.qml            Verbindungszustand (ab Stufe 4: laufendes Stück)
 ```

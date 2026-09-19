@@ -122,13 +122,59 @@ Item {
     }
 
     // option ist eine QueueOption: "play" (jetzt), "next" (als Nächstes),
-    // "add" (anhängen), "replace" (Warteschlange ersetzen).
-    function playMedia(playerId, uri, option, callback) {
+    // "add" (anhängen), "replace" (Warteschlange ersetzen). `shuffle` wirkt
+    // laut Server nur bei den Optionen, die sofort losspielen (play/replace).
+    function playMedia(playerId, uri, option, callback, shuffle) {
         if (!mass) {
             return
         }
-        mass.sendCommand("player_queues/play_media",
-                         { queue_id: playerId, media: uri, option: option },
+        var args = { queue_id: playerId, media: uri, option: option }
+        if (shuffle !== undefined) {
+            args.shuffle = shuffle
+        }
+        mass.sendCommand("player_queues/play_media", args, function (err) {
+            if (err) {
+                store.lastError = err.hint
+            }
+            if (callback) {
+                callback(err)
+            }
+        })
+    }
+
+    // --- Warteschlange ---------------------------------------------------
+
+    function playIndex(playerId, index) {
+        _send("player_queues/play_index", { queue_id: playerId, index: index })
+    }
+
+    // pos_shift: negativ nach vorn, positiv nach hinten.
+    function moveItem(playerId, queueItemId, posShift) {
+        _send("player_queues/move_item", { queue_id: playerId,
+                                           queue_item_id: queueItemId,
+                                           pos_shift: posShift })
+    }
+
+    function moveItemEnd(playerId, queueItemId) {
+        _send("player_queues/move_item_end", { queue_id: playerId,
+                                               queue_item_id: queueItemId })
+    }
+
+    function deleteItem(playerId, queueItemId) {
+        _send("player_queues/delete_item", { queue_id: playerId,
+                                             item_id_or_index: queueItemId })
+    }
+
+    function clearQueue(playerId) {
+        _send("player_queues/clear", { queue_id: playerId })
+    }
+
+    function saveAsPlaylist(playerId, name, callback) {
+        if (!mass) {
+            return
+        }
+        mass.sendCommand("player_queues/save_as_playlist",
+                         { queue_id: playerId, name: name },
                          function (err) {
                              if (err) {
                                  store.lastError = err.hint
@@ -137,6 +183,41 @@ Item {
                                  callback(err)
                              }
                          })
+    }
+
+    // Übergibt die laufende Warteschlange an einen anderen Player --
+    // "die Musik folgt mir".
+    function transferQueue(sourcePlayerId, targetPlayerId, autoPlay, callback) {
+        if (!mass) {
+            return
+        }
+        mass.sendCommand("player_queues/transfer",
+                         { source_queue_id: sourcePlayerId,
+                           target_queue_id: targetPlayerId,
+                           auto_play: autoPlay === true },
+                         function (err) {
+                             if (err) {
+                                 store.lastError = err.hint
+                             }
+                             if (callback) {
+                                 callback(err)
+                             }
+                         })
+    }
+
+    function setShuffle(playerId, enabled) {
+        _send("player_queues/shuffle", { queue_id: playerId,
+                                         shuffle_enabled: enabled })
+    }
+
+    // RepeatMode: "off", "one", "all".
+    function setRepeat(playerId, mode) {
+        _send("player_queues/repeat", { queue_id: playerId, repeat_mode: mode })
+    }
+
+    function setCrossfade(playerId, enabled) {
+        _send("player_queues/crossfade", { queue_id: playerId,
+                                           crossfade_enabled: enabled })
     }
 
     function playPause(playerId) {

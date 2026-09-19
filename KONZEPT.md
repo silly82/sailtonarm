@@ -1,9 +1,9 @@
 # Konzept: Music-Assistant-Client für SailfishOS (Tonarm)
 
-Stand: 2026-09-19 -- **Ausbaustufe 2 fertig** (v0.6), auf dem Telefon
+Stand: 2026-09-19 -- **Ausbaustufe 3 fertig** (v0.8), auf dem Telefon
 bestätigt. Stufe 0 in Abschnitt 11, Zielserver vermessen in 12, Build und
 Harbour-Prüfung in 13, erster Gerätestart in 14, Stufe 1 in 15, Cover-Page
-und Stufe 2 in 16. Als Nächstes: Stufe 3 (Warteschlange).
+und Stufe 2 in 16, Stufe 3 in 17. Als Nächstes: Stufe 4 (MPRIS, Hintergrund).
 
 ## 1. Ausgangslage und Ziel
 
@@ -711,3 +711,64 @@ verifiziert.
 
 **Offen für Stufe 3:** die Warteschlange -- ansehen, umsortieren, an einen
 anderen Player übergeben.
+
+## 17. Update 2026-09-19: Ausbaustufe 3 (v0.7/v0.8)
+
+Neu: `qml/pages/QueuePage.qml` und `qml/pages/SavePlaylistDialog.qml`;
+`PlayerPickerPage` ist verallgemeinert (ein `pickHandler` entscheidet, was die
+Auswahl bedeutet -- Ziel setzen oder Warteschlange übergeben).
+
+Die Warteschlange zeigt, was noch kommt, markiert den laufenden Eintrag mit
+einem Balken am linken Rand, springt per Tippen dorthin (`play_index`) und
+lässt Einträge nach oben, nach unten, ans Ende schieben oder entfernen. Dazu
+je Warteschlange: zufällige Reihenfolge, Überblenden, Wiederholen
+(aus → alle → ein Titel), Übergabe an einen anderen Player, Speichern als
+Playlist und Leeren mit Widerrufsfrist.
+
+Erreichbar über das Pulley-Menü von Now Playing und über das Kontextmenü
+einer Zeile in der Player-Liste.
+
+**Zusätzlich gewünscht und umgesetzt:** die Playlist-Seite hat einen Knopf
+"Zufällig", der die Playlist gleich in zufälliger Reihenfolge startet
+(`play_media` mit `shuffle: true`). Das Feld wirkt serverseitig nur bei
+Optionen, die sofort losspielen, und wird beim Anhängen deshalb gar nicht erst
+mitgeschickt. Nicht zu verwechseln mit dem Schalter "Zufällige Reihenfolge"
+auf der Warteschlangen-Seite: der ändert den Modus der Warteschlange dauerhaft,
+der Knopf startet nur diesen einen Durchlauf gemischt.
+
+**Aktualisierung:** die Seite lauscht auf `queue_items_updated` für ihre eigene
+Warteschlange und lädt dann neu, statt nach einem Verschieben selbst zu raten.
+Entprellt um 400 ms -- ein Umsortieren löst mehrere Ereignisse kurz
+hintereinander aus, sonst lädt die Seite drei- bis viermal dasselbe.
+
+### Am Gerät gefunden
+
+**Die Spieldauer überdeckte das Ende langer Titel (v0.8).** Die Textspalte zog
+den rechten Seitenabstand nicht ab und reichte damit unter die Dauer, statt
+vorher auszublenden. Dieselbe Klasse Fehler wie der Fortschrittsbalken in
+v0.4 -- bei Zeilen mit rechtsbündigem Zusatz muss dessen Breite *und* der
+Seitenabstand aus der Spaltenbreite heraus.
+
+### Gegen den echten Server geprüft
+
+Wieder gegen einen unbenutzten Browser-Player statt gegen einen Lautsprecher:
+
+- `move_item` mit `pos_shift: -1` rückt einen Eintrag eine Position vor, `+2`
+  zwei zurück, `move_item_end` ans Ende -- alles bestätigt.
+- **Ein grosser negativer `pos_shift` bewirkt nichts und meldet auch keinen
+  Fehler.** Der Server lässt Einträge nicht vor den gerade laufenden rutschen.
+  Für die Oberfläche folgenlos (sie benutzt nur ±1 und "ans Ende"), aber
+  "Nach oben" auf dem Eintrag direkt hinter dem laufenden tut daher nichts.
+- `delete_item` nimmt die `queue_item_id` und entfernt genau diesen Eintrag.
+- `clear` leert zuverlässig; alle Testeinträge wurden danach entfernt.
+
+**Nicht geprüft:** `transfer` -- dafür braucht es zwei freie Player, und zum
+Zeitpunkt der Prüfung war nur noch ein Browser-Player angemeldet. Die Übergabe
+an einen echten Lautsprecher wäre ein Eingriff in laufende Musik gewesen.
+Ebenfalls nicht durchgeklickt: "Als Playlist speichern" (es legt einen
+dauerhaften Eintrag in der Bibliothek an) und die Kontextmenü-Einträge auf dem
+Gerät selbst.
+
+**Offen:** Stufe 4 (MPRIS, Benachrichtigungen, Hintergrund) und Stufe 5
+(Sendspin). Ausserdem weiterhin: Quelltext-Strings sind deutsch, die englische
+Übersetzung fehlt -- vor einer Harbour-Veröffentlichung zu drehen.

@@ -2,25 +2,49 @@ import QtQuick 2.6
 import Sailfish.Silica 1.0
 import "../lib/MassModels.js" as Models
 
-// Auf welchem Player soll landen, was man in der Bibliothek antippt. Ohne
-// eigene Wahl entscheidet PlayerStore selbst (der gerade spielende, sonst der
-// zuletzt geöffnete) -- hier wird die Wahl festgenagelt.
+// Einen Player auswählen. Zwei Verwendungen: Ziel für alles, was man in der
+// Bibliothek abspielt (Voreinstellung), und Ziel einer Warteschlangen-
+// Übergabe -- dann setzt `pickHandler` die Bedeutung, und die Seite ändert
+// selbst nichts.
 Page {
     id: page
 
     property var mass
     property var store
 
+    property string title: qsTr("Ziel-Player")
+    property string hint: qsTr("Hier landet, was du in der Bibliothek abspielst.")
+    // Nicht anbieten: beim Übergeben die Quelle selbst.
+    property string excludePlayerId: ""
+    // function(playerId). Ohne Angabe wird der Ziel-Player gesetzt.
+    property var pickHandler: null
+
     allowedOrientations: Orientation.All
+
+    readonly property var choices: {
+        if (!store) {
+            return []
+        }
+        if (excludePlayerId.length === 0) {
+            return store.players
+        }
+        var out = []
+        for (var i = 0; i < store.players.length; i++) {
+            if (store.players[i].player_id !== excludePlayerId) {
+                out.push(store.players[i])
+            }
+        }
+        return out
+    }
 
     SilicaListView {
         anchors.fill: parent
-        model: store ? store.players : []
+        model: page.choices
 
         header: Column {
             width: page.width
 
-            PageHeader { title: qsTr("Ziel-Player") }
+            PageHeader { title: page.title }
 
             Label {
                 x: Theme.horizontalPageMargin
@@ -29,8 +53,13 @@ Page {
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryHighlightColor
                 bottomPadding: Theme.paddingMedium
-                text: qsTr("Hier landet, was du in der Bibliothek abspielst.")
+                text: page.hint
             }
+        }
+
+        ViewPlaceholder {
+            enabled: page.choices.length === 0
+            text: qsTr("Kein anderer Player")
         }
 
         delegate: ListItem {
@@ -38,11 +67,18 @@ Page {
             contentHeight: Theme.itemSizeMedium
             opacity: Models.isAvailable(modelData) ? 1.0 : Theme.opacityLow
 
+            // Das Häkchen ergibt nur beim Einstellen eines Ziels Sinn; beim
+            // Übergeben gibt es kein "aktuelles" Ziel.
             readonly property bool current:
-                store && store.targetPlayerId === modelData.player_id
+                page.pickHandler === null && store
+                && store.targetPlayerId === modelData.player_id
 
             onClicked: {
-                store.explicitTargetPlayerId = modelData.player_id
+                if (page.pickHandler) {
+                    page.pickHandler(modelData.player_id)
+                } else {
+                    store.explicitTargetPlayerId = modelData.player_id
+                }
                 pageStack.pop()
             }
 
@@ -52,9 +88,8 @@ Page {
                 width: parent.width - x - checkMark.width - Theme.paddingMedium
                 truncationMode: TruncationMode.Fade
                 text: Models.playerName(modelData)
-                color: row.current ? Theme.highlightColor
-                                   : (row.highlighted ? Theme.highlightColor
-                                                      : Theme.primaryColor)
+                color: (row.current || row.highlighted) ? Theme.highlightColor
+                                                        : Theme.primaryColor
             }
 
             Image {

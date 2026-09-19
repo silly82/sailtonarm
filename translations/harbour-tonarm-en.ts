@@ -225,6 +225,10 @@
         <source>Einschalten</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Warteschlange</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PlayerPickerPage</name>
@@ -234,6 +238,10 @@
     </message>
     <message>
         <source>Hier landet, was du in der Bibliothek abspielst.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Kein anderer Player</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -327,6 +335,14 @@
         <source>Bibliothek</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Warteschlange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Als Ziel für die Bibliothek</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PlaylistPage</name>
@@ -364,6 +380,128 @@
     </message>
     <message>
         <source>Keine Titel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zufällig</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zufällig auf %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QueuePage</name>
+    <message>
+        <source>Wiederholen: aus</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Wiederholen: ein Titel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Wiederholen: alle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warteschlange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zufällige Reihenfolge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Überblenden</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Titel ineinander übergehen lassen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An anderen Player übergeben</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Übergeben an</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Die Warteschlange wandert mitsamt Abspielposition dorthin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Übergeben an %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Als Playlist speichern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Als Playlist gespeichert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warteschlange leeren</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warteschlange wird geleert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neu laden</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warteschlange leer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Aus der Bibliothek etwas hinzufügen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nach oben</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nach unten</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ans Ende</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Entfernen</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SavePlaylistDialog</name>
+    <message>
+        <source>Speichern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Abbrechen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name der Playlist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warteschlange %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
