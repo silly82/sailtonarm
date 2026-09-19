@@ -674,5 +674,24 @@
         <source>—</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Benachrichtigungen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bei jedem Titelwechsel melden</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Standardmässig aus: bei einem Titel alle paar Minuten füllt das schnell den Benachrichtigungsbereich. Cover und Sperrbildschirm zeigen den laufenden Titel ohnehin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TrackNotifier</name>
+    <message>
+        <source>%1 · %2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
+import Nemo.Configuration 1.0
 import "../lib/MassApi.js" as MassApi
 
 Page {
@@ -169,6 +170,23 @@ Page {
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryHighlightColor
                 text: qsTr("Der Test spricht nur /info an — die einzige Route ohne Anmeldung. Er sagt also, ob der Server erreichbar ist, nicht ob das Token gültig ist. Das zeigt die Startseite.")
+            }
+
+            SectionHeader { text: qsTr("Benachrichtigungen") }
+
+            TextSwitch {
+                width: parent.width
+                text: qsTr("Bei jedem Titelwechsel melden")
+                description: qsTr("Standardmässig aus: bei einem Titel alle paar Minuten füllt das schnell den Benachrichtigungsbereich. Cover und Sperrbildschirm zeigen den laufenden Titel ohnehin.")
+                checked: notifySetting.value === true
+                automaticCheck: false
+                onClicked: notifySetting.value = !checked
+            }
+
+            ConfigurationValue {
+                id: notifySetting
+                key: "/apps/harbour-tonarm/notifyOnTrackChange"
+                defaultValue: false
             }
 
             // Was der Server über sich meldet -- stand bis Ausbaustufe 0 auf
