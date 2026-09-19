@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.8
+Version:    0.9
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -9,6 +9,11 @@ Source0:    %{name}-%{version}.tar.bz2
 Requires:   sailfishsilica-qt5 >= 0.10.9
 Requires:   qt5-qtdeclarative-import-websockets
 Requires:   qt5-qtwebsockets
+# Amber.Mpris meldet die App als MPRIS-Dienst an (Sperrbildschirm,
+# Medientasten); Nemo.Notifications nur für die abschaltbare Meldung bei
+# Titelwechsel. Beides reine QML-Plugins -- nichts wird dagegen gelinkt.
+Requires:   amber-qml-plugin-mpris
+Requires:   nemo-qml-plugin-notifications-qt5
 # libsailfishsecrets (die C++-API hinter src/credentials.{h,cpp}) steht hier
 # absichtlich *nicht*: Harbours Validator lehnt den reinen Paketnamen ab
 # ("Dependency not allowed"), während die automatische Soname-Abhängigkeit, die
@@ -62,6 +67,15 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Sat Sep 19 2026 silly82 <siliwalker@gmail.com> - 0.9-1
+- Ausbaustufe 4: Sperrbildschirm und Medientasten steuern jetzt den
+  entfernten Player. Die App meldet sich als MPRIS-Dienst an und spiegelt
+  Titel, Interpret, Album, Cover, Spielzeit, Lautstärke sowie Zufalls- und
+  Wiederholmodus dorthin -- und nimmt von dort Play/Pause, Weiter, Zurück,
+  Springen und Lautstärke entgegen.
+- Optionale Benachrichtigung bei Titelwechsel, in den Einstellungen
+  einzuschalten und bewusst standardmässig aus.
+
 * Sat Sep 19 2026 silly82 <siliwalker@gmail.com> - 0.8-1
 - In der Warteschlange überdeckte die Spieldauer das Ende langer Titel: die
   Textspalte reichte unter die Dauer, statt vorher auszublenden.

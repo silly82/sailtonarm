@@ -36,6 +36,8 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/components/PlayerStore.qml \
     qml/components/MediaListItem.qml \
     qml/components/StatusToast.qml \
+    qml/components/MprisBridge.qml \
+    qml/components/TrackNotifier.qml \
     qml/lib/MassApi.js \
     qml/lib/MassModels.js \
     qml/pages/PlayersPage.qml \

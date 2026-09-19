@@ -33,6 +33,26 @@ ApplicationWindow {
         onPreferredPlayerIdChanged: preferredPlayerSetting.value = preferredPlayerId
     }
 
+    // Meldet den laufenden Player als MPRIS-Dienst an: damit steuern
+    // Sperrbildschirm und Medientasten den entfernten Player. Gehört ins
+    // Wurzelfenster, weil der Dienst unabhängig von der gerade sichtbaren
+    // Seite bestehen muss.
+    MprisBridge {
+        mass: massConnection
+        store: playerStore
+    }
+
+    TrackNotifier {
+        store: playerStore
+        enabled: notifySetting.value === true
+    }
+
+    ConfigurationValue {
+        id: notifySetting
+        key: "/apps/harbour-tonarm/notifyOnTrackChange"
+        defaultValue: false
+    }
+
     // Der zuletzt geöffnete Player überlebt den App-Neustart. Nur eine
     // Bequemlichkeit (Sortierung und Markierung in der Liste), deshalb reicht
     // dconf -- hier liegt nichts Schützenswertes, anders als bei Adresse und

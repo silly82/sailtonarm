@@ -1,9 +1,11 @@
 # Konzept: Music-Assistant-Client für SailfishOS (Tonarm)
 
-Stand: 2026-09-19 -- **Ausbaustufe 3 fertig** (v0.8), auf dem Telefon
-bestätigt. Stufe 0 in Abschnitt 11, Zielserver vermessen in 12, Build und
-Harbour-Prüfung in 13, erster Gerätestart in 14, Stufe 1 in 15, Cover-Page
-und Stufe 2 in 16, Stufe 3 in 17. Als Nächstes: Stufe 4 (MPRIS, Hintergrund).
+Stand: 2026-09-19 -- Stufen 0-3 fertig und auf dem Telefon bestätigt (v0.8).
+**Stufe 4 (MPRIS) ist gebaut und besteht die Harbour-Prüfung, aber noch nicht
+auf dem Gerät geprüft** (v0.9, s. Abschnitt 18) -- die USB-Verbindung zum
+Telefon brach beim Ausrollen ab. Stufe 0 in Abschnitt 11, Zielserver vermessen
+in 12, Build und Harbour-Prüfung in 13, erster Gerätestart in 14, Stufe 1 in
+15, Cover-Page und Stufe 2 in 16, Stufe 3 in 17, Stufe 4 in 18.
 
 ## 1. Ausgangslage und Ziel
 
@@ -772,3 +774,76 @@ Gerät selbst.
 **Offen:** Stufe 4 (MPRIS, Benachrichtigungen, Hintergrund) und Stufe 5
 (Sendspin). Ausserdem weiterhin: Quelltext-Strings sind deutsch, die englische
 Übersetzung fehlt -- vor einer Harbour-Veröffentlichung zu drehen.
+
+## 18. Update 2026-09-19: Ausbaustufe 4 (v0.9) -- MPRIS
+
+Neu: `qml/components/MprisBridge.qml` und `qml/components/TrackNotifier.qml`.
+
+**Die offene Frage aus Abschnitt 6 ist beantwortet:** SailfishOS nimmt einen
+MPRIS-Anbieter ohne eigene Audioausgabe an. `Amber.Mpris` (Paket
+`amber-qml-plugin-mpris`, auf dem Gerät in 1.2.10 vorhanden) ist ein reiner
+D-Bus-Anbieter und an keine Audio-Policy gekoppelt. Das alte
+`org.nemomobile.mpris` gibt es auf diesem Gerät nicht mehr -- die Vermutung aus
+dem ursprünglichen Konzept war also veraltet.
+
+**Wichtiger Nebenbefund: `Amber.Mpris` besteht die Harbour-Prüfung.**
+`sfdk check -s harbour` läuft mit der Abhängigkeit sauber durch, die
+Store-Tauglichkeit bleibt also erhalten.
+
+Gespiegelt wird `store.activePlayer` (spielend vor pausiert vor gemerkt),
+dieselbe Wahl wie beim Cover. Nach aussen gehen Titel, Interpret, Album,
+Cover-Adresse, Dauer, Spielzeit, Lautstärke sowie Zufalls- und Wiederholmodus;
+entgegengenommen werden Play, Pause, Play/Pause, Weiter, Zurück, relatives und
+absolutes Springen, Lautstärke, Shuffle und Loop.
+
+Details, die aus der Typbeschreibung des Plugins stammen und nicht aus der
+Erinnerung (`plugins.qmltypes` vom Gerät gelesen):
+
+- MPRIS rechnet in **Mikrosekunden**, Music Assistant in Sekunden.
+- Die MPRIS-Lautstärke ist **0..1**, die von Music Assistant **0..100**.
+- Enums: `Mpris.Stopped/Playing/Paused`, `Mpris.LoopNone/LoopTrack/LoopPlaylist`.
+- `serviceName` muss zum Anwendungsnamen passen -- der Dienst heisst
+  `org.mpris.MediaPlayer2.<serviceName>`.
+- `metaData.trackId` wird gesetzt (die `queue_item_id`), sonst halten manche
+  Clients zwei aufeinanderfolgende Titel für denselben.
+- `canPlay`/`canPause`/`canGoNext`/`canGoPrevious` hängen an der aktiven
+  Warteschlange, nicht an `supported_features` -- gleiche Begründung wie in
+  Abschnitt 15.
+
+**Stop wird auf Pause abgebildet.** Vom Sperrbildschirm aus ist Pause das, was
+gemeint ist; `player_queues/stop` verwürfe die Abspielposition.
+
+**Benachrichtigung bei Titelwechsel** ist umgesetzt, aber standardmässig aus
+und in den Einstellungen zu schalten: bei einem Titel alle paar Minuten füllt
+das sonst den Benachrichtigungsbereich, und Cover wie Sperrbildschirm zeigen
+dasselbe ohnehin. Beim ersten Erkennen nach dem Start wird nur gemerkt, nicht
+gemeldet -- sonst meldete jeder App-Start den gerade laufenden Titel.
+
+**Bewusst nicht umgesetzt:**
+
+- **`BackgroundJob`/Keepalive.** Im ursprünglichen Plan stand es unter Stufe 4,
+  wurde hier aber weggelassen: `MassConnection` verbindet nach einem Abbruch
+  ohnehin mit wachsendem Abstand neu, und periodische Aufwachzeiten kosten
+  Akku, ohne ein belegtes Problem zu lösen. Nachzurüsten, falls sich auf dem
+  Gerät zeigt, dass die Verbindung bei ausgeschaltetem Bildschirm wegbricht.
+- **mDNS-Discovery** (`_mass._tcp`). SailfishOS hat keinen QML-mDNS-Client;
+  es liefe über Avahi per D-Bus. Bleibt Kür, die Adresse steht in den
+  Einstellungen.
+
+### Nicht auf dem Gerät verifiziert
+
+Der Build ist fertig und besteht die Harbour-Prüfung, **aber Stufe 4 wurde
+nicht auf dem Telefon geprüft**: während des Ausrollens brach die
+USB-Netzverbindung zum Gerät ab. Ob die Installation von v0.9 noch
+durchgelaufen ist, ist offen; die App war zu dem Zeitpunkt beendet worden.
+
+Nachzuholen, sobald das Telefon wieder erreichbar ist:
+
+1. v0.9 installieren und starten.
+2. Auf dem Bus nachsehen, ob der Dienst erscheint:
+   `dbus-send --session --dest=org.freedesktop.DBus --print-reply
+   /org/freedesktop/DBus org.freedesktop.DBus.ListNames` sollte
+   `org.mpris.MediaPlayer2.harbour-tonarm` enthalten.
+3. Sperrbildschirm prüfen: erscheinen Titel und Cover, und steuern die
+   Knöpfe dort tatsächlich den entfernten Player?
+4. Medientasten eines Headsets gegenprüfen.

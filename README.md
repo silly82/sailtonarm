@@ -6,8 +6,13 @@ Silica-QML, spricht die WebSocket-API des MA-Servers direkt an.
 Nicht mit dem Music-Assistant-Projekt verbunden. Der Name "Music Assistant"
 gehört dessen Urhebern; diese App heisst deshalb Tonarm.
 
-**Stand: Ausbaustufe 3** (v0.8) -- Fernbedienung, Bibliothek, Suche und
-Warteschlange. Der Ausbauplan steht in [`KONZEPT.md`](KONZEPT.md).
+**Stand: Ausbaustufe 4** (v0.9) -- Fernbedienung, Bibliothek, Suche,
+Warteschlange und Sperrbildschirm-Steuerung. Der Ausbauplan steht in
+[`KONZEPT.md`](KONZEPT.md).
+
+Stufen 0-3 sind auf einem Jolla Phone (2026) gegen einen echten Server
+verifiziert; die MPRIS-Anbindung aus Stufe 4 ist gebaut und besteht die
+Harbour-Prüfung, wurde aber noch nicht auf dem Gerät geprüft.
 
 Baut sauber für `SailfishOS-5.1.0.11-{armv7hl,aarch64}`, besteht `sfdk check`
 (harbour und rpmlint, je ohne Befund) und läuft auf einem Jolla Phone (2026)
@@ -33,6 +38,11 @@ gegen einen echten Server.
   leeren
 - **Cover-Page** mit laufendem Titel, Albumbild und Play/Pause -- bedienbar,
   ohne die App zu öffnen
+- **Sperrbildschirm und Medientasten** über MPRIS: Titel, Interpret, Album,
+  Cover und Spielzeit werden dorthin gespiegelt, und von dort lassen sich
+  Play/Pause, Weiter, Zurück, Springen und Lautstärke bedienen -- gesteuert
+  wird dabei der entfernte Player, die App gibt selbst kein Audio aus
+- **Optionale Benachrichtigung** bei Titelwechsel (standardmässig aus)
 - **Live-Aktualisierung** per Server-Events (`player_updated`, `queue_updated`,
   `queue_time_updated`) statt durch Nachfragen; zwischen zwei Meldungen zählt
   die Spielzeit lokal weiter
@@ -86,6 +96,8 @@ qml/lib/MassApi.js                 URL-Ableitung, Nachrichtenbau, /info-Probe
 qml/lib/MassModels.js              Fähigkeiten, Spielzeit, Now-Playing-Aufbereitung
 qml/components/MediaListItem.qml   Bibliothekszeile samt Abspiel-Kontextmenü
 qml/components/StatusToast.qml     kurze Rückmeldung am unteren Rand
+qml/components/MprisBridge.qml     MPRIS-Dienst für Sperrbildschirm/Medientasten
+qml/components/TrackNotifier.qml   optionale Meldung bei Titelwechsel
 qml/pages/PlayersPage.qml          Startseite: die Player der Anlage
 qml/pages/NowPlayingPage.qml       Cover, Titel, Transport, Lautstärke
 qml/pages/LibraryPage.qml          Einstieg: Medientypen mit Anzahl
