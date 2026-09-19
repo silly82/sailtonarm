@@ -1,0 +1,17 @@
+*.o
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+Makefile
+harbour-tonarm
+RPMS/
+build-*/
+.qmake.stash
+*.pro.user
+*.pro.user.*
+.sfdk/
+translations/*.qm
+# Von lupdate beim Build erzeugte Basisdatei (nicht in TRANSLATIONS gelistet);
+# gepflegt wird nur harbour-tonarm-en.ts.
+translations/harbour-tonarm.ts
+documentation.list
