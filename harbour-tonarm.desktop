@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+X-Nemo-Application-Type=silica-qt5
+Icon=harbour-tonarm
+Exec=harbour-tonarm
+Name=Tonarm
+Comment=Remote control for a Music Assistant server
+Comment[de]=Fernbedienung für einen Music-Assistant-Server
+
+[X-Sailjail]
+OrganizationName=io.github.silly82
+ApplicationName=tonarm
+# Internet: HTTP/WebSocket zum Music-Assistant-Server im lokalen Netz.
+# Secrets:  verschlüsselte Ablage von Serveradresse und Token
+#           (src/credentials.{h,cpp}).
+Permissions=Internet;Secrets;
