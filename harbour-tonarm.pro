@@ -34,10 +34,19 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/cover/CoverPage.qml \
     qml/components/MassConnection.qml \
     qml/components/PlayerStore.qml \
+    qml/components/MediaListItem.qml \
+    qml/components/StatusToast.qml \
     qml/lib/MassApi.js \
     qml/lib/MassModels.js \
     qml/pages/PlayersPage.qml \
     qml/pages/NowPlayingPage.qml \
+    qml/pages/LibraryPage.qml \
+    qml/pages/MediaListPage.qml \
+    qml/pages/AlbumPage.qml \
+    qml/pages/ArtistPage.qml \
+    qml/pages/PlaylistPage.qml \
+    qml/pages/SearchPage.qml \
+    qml/pages/PlayerPickerPage.qml \
     qml/pages/SettingsPage.qml \
     rpm/harbour-tonarm.spec \
     harbour-tonarm.desktop

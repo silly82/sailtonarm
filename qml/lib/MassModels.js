@@ -175,6 +175,47 @@ function formatTime(seconds) {
     return h > 0 ? (h + ":" + mm + ":" + ss) : (mm + ":" + ss)
 }
 
+// --- Medienobjekte (Bibliothek) -----------------------------------------
+
+// Bildkennung eines Medienobjekts. In der Bibliothek liefert der Server nur
+// `metadata.images[]` -- daraus zählt `proxy_id`, nicht `path` (der ist
+// providerspezifisch und für den Bildproxy wertlos). Bei Now Playing ist das
+// anders: dort steht in `current_media.image_url` bereits eine fertige
+// Adresse, siehe nowPlaying().
+function imageProxyId(item) {
+    if (!item || !item.metadata || !item.metadata.images) {
+        return ""
+    }
+    var images = item.metadata.images
+    for (var i = 0; i < images.length; i++) {
+        if (images[i] && images[i].proxy_id) {
+            return images[i].proxy_id
+        }
+    }
+    return ""
+}
+
+// Die Interpreten eines Albums oder Titels als eine Zeile.
+function artistNames(item) {
+    if (!item || !item.artists || item.artists.length === 0) {
+        return ""
+    }
+    var names = []
+    for (var i = 0; i < item.artists.length; i++) {
+        if (item.artists[i] && item.artists[i].name) {
+            names.push(item.artists[i].name)
+        }
+    }
+    return names.join(", ")
+}
+
+// Ein Medienobjekt ist spielbar, wenn der Server es so markiert. Titel aus
+// einem abgemeldeten Dienst bleiben in der Bibliothek stehen, lassen sich aber
+// nicht abspielen -- die gehören ausgegraut, nicht versteckt.
+function isPlayable(item) {
+    return !!item && item.is_playable !== false
+}
+
 // --- Queue ---------------------------------------------------------------
 
 // queue_id und player_id sind auf diesem Server identisch; die Kommandos

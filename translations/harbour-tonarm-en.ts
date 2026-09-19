@@ -2,6 +2,80 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en">
 <context>
+    <name>AlbumPage</name>
+    <message>
+        <source>Kein Player ausgewählt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 Titel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Abspielen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Läuft auf %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Anhängen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Angehängt auf %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ziel-Player: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keine Titel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nr. %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>keiner</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ArtistPage</name>
+    <message>
+        <source>keiner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 Alben</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ziel-Player: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keine Alben</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dieser Anbieter listet für den Interpreten keine Alben</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CoverPage</name>
     <message>
         <source>Tonarm</source>
@@ -12,11 +86,116 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>verbunden</source>
+        <source>getrennt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>getrennt</source>
+        <source>nichts läuft</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>LibraryPage</name>
+    <message>
+        <source>%1 Einträge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Suchen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bibliothek</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Interpreten</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alben</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Titel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Playlists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Radio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keine Verbindung zum Server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MediaListItem</name>
+    <message>
+        <source>Kein Player ausgewählt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Jetzt spielen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Läuft auf %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Als Nächstes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Als Nächstes auf %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Anhängen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Angehängt auf %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MediaListPage</name>
+    <message>
+        <source>%1 Einträge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>In der Bibliothek suchen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ziel-Player: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neu laden</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nichts gefunden</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nichts in der Bibliothek</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>keiner</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -44,6 +223,17 @@
     </message>
     <message>
         <source>Einschalten</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PlayerPickerPage</name>
+    <message>
+        <source>Ziel-Player</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hier landet, was du in der Bibliothek abspielst.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -127,6 +317,104 @@
     </message>
     <message>
         <source>nicht verfügbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Suchen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bibliothek</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PlaylistPage</name>
+    <message>
+        <source>Kein Player ausgewählt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>keiner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Abspielen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Läuft auf %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Anhängen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Angehängt auf %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ziel-Player: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keine Titel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SearchPage</name>
+    <message>
+        <source>Interpreten</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alben</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Titel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Playlists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Radio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>keiner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Suche</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Interpret, Album, Titel …</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ziel-Player: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nichts gefunden</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Durchsucht Bibliothek und Anbieter</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

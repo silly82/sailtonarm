@@ -25,6 +25,31 @@ Item {
     // würde bei jedem Start eine Rückwärtsgeste erzwingen.
     property string preferredPlayerId: ""
 
+    // Der Player, den das Cover zeigt und den eine Bedienung ohne weitere
+    // Angabe meint: zuerst einer, der gerade spielt, sonst ein pausierter,
+    // sonst der zuletzt geöffnete. Ohne diese Reihenfolge zeigte das Cover
+    // den gemerkten Player auch dann, wenn nebenan tatsächlich Musik läuft.
+    readonly property var activePlayer: {
+        var paused = null
+        var preferred = null
+        for (var i = 0; i < players.length; i++) {
+            var p = players[i]
+            if (!Models.isAvailable(p)) {
+                continue
+            }
+            if (Models.isPlaying(p)) {
+                return p
+            }
+            if (Models.playbackState(p) === "paused" && paused === null) {
+                paused = p
+            }
+            if (p.player_id === preferredPlayerId) {
+                preferred = p
+            }
+        }
+        return paused !== null ? paused : preferred
+    }
+
     property bool loading: false
     property string lastError: ""
     // Zeitstempel des letzten erfolgreichen Ladens, damit die UI "noch nie
@@ -79,6 +104,40 @@ Item {
     // --- Kommandos -------------------------------------------------------
     // Absichtlich hier gebündelt statt in den Seiten verstreut: so gibt es
     // genau eine Stelle, an der Kommandonamen und Argumentnamen stehen.
+
+    // Ziel für "abspielen" aus der Bibliothek. Getrennt von
+    // preferredPlayerId gehalten, weil beides Verschiedenes meint: welchen
+    // Player man zuletzt *angeschaut* hat, und auf welchem etwas *landen*
+    // soll. Ohne eigene Wahl gilt der Player, der gerade spielt, sonst der
+    // zuletzt geöffnete.
+    property string explicitTargetPlayerId: ""
+    readonly property string targetPlayerId: {
+        if (explicitTargetPlayerId.length > 0 && playerById(explicitTargetPlayerId)) {
+            return explicitTargetPlayerId
+        }
+        if (activePlayer) {
+            return activePlayer.player_id
+        }
+        return preferredPlayerId
+    }
+
+    // option ist eine QueueOption: "play" (jetzt), "next" (als Nächstes),
+    // "add" (anhängen), "replace" (Warteschlange ersetzen).
+    function playMedia(playerId, uri, option, callback) {
+        if (!mass) {
+            return
+        }
+        mass.sendCommand("player_queues/play_media",
+                         { queue_id: playerId, media: uri, option: option },
+                         function (err) {
+                             if (err) {
+                                 store.lastError = err.hint
+                             }
+                             if (callback) {
+                                 callback(err)
+                             }
+                         })
+    }
 
     function playPause(playerId) {
         _send("player_queues/play_pause", { queue_id: playerId })
