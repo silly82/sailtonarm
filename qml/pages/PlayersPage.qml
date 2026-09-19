@@ -243,6 +243,19 @@ Page {
                 onClicked: store.playPause(modelData.player_id)
             }
 
+            menu: ContextMenu {
+                MenuItem {
+                    text: qsTr("Warteschlange")
+                    onClicked: pageStack.push(Qt.resolvedUrl("QueuePage.qml"),
+                                              { mass: page.mass, store: page.store,
+                                                playerId: modelData.player_id })
+                }
+                MenuItem {
+                    text: qsTr("Als Ziel für die Bibliothek")
+                    onClicked: store.explicitTargetPlayerId = modelData.player_id
+                }
+            }
+
             // Kennzeichnet den zuletzt geöffneten Player. Er steht ohnehin
             // oben; der Punkt sagt, warum. Auf Höhe der ersten Textzeile statt
             // mittig, und weit genug vom Rand weg, um nicht angeschnitten zu

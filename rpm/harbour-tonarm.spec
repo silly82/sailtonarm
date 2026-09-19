@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.6
+Version:    0.8
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -62,6 +62,25 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Sat Sep 19 2026 silly82 <siliwalker@gmail.com> - 0.8-1
+- In der Warteschlange überdeckte die Spieldauer das Ende langer Titel: die
+  Textspalte reichte unter die Dauer, statt vorher auszublenden.
+
+* Sat Sep 19 2026 silly82 <siliwalker@gmail.com> - 0.7-1
+- Ausbaustufe 3: die Warteschlange. Zu sehen, was noch kommt, der laufende
+  Eintrag markiert, ein Tippen springt dorthin. Einträge lassen sich nach
+  oben, nach unten, ans Ende schieben oder entfernen.
+- Zufällige Reihenfolge, Überblenden und Wiederholen (aus / alle / ein
+  Titel) je Warteschlange.
+- Die Warteschlange an einen anderen Player übergeben -- sie wandert
+  mitsamt Abspielposition mit.
+- Die Warteschlange als Playlist in der Bibliothek speichern, und sie
+  leeren (mit Widerrufsfrist).
+- Playlists haben jetzt einen Knopf "Zufällig", der die Playlist gleich in
+  zufälliger Reihenfolge startet.
+- Erreichbar über das Pulley-Menü von Now Playing und über das
+  Kontextmenü einer Zeile in der Player-Liste.
+
 * Sat Sep 19 2026 silly82 <siliwalker@gmail.com> - 0.6-1
 - Ausbaustufe 2: Bibliothek und Suche. Interpreten, Alben, Titel, Playlists
   und Radio mit Anzahl, seitenweise nachgeladen und je Liste durchsuchbar.

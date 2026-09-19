@@ -46,6 +46,8 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/pages/ArtistPage.qml \
     qml/pages/PlaylistPage.qml \
     qml/pages/SearchPage.qml \
+    qml/pages/QueuePage.qml \
+    qml/pages/SavePlaylistDialog.qml \
     qml/pages/PlayerPickerPage.qml \
     qml/pages/SettingsPage.qml \
     rpm/harbour-tonarm.spec \
