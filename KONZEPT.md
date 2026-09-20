@@ -1071,15 +1071,25 @@ Ordnung:
   Anbieter") stehen; ein Suchlauf wurde nicht ausgelöst, dafür bräuchte es die
   Bildschirmtastatur.
 
-### Eine Schönheitsfrage, nicht behoben
+### Eine Schönheitsfrage -- inzwischen behoben (v0.17)
 
-Das Token-Feld in den Einstellungen zeigt bei gespeichertem Token eine über
-die ganze Breite laufende, überlaufende Reihe von 381 Punkten. Technisch
-richtig -- so stellt ein Passwortfeld einen langen Wert eben dar -- aber auf
-einer sonst aufgeräumten Seite unschön.
+Das Token-Feld zeigte bei gespeichertem Token eine über die ganze Breite
+laufende, überlaufende Reihe von 381 Passwortpunkten. Technisch richtig, auf
+einer sonst aufgeräumten Seite aber unschön -- und zu sehen gibt es an den
+Punkten ohnehin nichts.
 
-Nicht angefasst, weil die naheliegende Lösung (Feld leer lassen und nur bei
-Eingabe schreiben) die Speicherlogik ändert: `saveIfComplete()` verlangt
-derzeit beide Felder gefüllt, und ein leeres Feld dürfte den gespeicherten
-Token dann nicht löschen. Das ist eine bewusste Entscheidung wert, keine
-Nebenbei-Änderung.
+Das Feld ist jetzt nicht mehr an `Credentials.token` gebunden. Es bleibt leer
+und meldet im Platzhalter "hinterlegt -- zum Ändern neu eingeben". **Leer
+heisst dabei ausdrücklich "unverändert lassen", nicht "löschen"**
+(`effectiveToken()` fällt auf den gespeicherten Wert zurück); zum Entfernen
+gibt es weiterhin den Knopf mit Widerrufsfrist. Nach dem Speichern leert sich
+das Feld wieder -- `Credentials.save()` übernimmt die Werte sofort in den
+Speicher, das Schreiben in den Daemon läuft im Hintergrund weiter.
+
+**Nebeneffekt, der vorher schlicht fehlte:** die Serveradresse lässt sich
+jetzt allein ändern, ohne das Token noch einmal abzutippen. Vorher verlangte
+`saveIfComplete()` beide Felder gefüllt, und der Token stand nur deshalb
+darin, weil er angezeigt wurde.
+
+Auf dem Gerät geprüft: Platzhalter erscheint, Zugangsdaten bleiben unberührt,
+die Verbindung steht weiterhin.

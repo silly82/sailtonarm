@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.16
+Version:    0.17
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -67,6 +67,14 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.17-1
+- Das Tokenfeld in den Einstellungen zeigt ein hinterlegtes Token nicht
+  mehr als seitenbreite Reihe von Passwortpunkten. Es bleibt leer und
+  meldet im Platzhalter, dass etwas hinterlegt ist. Leer heisst dabei
+  "unverändert lassen"; zum Entfernen gibt es weiterhin den Knopf.
+- Dadurch lässt sich die Serveradresse jetzt auch allein ändern, ohne das
+  Token noch einmal abzutippen.
+
 * Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.16-1
 - Die App gibt es jetzt auf Englisch. Die deutsche Fassung bleibt
   unverändert die Grundlage, Englisch ist die Übersetzung.

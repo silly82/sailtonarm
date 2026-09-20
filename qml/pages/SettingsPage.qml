@@ -17,20 +17,36 @@ Page {
     property string probeText: ""
     property var _probeHandle: null
 
-    // Geschrieben wird erst, wenn beide Felder ausgefüllt sind und sich
-    // gegenüber dem gespeicherten Stand geändert haben -- dem Secrets-Daemon
-    // zuliebe (jeder Tastendruck wäre sonst ein Request) und damit ein halb
-    // ausgefülltes Feld den gültigen Satz nicht überschreibt. Ausgelöst beim
-    // Fokusverlust und beim Verlassen der Seite.
+    // Das Tokenfeld zeigt ein gespeichertes Token *nicht* an: 381 Zeichen
+    // Passwortpunkte liefen quer über die Seite, und zu sehen gibt es an
+    // ihnen ohnehin nichts. Leer bedeutet darum "unverändert lassen", nicht
+    // "löschen" -- Löschen ist ausdrücklich der Knopf weiter unten.
+    //
+    // Nebeneffekt, der vorher fehlte: die Adresse lässt sich jetzt allein
+    // ändern, ohne das Token noch einmal abzutippen.
+    function effectiveToken() {
+        return tokenField.text.length > 0 ? tokenField.text : Credentials.token
+    }
+
+    // Geschrieben wird erst, wenn beides beisammen ist und sich gegenüber dem
+    // gespeicherten Stand geändert hat -- dem Secrets-Daemon zuliebe (jeder
+    // Tastendruck wäre sonst ein Request). Ausgelöst beim Fokusverlust und
+    // beim Verlassen der Seite.
     function saveIfComplete() {
         var url = MassApi.normalizeBaseUrl(baseUrlField.text)
-        if (url.length === 0 || tokenField.text.length === 0) {
+        var token = effectiveToken()
+        if (url.length === 0 || token.length === 0) {
             return
         }
-        if (url === Credentials.baseUrl && tokenField.text === Credentials.token) {
+        if (url === Credentials.baseUrl && token === Credentials.token) {
             return
         }
-        Credentials.save(url, tokenField.text)
+        Credentials.save(url, token)
+        // Credentials.save() übernimmt die Werte sofort in den Speicher (das
+        // Schreiben in den Daemon läuft im Hintergrund weiter), also ist das
+        // Feld hier gefahrlos zu leeren. Der Platzhalter meldet danach, dass
+        // etwas hinterlegt ist.
+        tokenField.text = ""
     }
 
     function testConnection() {
@@ -115,10 +131,13 @@ Page {
                 id: tokenField
                 width: parent.width
                 label: qsTr("Zugriffstoken")
-                placeholderText: qsTr("in MA: Einstellungen → Profil")
+                // Bewusst nicht an Credentials.token gebunden, siehe
+                // effectiveToken().
+                placeholderText: Credentials.token.length > 0
+                                 ? qsTr("hinterlegt — zum Ändern neu eingeben")
+                                 : qsTr("in MA: Einstellungen → Profil")
                 echoMode: TextInput.Password
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                text: Credentials.token
                 EnterKey.iconSource: "image://theme/icon-m-enter-close"
                 EnterKey.onClicked: focus = false
                 onActiveFocusChanged: if (!activeFocus) page.saveIfComplete()
@@ -140,7 +159,7 @@ Page {
                 wrapMode: Text.Wrap
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryHighlightColor
-                text: qsTr("Adresse und Token werden über Sailfish Secrets verschlüsselt gespeichert und sind an die Gerätesperre gebunden. Gespeichert wird, sobald beide Felder ausgefüllt sind und den Fokus verlassen.")
+                text: qsTr("Adresse und Token werden über Sailfish Secrets verschlüsselt gespeichert und sind an die Gerätesperre gebunden. Gespeichert wird beim Verlassen eines Feldes. Ein leeres Tokenfeld lässt das hinterlegte Token unverändert — zum Entfernen den Knopf unten benutzen.")
             }
 
             SectionHeader { text: qsTr("Prüfen") }
