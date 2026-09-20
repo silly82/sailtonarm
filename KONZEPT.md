@@ -1,11 +1,10 @@
 # Konzept: Music-Assistant-Client für SailfishOS (Tonarm)
 
-Stand: 2026-09-19 -- Stufen 0-3 fertig und auf dem Telefon bestätigt (v0.8).
-**Stufe 4 (MPRIS) ist gebaut und besteht die Harbour-Prüfung, aber noch nicht
-auf dem Gerät geprüft** (v0.9, s. Abschnitt 18) -- die USB-Verbindung zum
-Telefon brach beim Ausrollen ab. Stufe 0 in Abschnitt 11, Zielserver vermessen
-in 12, Build und Harbour-Prüfung in 13, erster Gerätestart in 14, Stufe 1 in
-15, Cover-Page und Stufe 2 in 16, Stufe 3 in 17, Stufe 4 in 18.
+Stand: 2026-09-20 -- **Stufen 0-4 fertig und auf dem Telefon bestätigt**
+(v0.14). Offen ist nur noch Stufe 5 (Sendspin, optional). Stufe 0 in
+Abschnitt 11, Zielserver vermessen in 12, Build und Harbour-Prüfung in 13,
+erster Gerätestart in 14, Stufe 1 in 15, Cover-Page und Stufe 2 in 16,
+Stufe 3 in 17, Stufe 4 in 18, deren Geräteprüfung in 19.
 
 ## 1. Ausgangslage und Ziel
 
@@ -847,3 +846,83 @@ Nachzuholen, sobald das Telefon wieder erreichbar ist:
 3. Sperrbildschirm prüfen: erscheinen Titel und Cover, und steuern die
    Knöpfe dort tatsächlich den entfernten Player?
 4. Medientasten eines Headsets gegenprüfen.
+
+## 19. Update 2026-09-20: Stufe 4 auf dem Gerät -- drei Fehler
+
+MPRIS läuft. `org.mpris.MediaPlayer2.harbour-tonarm` steht am Session-Bus,
+meldet Titel, Interpret, Album, Cover-Adresse, Länge, laufende Spielzeit,
+Lautstärke, Zufalls- und Wiederholmodus, und ein `Next` über den Bus liess die
+echte Warteschlange im Server weiterspringen. Drei Fehler standen dazwischen,
+die alle erst das Gerät gezeigt hat.
+
+### 1. Der Dienst meldete sich gar nicht an (v0.10)
+
+Sailjail erlaubt einer App nur den Busnamen, der sich aus
+`OrganizationName`/`ApplicationName` ergibt. `org.mpris.MediaPlayer2.*` gewährt
+ausgerechnet die **Audio**-Berechtigung -- deren eigene Beschreibung sagt es:
+"Play and record audio, **and show audio controls on lockscreen**". Sie steht
+jetzt in der `.desktop`, obwohl die App kein Audio ausgibt. Die
+Berechtigungsdatei selbst trägt dazu ein `FIXME`, dass sie zu grob geschnitten
+sei.
+
+**Nebenwirkung, die man wissen sollte:** der Berechtigungsdialog beim ersten
+Start nennt das dem Nutzer gegenüber als *"Audio aufzeichnen und abspielen"*.
+Für eine Fernbedienung, die weder aufzeichnet noch abspielt, liest sich das
+befremdlich. Es gibt auf SailfishOS keinen feineren Weg zum
+Sperrbildschirm-Symbol; die Alternative wäre, auf MPRIS zu verzichten.
+
+Ausserdem: eine geänderte Berechtigungsliste lässt den Dialog beim nächsten
+Start erneut erscheinen.
+
+### 2. Alle Fähigkeiten waren tot eingefroren (v0.12)
+
+`CanControl` stand auf false, dadurch lieferten `CanGoNext`, `CanSeek` und
+`CanPause` ebenfalls false, und `Shuffle`/`LoopStatus` fehlten ganz am Bus.
+
+Ursache in `amber-mpris`: `MprisPropertiesAdaptor::GetAll()` ruft
+`lockProperties()` auf, und entsperrt wird nie wieder. **Genau drei Setter
+prüfen diese Sperre** -- `setCanControl`, `setHasShuffle`, `setHasLoopStatus`.
+Der Sperrbildschirm fragt `GetAll` ab, sobald der Dienst am Bus erscheint; zu
+diesem Zeitpunkt steht die WebSocket-Verbindung zum Server noch nicht. Ein an
+den Verbindungszustand gebundenes `canControl` fror damit dauerhaft auf false
+ein.
+
+Diese drei Eigenschaften müssen also **statisch** wahr sein und dürfen nicht an
+Laufzeitzustand gebunden werden. Inhaltlich ist das auch richtig: `CanControl`
+heisst in MPRIS "grundsätzlich steuerbar", nicht "gerade jetzt". Was im Moment
+möglich ist, sagen `CanPlay`/`CanGoNext`/`CanSeek` -- und die unterliegen der
+Sperre nicht.
+
+### 3. Der Sperrbildschirm zeigte 82 Stunden Spiellänge (v0.11)
+
+`Amber.Mpris` rechnet in **Millisekunden** und wandelt selbst in die
+Mikrosekunden um, die auf dem D-Bus stehen: `MprisMetaData::duration` ist laut
+Quelltext "Length of the media in milliseconds", `position()` wird für den Bus
+mit 1000 multipliziert, und `seekRequested`/`setPositionRequested` liefern
+bereits geteilte Werte. Wer der MPRIS-Spezifikation folgt und Mikrosekunden
+einsetzt, meldet das Tausendfache -- aus 4:56 wurden 82 Stunden.
+
+Eine weitere Kleinigkeit vorab: `mpris:trackid` muss ein gültiger
+**D-Bus-Objektpfad** sein. Die nackte `queue_item_id` quittierte Qt mit
+"QDBusObjectPath: invalid path" und verwarf das Feld.
+
+### Was dabei sonst besser wurde
+
+Fehlgeschlagene Steuerbefehle landen jetzt zusätzlich im Systemprotokoll.
+Vorher setzten sie nur `PlayerStore.lastError`, das aber nur eine offene Seite
+anzeigt -- ein Befehl vom Sperrbildschirm oder vom Cover scheiterte damit
+vollkommen lautlos. Genau das hat die Fehlersuche hier unnötig verlängert.
+
+### Prüfmethode
+
+Die Wiedergabe lief für die Prüfung auf dem Browser-Player "Web (Chrome on
+Linux)", nicht auf einem Lautsprecher -- so entstand in der Wohnung kein Ton.
+Dessen Übergänge sind allerdings unzuverlässig, solange kein Browser
+tatsächlich verbunden ist: das erste `Next` über den Bus liess die
+Warteschlange von Index 0 auf 2 wandern, ein späteres blieb wirkungslos. Das
+ist eine Eigenheit dieses Player-Typs, nicht der App; der Steuerpfad ist damit
+belegt. Nach der Prüfung wurde die Warteschlange gestoppt und geleert.
+
+**Noch nicht mit eigenen Augen geprüft:** wie der Sperrbildschirm selbst
+aussieht, und ob die Medientasten eines Headsets durchgreifen. Beides braucht
+einen Blick aufs Gerät bzw. ein Headset.

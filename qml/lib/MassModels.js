@@ -216,6 +216,20 @@ function isPlayable(item) {
     return !!item && item.is_playable !== false
 }
 
+// --- MPRIS ---------------------------------------------------------------
+
+// `mpris:trackid` muss ein gültiger **D-Bus-Objektpfad** sein, keine blosse
+// Kennung -- eine nackte queue_item_id quittiert Qt mit
+// "QDBusObjectPath: invalid path" und verwirft das Feld. Erlaubt sind in
+// einem Pfadelement nur A-Z, a-z, 0-9 und _; alles andere wird ersetzt.
+function mprisTrackId(queueItem) {
+    var raw = (queueItem && queueItem.queue_item_id) ? queueItem.queue_item_id : ""
+    if (raw.length === 0) {
+        return "/org/mpris/MediaPlayer2/TrackList/NoTrack"
+    }
+    return "/org/mpris/MediaPlayer2/Track/" + raw.replace(/[^A-Za-z0-9_]/g, "_")
+}
+
 // --- Queue ---------------------------------------------------------------
 
 // queue_id und player_id sind auf diesem Server identisch; die Kommandos

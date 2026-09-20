@@ -13,4 +13,11 @@ ApplicationName=tonarm
 # Internet: HTTP/WebSocket zum Music-Assistant-Server im lokalen Netz.
 # Secrets:  verschlüsselte Ablage von Serveradresse und Token
 #           (src/credentials.{h,cpp}).
-Permissions=Internet;Secrets;
+# Audio:    trotz des Namens nicht fürs Abspielen -- diese App gibt kein Audio
+#           aus. Es ist die Berechtigung, die
+#           "dbus-user.own org.mpris.MediaPlayer2.*" gewährt, ohne die sich der
+#           MPRIS-Dienst nicht anmelden kann (Sailjail lässt sonst nur den aus
+#           OrganizationName/ApplicationName abgeleiteten Namen zu). Jollas
+#           eigene Beschreibung sagt es ausdrücklich: "Play and record audio,
+#           and show audio controls on lockscreen".
+Permissions=Internet;Secrets;Audio;

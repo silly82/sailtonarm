@@ -25,15 +25,22 @@ Item {
     readonly property var track: Models.nowPlaying(player, queue)
     readonly property bool active: player !== null && mass && mass.ready
 
-    // MPRIS rechnet in Mikrosekunden, Music Assistant in Sekunden.
-    readonly property int microsPerSecond: 1000000
+    // Achtung, zwei Einheiten: auf dem D-Bus stehen laut MPRIS-Spezifikation
+    // Mikrosekunden, aber `Amber.Mpris` nimmt und liefert **Millisekunden**
+    // und rechnet selbst um -- `MprisMetaData::duration` ist laut Quelltext
+    // "Length of the media in milliseconds", `position()` wird für den Bus
+    // mit 1000 multipliziert, und `seekRequested`/`setPositionRequested`
+    // liefern bereits durch 1000 geteilte Werte. Wer hier Mikrosekunden
+    // einsetzt, meldet die tausendfache Länge (einmal passiert: 4:56 wurden
+    // zu 82 Stunden).
+    readonly property int millisPerSecond: 1000
 
     function pushPosition() {
         if (!active) {
             return
         }
         mprisPlayer.position = Math.round(
-                    Models.elapsedSeconds(queue, player, Date.now()) * microsPerSecond)
+                    Models.elapsedSeconds(queue, player, Date.now()) * millisPerSecond)
     }
 
     onTrackChanged: pushPosition()
@@ -62,7 +69,21 @@ Item {
         canSetFullscreen: false
         hasTrackList: false
 
-        canControl: bridge.active
+        // Fest auf true, *nicht* an den Verbindungszustand gebunden: der
+        // Eigenschafts-Adaptor von Amber ruft beim ersten `GetAll` eines
+        // Clients `lockProperties()` auf und entsperrt nie wieder. Genau drei
+        // Properties prüfen diese Sperre -- canControl, hasShuffle,
+        // hasLoopStatus. Lipstick fragt GetAll ab, sobald der Dienst am Bus
+        // erscheint; zu dem Zeitpunkt steht die WebSocket-Verbindung noch
+        // nicht, ein gebundenes canControl fröre also dauerhaft auf false ein
+        // und riss alles andere mit (canGoNext & Co. liefern false, solange
+        // canControl false ist). Genau das war in v0.11 zu sehen.
+        //
+        // Inhaltlich ist true auch richtig: canControl heisst in MPRIS "dieser
+        // Player ist grundsätzlich steuerbar", nicht "gerade jetzt". Was im
+        // Moment geht, sagen canPlay/canGoNext/canSeek -- und die unterliegen
+        // der Sperre nicht.
+        canControl: true
         // Transport hängt an der Warteschlange, nicht an den Fähigkeiten des
         // Players -- derselbe Grund wie auf der Now-Playing-Seite.
         canPlay: bridge.active && bridge.queue !== null && bridge.queue.active === true
@@ -82,10 +103,14 @@ Item {
             return Mpris.Stopped
         }
 
-        hasShuffle: bridge.queue !== null
+        // hasShuffle und hasLoopStatus werden bewusst *nicht* gesetzt: sie
+        // stehen in C++ ohnehin auf true, und da sie derselben Sperre
+        // unterliegen wie canControl, würde eine Bindung sie beim ersten
+        // GetAll auf false einfrieren -- die Eigenschaften Shuffle und
+        // LoopStatus verschwänden dann dauerhaft vom Bus (in v0.11 genau so
+        // passiert: "Property ... was not found").
         shuffle: bridge.queue ? bridge.queue.shuffle_enabled === true : false
 
-        hasLoopStatus: bridge.queue !== null
         loopStatus: {
             if (!bridge.queue) {
                 return Mpris.LoopNone
@@ -107,11 +132,12 @@ Item {
         metaData.albumTitle: bridge.track ? bridge.track.album : ""
         metaData.artUrl: bridge.track ? bridge.track.imageUrl : ""
         metaData.duration: bridge.track
-                           ? bridge.track.duration * bridge.microsPerSecond : 0
+                           ? bridge.track.duration * bridge.millisPerSecond : 0
         // Ein stabiler Bezeichner je Stück; ohne ihn hält mancher Client zwei
         // aufeinanderfolgende Titel für denselben und aktualisiert nicht.
-        metaData.trackId: (bridge.queue && bridge.queue.current_item)
-                          ? bridge.queue.current_item.queue_item_id : ""
+        // Muss ein D-Bus-Objektpfad sein, siehe MassModels.mprisTrackId().
+        metaData.trackId: Models.mprisTrackId(
+                              bridge.queue ? bridge.queue.current_item : null)
 
         onPlayPauseRequested: if (bridge.active) store.playPause(bridge.player.player_id)
         onPlayRequested: if (bridge.active && !Models.isPlaying(bridge.player))
@@ -124,21 +150,25 @@ Item {
         onStopRequested: if (bridge.active && Models.isPlaying(bridge.player))
                              store.playPause(bridge.player.player_id)
         onNextRequested: if (bridge.active) store.next(bridge.player.player_id)
+        // Zurück springt in Music Assistant an den Anfang des laufenden
+        // Titels, wenn dieser schon eine Weile läuft, und erst danach zum
+        // vorherigen -- übliches Verhalten, kein Fehler.
         onPreviousRequested: if (bridge.active) store.previous(bridge.player.player_id)
 
-        // offset ist relativ und in Mikrosekunden.
+        // offset ist relativ und in Millisekunden (Amber hat die
+        // Mikrosekunden vom Bus bereits umgerechnet).
         onSeekRequested: {
             if (!bridge.active) {
                 return
             }
             var current = Models.elapsedSeconds(bridge.queue, bridge.player, Date.now())
-            var target = Math.max(0, current + offset / bridge.microsPerSecond)
+            var target = Math.max(0, current + offset / bridge.millisPerSecond)
             store.seek(bridge.player.player_id, target)
         }
 
         onSetPositionRequested: {
             if (bridge.active) {
-                store.seek(bridge.player.player_id, position / bridge.microsPerSecond)
+                store.seek(bridge.player.player_id, position / bridge.millisPerSecond)
             }
         }
 

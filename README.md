@@ -6,13 +6,12 @@ Silica-QML, spricht die WebSocket-API des MA-Servers direkt an.
 Nicht mit dem Music-Assistant-Projekt verbunden. Der Name "Music Assistant"
 gehört dessen Urhebern; diese App heisst deshalb Tonarm.
 
-**Stand: Ausbaustufe 4** (v0.9) -- Fernbedienung, Bibliothek, Suche,
+**Stand: Ausbaustufe 4** (v0.14) -- Fernbedienung, Bibliothek, Suche,
 Warteschlange und Sperrbildschirm-Steuerung. Der Ausbauplan steht in
 [`KONZEPT.md`](KONZEPT.md).
 
-Stufen 0-3 sind auf einem Jolla Phone (2026) gegen einen echten Server
-verifiziert; die MPRIS-Anbindung aus Stufe 4 ist gebaut und besteht die
-Harbour-Prüfung, wurde aber noch nicht auf dem Gerät geprüft.
+Auf einem Jolla Phone (2026) gegen einen echten Music-Assistant-Server
+verifiziert; besteht `sfdk check` (harbour und rpmlint, je ohne Befund).
 
 Baut sauber für `SailfishOS-5.1.0.11-{armv7hl,aarch64}`, besteht `sfdk check`
 (harbour und rpmlint, je ohne Befund) und läuft auf einem Jolla Phone (2026)
@@ -43,6 +42,12 @@ gegen einen echten Server.
   Play/Pause, Weiter, Zurück, Springen und Lautstärke bedienen -- gesteuert
   wird dabei der entfernte Player, die App gibt selbst kein Audio aus
 - **Optionale Benachrichtigung** bei Titelwechsel (standardmässig aus)
+
+Die App verlangt dafür die **Audio**-Berechtigung, obwohl sie kein Audio
+ausgibt: auf SailfishOS ist das die Berechtigung, die das Anmelden eines
+MPRIS-Dienstes erlaubt ("show audio controls on lockscreen"). Der
+Berechtigungsdialog nennt sie dem Nutzer gegenüber allerdings "Audio
+aufzeichnen und abspielen" -- einen feineren Weg gibt es nicht.
 - **Live-Aktualisierung** per Server-Events (`player_updated`, `queue_updated`,
   `queue_time_updated`) statt durch Nachfragen; zwischen zwei Meldungen zählt
   die Spielzeit lokal weiter
