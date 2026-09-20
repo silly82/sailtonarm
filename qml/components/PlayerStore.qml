@@ -252,11 +252,17 @@ Item {
 
     function _send(command, args) {
         if (!mass) {
+            console.warn("PlayerStore: kein Verbindungsobjekt für", command)
             return
         }
         mass.sendCommand(command, args, function (err) {
             if (err) {
                 store.lastError = err.hint
+                // Auch ins Journal: `lastError` zeigt nur die Seite an, die
+                // gerade offen ist -- ein Kommando vom Sperrbildschirm oder
+                // vom Cover scheiterte sonst vollkommen lautlos.
+                console.warn("PlayerStore:", command, "fehlgeschlagen:",
+                             err.hint, err.detail ? "(" + err.detail + ")" : "")
             }
         })
     }

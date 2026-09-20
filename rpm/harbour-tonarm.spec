@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.9
+Version:    0.14
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -67,6 +67,31 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.14-1
+- Fehlgeschlagene Steuerbefehle landen jetzt im Systemprotokoll. Bisher
+  verschwanden sie lautlos, wenn sie nicht von einer offenen Seite kamen --
+  etwa vom Sperrbildschirm oder vom Cover.
+
+* Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.12-1
+- Die Knöpfe auf dem Sperrbildschirm blieben wirkungslos und Zufalls- wie
+  Wiederholmodus fehlten dort ganz: drei MPRIS-Eigenschaften frieren beim
+  ersten Abruf durch den Sperrbildschirm dauerhaft ein, und zu dem
+  Zeitpunkt stand die Verbindung zum Server noch nicht.
+
+* Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.11-1
+- Der Sperrbildschirm zeigte die tausendfache Spiellänge (aus 4:56 wurden
+  82 Stunden): Amber.Mpris rechnet in Millisekunden und wandelt selbst in
+  die Mikrosekunden des D-Bus um. Betraf auch Spielzeit und Springen.
+
+* Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.10-1
+- Der MPRIS-Dienst meldete sich gar nicht am Bus an: Sailjail erlaubt einer
+  App nur den aus OrganizationName/ApplicationName abgeleiteten Busnamen.
+  "org.mpris.MediaPlayer2.*" gewährt die Audio-Berechtigung, die deshalb
+  jetzt in der .desktop steht -- trotz ihres Namens nicht fürs Abspielen,
+  die App gibt weiterhin kein Audio aus.
+- Die Titelkennung für den Sperrbildschirm muss ein D-Bus-Objektpfad sein;
+  die nackte Queue-Kennung verwarf Qt mit "invalid path".
+
 * Sat Sep 19 2026 silly82 <siliwalker@gmail.com> - 0.9-1
 - Ausbaustufe 4: Sperrbildschirm und Medientasten steuern jetzt den
   entfernten Player. Die App meldet sich als MPRIS-Dienst an und spiegelt
