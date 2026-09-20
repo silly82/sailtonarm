@@ -6,7 +6,7 @@ Abschnitt 11, Zielserver vermessen in 12, Build und Harbour-Prüfung in 13,
 erster Gerätestart in 14, Stufe 1 in 15, Cover-Page und Stufe 2 in 16,
 Stufe 3 in 17, Stufe 4 in 18, deren Geräteprüfung in 19,
 nachgezogene Favoriten und Lautsprecher-Gruppen in 20,
-Zweisprachigkeit und Store-Material in 21.
+Zweisprachigkeit und Store-Material in 21, UI-Durchgang in 22.
 
 ## 1. Ausgangslage und Ziel
 
@@ -1050,3 +1050,36 @@ Zwei Entscheidungen, die dort festgehalten sind:
 
 v0.16 baut warnungsfrei, besteht `sfdk check -s harbour` und `-s rpmlint`
 (0 errors, 0 warnings, 0 badness) und ist auf dem Gerät installiert.
+
+## 22. Update 2026-09-20: UI-Durchgang im Hochformat
+
+Mit festgehaltenem Hochformat stimmen auch die Koordinaten der
+Touch-Injektion wieder (sie rechnet in der Ausrichtung des Panels), deshalb
+liess sich die Oberfläche endlich vollständig durchgehen. Gesehen und in
+Ordnung:
+
+- Player-Liste, Now Playing, Bibliotheksübersicht, Titelliste, Albumseite,
+  Warteschlange -- alle bereits früher geprüft, unverändert richtig.
+- **Gruppen-Seite** (aus Abschnitt 20 nachgeholt): Kopf mit Anführer,
+  Erklärzeile, und Schalter für alle sieben koppelbaren Lautsprecher.
+  Gruppenlautstärke und "Gruppe auflösen" bleiben korrekt ausgeblendet,
+  solange nichts gruppiert ist.
+- **Einstellungen**: der neue Schalter "Hochkant festhalten" steht sichtbar
+  auf an, "Bei jedem Titelwechsel melden" auf aus -- beide spiegeln ihren
+  dconf-Wert richtig.
+- **Suchseite**: Suchfeld und Platzhalter ("Durchsucht Bibliothek und
+  Anbieter") stehen; ein Suchlauf wurde nicht ausgelöst, dafür bräuchte es die
+  Bildschirmtastatur.
+
+### Eine Schönheitsfrage, nicht behoben
+
+Das Token-Feld in den Einstellungen zeigt bei gespeichertem Token eine über
+die ganze Breite laufende, überlaufende Reihe von 381 Punkten. Technisch
+richtig -- so stellt ein Passwortfeld einen langen Wert eben dar -- aber auf
+einer sonst aufgeräumten Seite unschön.
+
+Nicht angefasst, weil die naheliegende Lösung (Feld leer lassen und nur bei
+Eingabe schreiben) die Speicherlogik ändert: `saveIfComplete()` verlangt
+derzeit beide Felder gefüllt, und ein leeres Feld dürfte den gespeicherten
+Token dann nicht löschen. Das ist eine bewusste Entscheidung wert, keine
+Nebenbei-Änderung.
