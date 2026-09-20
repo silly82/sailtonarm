@@ -216,6 +216,59 @@ function isPlayable(item) {
     return !!item && item.is_playable !== false
 }
 
+// --- Gruppen -------------------------------------------------------------
+
+// Die Player, mit denen sich dieser zusammenschalten lässt. Der Server führt
+// das je Player als `can_group_with`; was dort nicht steht, kann der Anbieter
+// nicht synchronisieren (AirPlay und Sonos etwa gruppieren nur jeweils unter
+// ihresgleichen, plus die anbieterübergreifenden Fälle, die MA selbst kann).
+function groupCandidateIds(player) {
+    if (!player || !player.can_group_with) {
+        return []
+    }
+    return player.can_group_with
+}
+
+// Gehört `other` gerade zur Gruppe von `leader`? Der Server führt das
+// doppelt -- als Kindliste beim Anführer und als Rückverweis beim Mitglied --
+// und je nach Anbieter ist mal das eine, mal das andere gesetzt. Deshalb
+// beides prüfen.
+function isGroupMember(leader, other) {
+    if (!leader || !other || leader.player_id === other.player_id) {
+        return false
+    }
+    if (other.synced_to === leader.player_id) {
+        return true
+    }
+    if (other.active_group === leader.player_id) {
+        return true
+    }
+    var childs = leader.group_childs || []
+    if (childs.indexOf(other.player_id) !== -1) {
+        return true
+    }
+    var members = leader.group_members || []
+    return members.indexOf(other.player_id) !== -1
+}
+
+// Ist dieser Player selbst an einen anderen angeschlossen? Liefert dessen Id
+// oder "".
+function groupLeaderOf(player) {
+    if (!player) {
+        return ""
+    }
+    return player.synced_to || player.active_group || ""
+}
+
+function hasGroupMembers(leader, players) {
+    for (var i = 0; i < players.length; i++) {
+        if (isGroupMember(leader, players[i])) {
+            return true
+        }
+    }
+    return false
+}
+
 // --- MPRIS ---------------------------------------------------------------
 
 // `mpris:trackid` muss ein gültiger **D-Bus-Objektpfad** sein, keine blosse

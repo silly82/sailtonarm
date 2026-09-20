@@ -78,7 +78,11 @@ ListItem {
         anchors.verticalCenter: parent.verticalCenter
         x: row.showImage ? (thumb.x + thumb.width + Theme.paddingMedium)
                          : Theme.horizontalPageMargin
+        // Der Favoritenstern hängt rechts *mit* Seitenabstand -- beides muss
+        // heraus, sonst überdeckt er das Textende, statt es ausblenden zu
+        // lassen. Dritter Anlauf dieser Sorte Fehler in diesem Projekt.
         width: parent.width - x - Theme.horizontalPageMargin
+               - (favoriteMark.visible ? favoriteMark.width + Theme.paddingMedium : 0)
 
         Label {
             width: parent.width
@@ -98,6 +102,43 @@ ListItem {
         }
     }
 
+    // Favoritenstand: erst der Wert vom Server, nach eigenem Umschalten der
+    // lokale Merker. Der Server schickt für Favoriten kein Ereignis, das die
+    // Liste aktualisieren würde -- ohne den Merker spränge die Zeile beim
+    // nächsten Blick zurück.
+    property var favoriteOverride: null
+    readonly property bool isFavorite: favoriteOverride !== null
+                                       ? favoriteOverride
+                                       : (mediaItem && mediaItem.favorite === true)
+    // Aus den Favoriten nehmen verlangt Medientyp und Bibliothekskennung --
+    // das geht nur bei Einträgen, die tatsächlich in der Bibliothek liegen.
+    readonly property bool canUnfavorite: mediaItem && mediaItem.provider === "library"
+
+    function toggleFavorite() {
+        if (!store || !mediaItem) {
+            return
+        }
+        if (isFavorite) {
+            store.removeFavorite(mediaItem.media_type, mediaItem.item_id, function (err) {
+                if (err) {
+                    if (toast) toast.show(err.hint, true)
+                } else {
+                    row.favoriteOverride = false
+                    if (toast) toast.show(qsTr("Aus Favoriten entfernt"))
+                }
+            })
+        } else {
+            store.addFavorite(mediaItem.uri, function (err) {
+                if (err) {
+                    if (toast) toast.show(err.hint, true)
+                } else {
+                    row.favoriteOverride = true
+                    if (toast) toast.show(qsTr("Zu Favoriten hinzugefügt"))
+                }
+            })
+        }
+    }
+
     menu: ContextMenu {
         MenuItem {
             text: qsTr("Jetzt spielen")
@@ -111,5 +152,25 @@ ListItem {
             text: qsTr("Anhängen")
             onClicked: row.enqueue("add", qsTr("Angehängt auf %1"))
         }
+        MenuItem {
+            text: row.isFavorite ? qsTr("Aus Favoriten") : qsTr("Zu Favoriten")
+            // Ein bereits markierter Eintrag, der nicht in der Bibliothek
+            // liegt, lässt sich nicht wieder abwählen -- dann lieber keinen
+            // Eintrag zeigen als einen, der scheitert.
+            visible: !row.isFavorite || row.canUnfavorite
+            onClicked: row.toggleFavorite()
+        }
+    }
+
+    // Kleiner Stern am rechten Rand, damit man Favoriten in der Liste sieht,
+    // ohne jede Zeile aufzuklappen.
+    Image {
+        id: favoriteMark
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        anchors.rightMargin: Theme.horizontalPageMargin
+        source: "image://theme/icon-s-favorite"
+        visible: row.isFavorite
+        opacity: 0.8
     }
 }

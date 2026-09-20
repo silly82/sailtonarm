@@ -6,7 +6,7 @@ Silica-QML, spricht die WebSocket-API des MA-Servers direkt an.
 Nicht mit dem Music-Assistant-Projekt verbunden. Der Name "Music Assistant"
 gehört dessen Urhebern; diese App heisst deshalb Tonarm.
 
-**Stand: Ausbaustufe 4** (v0.14) -- Fernbedienung, Bibliothek, Suche,
+**Stand: Ausbaustufe 4** (v0.15) -- Fernbedienung, Bibliothek, Suche,
 Warteschlange und Sperrbildschirm-Steuerung. Der Ausbauplan steht in
 [`KONZEPT.md`](KONZEPT.md).
 
@@ -41,6 +41,12 @@ gegen einen echten Server.
   Cover und Spielzeit werden dorthin gespiegelt, und von dort lassen sich
   Play/Pause, Weiter, Zurück, Springen und Lautstärke bedienen -- gesteuert
   wird dabei der entfernte Player, die App gibt selbst kein Audio aus
+- **Favoriten**: im Kontextmenü jeder Bibliothekszeile setzen oder entfernen,
+  als Stern in der Liste sichtbar, und jede Liste lässt sich auf "Nur
+  Favoriten" umstellen
+- **Lautsprecher gruppieren**: mehrere Lautsprecher synchron zusammenschalten,
+  mit gemeinsamer Lautstärke -- angeboten werden nur die, die der Server
+  tatsächlich synchronisieren kann
 - **Optionale Benachrichtigung** bei Titelwechsel (standardmässig aus)
 
 Die App verlangt dafür die **Audio**-Berechtigung, obwohl sie kein Audio
@@ -112,6 +118,7 @@ qml/pages/ArtistPage.qml           Interpret mit Alben
 qml/pages/PlaylistPage.qml         Playlist mit Titeln
 qml/pages/SearchPage.qml           Suche über alle Medientypen
 qml/pages/QueuePage.qml            Warteschlange ansehen und bearbeiten
+qml/pages/GroupPage.qml            Lautsprecher zusammenschalten
 qml/pages/SavePlaylistDialog.qml   Name für die gespeicherte Warteschlange
 qml/pages/PlayerPickerPage.qml     Player auswählen (Ziel oder Übergabe)
 qml/pages/SettingsPage.qml         Adresse, Token, Erreichbarkeitstest, Serverangaben

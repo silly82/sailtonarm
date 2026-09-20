@@ -142,6 +142,65 @@ Item {
         })
     }
 
+    // --- Favoriten -------------------------------------------------------
+
+    // Hinzufügen nimmt die URI und geht für jedes Objekt, auch für eines, das
+    // nur bei einem Anbieter liegt.
+    function addFavorite(uri, callback) {
+        _sendWithResult("music/favorites/add_item", { item: uri }, callback)
+    }
+
+    // Entfernen braucht dagegen Medientyp *und* Bibliothekskennung -- es wirkt
+    // nur auf Bibliothekseinträge. Aufrufer prüfen daher vorher
+    // `provider === "library"`.
+    function removeFavorite(mediaType, libraryItemId, callback) {
+        _sendWithResult("music/favorites/remove_item",
+                        { media_type: mediaType, library_item_id: libraryItemId },
+                        callback)
+    }
+
+    // --- Gruppen ---------------------------------------------------------
+
+    // Schliesst Player an einen Zielplayer an oder löst sie von ihm. Beide
+    // Listen sind optional, eine davon genügt.
+    function setGroupMembers(targetPlayerId, idsToAdd, idsToRemove, callback) {
+        var args = { target_player: targetPlayerId }
+        if (idsToAdd && idsToAdd.length > 0) {
+            args.player_ids_to_add = idsToAdd
+        }
+        if (idsToRemove && idsToRemove.length > 0) {
+            args.player_ids_to_remove = idsToRemove
+        }
+        _sendWithResult("players/cmd/set_members", args, callback)
+    }
+
+    // Löst diesen einen Player aus seiner Gruppe.
+    function ungroup(playerId) {
+        _send("players/cmd/ungroup", { player_id: playerId })
+    }
+
+    // Lautstärke der ganzen Gruppe; die Einzellautstärken zieht der Server
+    // im Verhältnis mit.
+    function setGroupVolume(playerId, level) {
+        _send("players/cmd/group_volume", { player_id: playerId,
+                                            volume_level: Math.round(level) })
+    }
+
+    function _sendWithResult(command, args, callback) {
+        if (!mass) {
+            return
+        }
+        mass.sendCommand(command, args, function (err) {
+            if (err) {
+                store.lastError = err.hint
+                console.warn("PlayerStore:", command, "fehlgeschlagen:", err.hint)
+            }
+            if (callback) {
+                callback(err)
+            }
+        })
+    }
+
     // --- Warteschlange ---------------------------------------------------
 
     function playIndex(playerId, index) {

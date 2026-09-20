@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.14
+Version:    0.15
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -67,6 +67,17 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.15-1
+- Lautsprecher lassen sich zusammenschalten: im Kontextmenü einer Zeile
+  der Player-Liste öffnet "Gruppieren" eine Seite, auf der die passenden
+  Lautsprecher per Schalter dazu- oder abgeschaltet werden. Dazu eine
+  Lautstärke für die ganze Gruppe und "Gruppe auflösen". Angeboten werden
+  nur Lautsprecher, die der Server auch tatsächlich synchronisieren kann.
+  Angeschlossene Lautsprecher zeigen in der Player-Liste, woran sie hängen.
+- Favoriten: im Kontextmenü jeder Bibliothekszeile hinzufügen oder
+  entfernen, als Stern in der Liste sichtbar, und im Pulley-Menü lässt sich
+  eine Liste auf "Nur Favoriten" umstellen.
+
 * Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.14-1
 - Fehlgeschlagene Steuerbefehle landen jetzt im Systemprotokoll. Bisher
   verschwanden sie lautlos, wenn sie nicht von einer offenen Seite kamen --
