@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en">
+<TS version="2.1" language="en_GB">
 <context>
     <name>AlbumPage</name>
     <message>
@@ -702,10 +702,6 @@
         <translation>Saving failed: %1</translation>
     </message>
     <message>
-        <source>Adresse und Token werden über Sailfish Secrets verschlüsselt gespeichert und sind an die Gerätesperre gebunden. Gespeichert wird, sobald beide Felder ausgefüllt sind und den Fokus verlassen.</source>
-        <translation>Address and token are stored encrypted via Sailfish Secrets and tied to the device lock. They are saved once both fields are filled in and lose focus.</translation>
-    </message>
-    <message>
         <source>Prüfen</source>
         <translation>Check</translation>
     </message>
@@ -792,6 +788,14 @@
     <message>
         <source>Die Seiten sind fürs Hochformat entworfen. Wer das Telefon beim Hören hinlegt, will meist nicht, dass die Liste dabei kippt.</source>
         <translation>The pages are designed for portrait. If you put the phone down while listening, you usually do not want the list to flip.</translation>
+    </message>
+    <message>
+        <source>hinterlegt — zum Ändern neu eingeben</source>
+        <translation>stored — enter a new one to change it</translation>
+    </message>
+    <message>
+        <source>Adresse und Token werden über Sailfish Secrets verschlüsselt gespeichert und sind an die Gerätesperre gebunden. Gespeichert wird beim Verlassen eines Feldes. Ein leeres Tokenfeld lässt das hinterlegte Token unverändert — zum Entfernen den Knopf unten benutzen.</source>
+        <translation>Address and token are stored encrypted via Sailfish Secrets and tied to the device lock. They are saved when a field loses focus. An empty token field leaves the stored token untouched — use the button below to remove it.</translation>
     </message>
 </context>
 <context>
