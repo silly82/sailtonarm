@@ -13,7 +13,7 @@ Page {
     property var store
     property var playlist
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     property var tracks: []
     property bool loading: false

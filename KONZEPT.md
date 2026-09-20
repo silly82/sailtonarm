@@ -1,11 +1,12 @@
 # Konzept: Music-Assistant-Client für SailfishOS (Tonarm)
 
-Stand: 2026-09-20 -- **Stufen 0-4 vollständig** (v0.15), auf dem Telefon
-bestätigt. Offen ist nur noch Stufe 5 (Sendspin, optional). Stufe 0 in
+Stand: 2026-09-20 -- **Stufen 0-4 vollständig** (v0.16), auf dem Telefon
+bestätigt, zweisprachig und mit vorbereitetem Store-Material. Offen ist nur noch Stufe 5 (Sendspin, optional). Stufe 0 in
 Abschnitt 11, Zielserver vermessen in 12, Build und Harbour-Prüfung in 13,
 erster Gerätestart in 14, Stufe 1 in 15, Cover-Page und Stufe 2 in 16,
 Stufe 3 in 17, Stufe 4 in 18, deren Geräteprüfung in 19,
-nachgezogene Favoriten und Lautsprecher-Gruppen in 20.
+nachgezogene Favoriten und Lautsprecher-Gruppen in 20,
+Zweisprachigkeit und Store-Material in 21.
 
 ## 1. Ausgangslage und Ziel
 
@@ -997,3 +998,55 @@ Menüeintrag "Gruppieren" ist auf dem Gerät bestätigt, das Antippen scheiterte
 aber an der Koordinatenumrechnung -- das Telefon lag quer, und die
 Touch-Injektion rechnet in der Ausrichtung des Panels. Weiteres blindes Tippen
 auf einem fremden Gerät schien der falsche Weg.
+
+## 21. Update 2026-09-20: Englisch, Hochformat-Sperre, Store-Material (v0.16)
+
+### Zweisprachig
+
+Die App gibt es jetzt auf Englisch. **Deutsch bleibt die Quelle**, Englisch ist
+die Übersetzung -- ausdrücklich so gewünscht, und die Umkehrung hätte 188
+`qsTr()`-Aufrufe im Quelltext anfassen müssen, ohne dass dabei etwas besser
+geworden wäre.
+
+`translations/harbour-tonarm-en.ts` ist vollständig gefüllt: 188 von 188
+Einträgen, keiner mehr `unfinished`. Der Build erzeugt daraus
+`harbour-tonarm-en.qm` (18 KB), auf dem Gerät unter
+`/usr/share/harbour-tonarm/translations/` installiert und stichprobenweise
+gegengelesen.
+
+Die Unwucht aus Abschnitt 11 ("vor einer Store-Veröffentlichung umdrehen") ist
+damit erledigt, nur eben andersherum als dort vermutet: nicht die Quelle
+drehen, sondern die Übersetzung liefern.
+
+### Hochformat festhalten
+
+Neuer Schalter in den Einstellungen, standardmässig aus. Die Seiten sind für
+Hochformat entworfen; quer funktionieren sie, sehen aber gestreckt aus, und wer
+das Telefon beim Hören hinlegt, will meist nicht, dass die Liste kippt.
+
+Umgesetzt über das Wurzelfenster: dessen `allowedOrientations` hängt an der
+Einstellung, und alle zwölf Seiten benutzen jetzt `defaultAllowedOrientations`
+statt eines eigenen `Orientation.All`. Eine Stelle entscheidet, nicht zwölf.
+
+### Store-Material
+
+`store/` angelegt, nach dem Vorbild von `sailhacontrol`: Icon in 172×172,
+Cover 1080×540 (`generate-cover.py`, gleicher Stil wie das App-Icon),
+Zusammenfassung und Beschreibung je auf Deutsch und Englisch, Bildschirmfotos
+und eine README, die Feld für Feld dem Harbour-Formular folgt.
+
+Zwei Entscheidungen, die dort festgehalten sind:
+
+- **Die Beschreibung erklärt die Audio-Berechtigung.** Das Berechtigungsfenster
+  nennt sie dem Nutzer gegenüber "Audio aufzeichnen und abspielen", obwohl die
+  App weder das eine noch das andere tut. Unerklärt liest sich das wie ein
+  Widerspruch; der Absatz steht deshalb in beiden Sprachfassungen am Ende.
+- **Nur unverfängliche Bildschirmfotos** sind dabei: Bibliotheksübersicht,
+  Albumseite, Titelliste. Player-Liste, Now Playing und Warteschlange sähen
+  besser aus, zeigen aber zwangsläufig die eigenen Lautsprechernamen -- also
+  die Räume der Wohnung -- und die zuletzt gehörte Musik. Für eine öffentliche
+  Anzeige ist das eine Entscheidung des Einreichenden, nicht meine; die README
+  sagt, wie man sie nachträglich aufnimmt.
+
+v0.16 baut warnungsfrei, besteht `sfdk check -s harbour` und `-s rpmlint`
+(0 errors, 0 warnings, 0 badness) und ist auf dem Gerät installiert.

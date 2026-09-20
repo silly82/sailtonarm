@@ -11,7 +11,7 @@ Page {
     property var mass
     property var store
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     property var counts: ({})
 

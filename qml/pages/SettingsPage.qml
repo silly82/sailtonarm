@@ -8,7 +8,7 @@ Page {
 
     property var mass
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     // Ergebnis des /info-Tests -- die einzige Route des Servers, die ohne Token
     // antwortet. Damit lässt sich "Adresse falsch" von "Token falsch" trennen,
@@ -170,6 +170,23 @@ Page {
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryHighlightColor
                 text: qsTr("Der Test spricht nur /info an — die einzige Route ohne Anmeldung. Er sagt also, ob der Server erreichbar ist, nicht ob das Token gültig ist. Das zeigt die Startseite.")
+            }
+
+            SectionHeader { text: qsTr("Anzeige") }
+
+            TextSwitch {
+                width: parent.width
+                text: qsTr("Hochkant festhalten")
+                description: qsTr("Die Seiten sind fürs Hochformat entworfen. Wer das Telefon beim Hören hinlegt, will meist nicht, dass die Liste dabei kippt.")
+                checked: portraitSetting.value === true
+                automaticCheck: false
+                onClicked: portraitSetting.value = !checked
+            }
+
+            ConfigurationValue {
+                id: portraitSetting
+                key: "/apps/harbour-tonarm/lockPortrait"
+                defaultValue: false
             }
 
             SectionHeader { text: qsTr("Benachrichtigungen") }

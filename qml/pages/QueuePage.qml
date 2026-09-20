@@ -20,7 +20,7 @@ Page {
     readonly property var player: store ? store.playerById(playerId) : null
     readonly property var queue: store ? store.queueOf(playerId) : null
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     property var items: []
     property bool loading: false

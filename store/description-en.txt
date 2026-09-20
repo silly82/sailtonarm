@@ -1,0 +1,28 @@
+Control your own Music Assistant server from SailfishOS. Not affiliated with the Music Assistant project — the name belongs to its authors.
+
+FEATURES
+
+- Every player of your setup at a glance, with what is playing, a progress bar and play/pause right in the row. Unavailable players stay visible, just dimmed.
+- A page per player with artwork, title, artist, album, a seekable progress slider, next and previous, volume and mute.
+- Library by artists, albums, tracks, playlists and radio, with a count per section, loaded page by page and searchable per list. Album and artist pages with artwork, playlists with their tracks.
+- Search across all media types on one page, grouped by type, covering the library and the connected providers.
+- Play from any list: play now, queue next, or append. Which player it lands on is a choice you make once.
+- Mark and unmark favourites, shown as a star in the list; any list can be switched to favourites only.
+- View and edit the queue: tap to jump to a track, move entries up, down or to the end, remove them one by one. Shuffle, crossfade and repeat. Hand the whole queue to another player, save it as a playlist, or clear it.
+- Group speakers so several play the same thing in sync, with one volume for the group. Only speakers the server can actually synchronise are offered.
+- Cover view with the running track, artwork and play/pause — usable without opening the app.
+- Lock screen and media keys drive the remote player over MPRIS. Title, artist, album, artwork and position show up there; the app itself outputs no audio.
+- Optional notification on track change, off by default.
+- Everything updates through server events rather than polling: changes made elsewhere show up immediately.
+- Portrait orientation can be locked.
+
+REQUIREMENTS
+
+- A Music Assistant server reachable on your local network (default port 8095). If it runs as a Home Assistant app, that is the address of the HA machine, not the ingress address.
+- An access token, created in the Music Assistant interface under Settings → Profile.
+
+Address and token are stored encrypted in Sailfish Secrets and tied to the device lock.
+
+A NOTE ON THE AUDIO PERMISSION
+
+The app asks for the Audio permission although it neither records nor plays anything. On SailfishOS that is the permission which allows registering an MPRIS service — that is, the controls on the lock screen. There is no finer-grained way to get there.

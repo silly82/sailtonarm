@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.15
+Version:    0.16
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -67,6 +67,13 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.16-1
+- Die App gibt es jetzt auf Englisch. Die deutsche Fassung bleibt
+  unverändert die Grundlage, Englisch ist die Übersetzung.
+- In den Einstellungen lässt sich das Hochformat festhalten. Die Seiten
+  sind dafür entworfen; wer das Telefon beim Hören hinlegt, will meist
+  nicht, dass die Liste dabei kippt.
+
 * Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.15-1
 - Lautsprecher lassen sich zusammenschalten: im Kontextmenü einer Zeile
   der Player-Liste öffnet "Gruppieren" eine Seite, auf der die passenden

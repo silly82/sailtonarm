@@ -6,7 +6,7 @@ Silica-QML, spricht die WebSocket-API des MA-Servers direkt an.
 Nicht mit dem Music-Assistant-Projekt verbunden. Der Name "Music Assistant"
 gehört dessen Urhebern; diese App heisst deshalb Tonarm.
 
-**Stand: Ausbaustufe 4** (v0.15) -- Fernbedienung, Bibliothek, Suche,
+**Stand: Ausbaustufe 4** (v0.16) -- Fernbedienung, Bibliothek, Suche,
 Warteschlange und Sperrbildschirm-Steuerung. Der Ausbauplan steht in
 [`KONZEPT.md`](KONZEPT.md).
 
@@ -127,10 +127,15 @@ qml/cover/CoverPage.qml            Verbindungszustand (ab Stufe 4: laufendes St�
 
 ## Sprache
 
-Die Quelltext-Strings sind deutsch; `translations/harbour-tonarm-en.ts` ist für
-die englische Fassung vorgesehen und noch leer. Vor einer Veröffentlichung im
-Harbour-Store sollte das gedreht werden (englische Quelle, deutsche
-Übersetzung) -- bis dahin zeigt die App auf englischen Geräten deutsche Texte.
+Deutsch und Englisch. Die Quelltext-Strings sind deutsch, Englisch liegt als
+vollständige Übersetzung in `translations/harbour-tonarm-en.ts` (188 von 188
+Einträgen) und wird beim Bauen zu `harbour-tonarm-en.qm` übersetzt.
+
+## Store-Material
+
+`store/` enthält Icon, Cover, Zusammenfassung und Beschreibung auf Deutsch und
+Englisch, Bildschirmfotos und eine README, die Feld für Feld dem
+Harbour-Einreichungsformular folgt.
 
 ## Lizenz
 

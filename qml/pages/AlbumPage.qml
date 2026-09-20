@@ -15,7 +15,7 @@ Page {
     property var store
     property var album
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     property var tracks: []
     property bool loading: false

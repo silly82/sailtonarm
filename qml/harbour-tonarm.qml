@@ -47,6 +47,17 @@ ApplicationWindow {
         enabled: notifySetting.value === true
     }
 
+    // Hochkant festhalten. Die Seiten sind für Hochformat entworfen; quer
+    // funktionieren sie, sehen aber gestreckt aus. Wer das Telefon beim
+    // Hören ohnehin hinlegt, will nicht, dass die Liste dabei kippt.
+    // Wirkt über das Wurzelfenster: alle Seiten übernehmen es, weil sie
+    // `defaultAllowedOrientations` benutzen statt eigener Werte.
+    ConfigurationValue {
+        id: portraitLockSetting
+        key: "/apps/harbour-tonarm/lockPortrait"
+        defaultValue: false
+    }
+
     ConfigurationValue {
         id: notifySetting
         key: "/apps/harbour-tonarm/notifyOnTrackChange"
@@ -69,5 +80,6 @@ ApplicationWindow {
     cover: Component {
         CoverPage { mass: massConnection; store: playerStore }
     }
-    allowedOrientations: defaultAllowedOrientations
+    allowedOrientations: portraitLockSetting.value === true
+                         ? Orientation.Portrait : Orientation.All
 }

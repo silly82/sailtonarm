@@ -13,7 +13,7 @@ Page {
     property var mass
     property var store
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     // Flache Liste aus { section: "..." } und { item: ..., type: "..." }
     property var rows: []
