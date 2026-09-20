@@ -27,6 +27,10 @@ Page {
     property bool exhausted: false
     property string errorText: ""
     property string searchText: ""
+    // Nur Favoriten zeigen. Läuft serverseitig über den `favorite`-Filter von
+    // library_items, nicht über Nachfiltern -- bei 13847 Titeln wäre das
+    // sonst sinnlos, weil immer nur die geladene Seite gefiltert würde.
+    property bool favoritesOnly: false
 
     readonly property int pageSize: 60
 
@@ -45,7 +49,7 @@ Page {
         }
         // Bei aktiver Suche sagt die Gesamtzahl der Bibliothek nichts über das
         // Ergebnis aus -- dann gar keine Zahl zeigen statt einer falschen.
-        if (searchText.length > 0) {
+        if (searchText.length > 0 || favoritesOnly) {
             totalCount = -1
             return
         }
@@ -64,6 +68,9 @@ Page {
         var args = { limit: pageSize, offset: items.length }
         if (searchText.length > 0) {
             args.search = searchText
+        }
+        if (favoritesOnly) {
+            args.favorite = true
         }
         var requestedFor = searchText
         mass.sendCommand("music/" + mediaType + "/library_items", args,
@@ -143,8 +150,13 @@ Page {
 
             PageHeader {
                 title: page.title
-                description: page.totalCount >= 0
-                             ? qsTr("%1 Einträge").arg(page.totalCount) : ""
+                description: {
+                    if (page.favoritesOnly) {
+                        return qsTr("nur Favoriten")
+                    }
+                    return page.totalCount >= 0
+                            ? qsTr("%1 Einträge").arg(page.totalCount) : ""
+                }
             }
 
             SearchField {
@@ -165,6 +177,13 @@ Page {
                                           { mass: page.mass, store: page.store })
             }
             MenuItem {
+                text: page.favoritesOnly ? qsTr("Alle zeigen") : qsTr("Nur Favoriten")
+                onClicked: {
+                    page.favoritesOnly = !page.favoritesOnly
+                    page.reload()
+                }
+            }
+            MenuItem {
                 text: qsTr("Neu laden")
                 enabled: mass && mass.ready
                 onClicked: page.reload()
@@ -173,10 +192,16 @@ Page {
 
         ViewPlaceholder {
             enabled: page.items.length === 0 && !page.loading
-            text: page.errorText.length > 0 ? qsTr("Fehler")
-                                            : (page.searchText.length > 0
-                                               ? qsTr("Nichts gefunden")
-                                               : qsTr("Nichts in der Bibliothek"))
+            text: {
+                if (page.errorText.length > 0) {
+                    return qsTr("Fehler")
+                }
+                if (page.searchText.length > 0) {
+                    return qsTr("Nichts gefunden")
+                }
+                return page.favoritesOnly ? qsTr("Keine Favoriten")
+                                          : qsTr("Nichts in der Bibliothek")
+            }
             hintText: page.errorText.length > 0 ? page.errorText : ""
         }
 

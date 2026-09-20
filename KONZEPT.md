@@ -1,10 +1,11 @@
 # Konzept: Music-Assistant-Client für SailfishOS (Tonarm)
 
-Stand: 2026-09-20 -- **Stufen 0-4 fertig und auf dem Telefon bestätigt**
-(v0.14). Offen ist nur noch Stufe 5 (Sendspin, optional). Stufe 0 in
+Stand: 2026-09-20 -- **Stufen 0-4 vollständig** (v0.15), auf dem Telefon
+bestätigt. Offen ist nur noch Stufe 5 (Sendspin, optional). Stufe 0 in
 Abschnitt 11, Zielserver vermessen in 12, Build und Harbour-Prüfung in 13,
 erster Gerätestart in 14, Stufe 1 in 15, Cover-Page und Stufe 2 in 16,
-Stufe 3 in 17, Stufe 4 in 18, deren Geräteprüfung in 19.
+Stufe 3 in 17, Stufe 4 in 18, deren Geräteprüfung in 19,
+nachgezogene Favoriten und Lautsprecher-Gruppen in 20.
 
 ## 1. Ausgangslage und Ziel
 
@@ -926,3 +927,73 @@ belegt. Nach der Prüfung wurde die Warteschlange gestoppt und geleert.
 **Noch nicht mit eigenen Augen geprüft:** wie der Sperrbildschirm selbst
 aussieht, und ob die Medientasten eines Headsets durchgreifen. Beides braucht
 einen Blick aufs Gerät bzw. ein Headset.
+
+## 20. Update 2026-09-20: Nachgezogen -- Favoriten und Lautsprecher-Gruppen (v0.15)
+
+Zwei Dinge, die Abschnitt 6 für die Stufen 2 und 3 vorsah und die beim
+Abschluss dieser Stufen schlicht fehlten. Das hätte damals gesagt gehört,
+statt die Stufen als "fertig" zu melden.
+
+### Favoriten
+
+Im Kontextmenü jeder Bibliothekszeile, als Stern am rechten Rand sichtbar, und
+über das Pulley-Menü lässt sich jede Liste auf "Nur Favoriten" umstellen.
+
+Zwei Eigenheiten der Server-API, die die Oberfläche prägen:
+
+- **Hinzufügen und Entfernen sind nicht symmetrisch.**
+  `music/favorites/add_item(item)` nimmt eine URI und geht für jedes Objekt,
+  auch für eines, das nur bei einem Anbieter liegt.
+  `music/favorites/remove_item(media_type, library_item_id)` verlangt dagegen
+  Medientyp *und* Bibliothekskennung -- es wirkt nur auf Bibliothekseinträge.
+  Der Menüeintrag zum Entfernen erscheint deshalb nur bei
+  `provider === "library"`; einen Knopf anzubieten, der zuverlässig scheitert,
+  wäre schlechter als keiner.
+- **Es gibt kein Ereignis für Favoriten.** Nach dem Umschalten aktualisiert
+  der Server die Liste nicht von sich aus, die Zeile spränge beim nächsten
+  Blick zurück. Deshalb merkt sich die Zeile ihren eigenen Stand lokal
+  (`favoriteOverride`), bis die Liste ohnehin neu geladen wird.
+
+Gefiltert wird serverseitig über `library_items(favorite: true)`, nicht durch
+Nachfiltern der geladenen Seite -- bei 13847 Titeln wäre Letzteres sinnlos.
+
+### Lautsprecher-Gruppen
+
+Neue Seite `GroupPage.qml`, erreichbar über "Gruppieren" im Kontextmenü einer
+Zeile der Player-Liste. Ein Player ist der Anführer, die übrigen werden per
+Schalter zu- oder abgeschaltet; dazu eine Lautstärke für die ganze Gruppe und
+"Gruppe auflösen". Angeschlossene Lautsprecher zeigen in der Player-Liste,
+woran sie hängen.
+
+- Angeboten werden **nur die Player aus `can_group_with`** des Anführers. Was
+  dort nicht steht, kann der Anbieter nicht synchronisieren -- ein Schalter
+  dafür wäre ein Versprechen, das der Server nicht hält.
+- Umgesetzt über `players/cmd/set_members(target_player, player_ids_to_add,
+  player_ids_to_remove)`; beide Listen sind optional, eine genügt.
+- **Die Mitgliedschaft steht doppelt in den Daten**, und je nach Anbieter ist
+  mal das eine, mal das andere gesetzt: als `group_childs`/`group_members`
+  beim Anführer und als `synced_to`/`active_group` beim Mitglied.
+  `Models.isGroupMember()` prüft daher alle vier. Bei Sonos enthält
+  `group_childs` ausserdem den Anführer selbst -- der Vergleich schliesst die
+  eigene Id aus.
+- Die Schalter setzen sich nicht selbst (`automaticCheck: false`): erst das
+  Ereignis vom Server bewegt sie. Sonst zeigte die Oberfläche einen Zustand,
+  den die Anlage vielleicht gar nicht angenommen hat.
+
+### Gegen den echten Server geprüft
+
+Beides an zwei Sonos-Lautsprechern, die gerade nichts spielten, und an einem
+Album der Bibliothek -- jeweils mit anschliessender Wiederherstellung des
+Ausgangszustands:
+
+- `set_members` mit `player_ids_to_add` setzte `synced_to` beim Mitglied und
+  füllte `group_childs` beim Anführer; `player_ids_to_remove` machte es sauber
+  rückgängig.
+- `add_item` brachte das Album in die Favoritenliste (von 1 auf 2 Einträge),
+  `remove_item` nahm es wieder heraus.
+
+**Nicht mit eigenen Augen gesehen:** wie `GroupPage` tatsächlich aussieht. Der
+Menüeintrag "Gruppieren" ist auf dem Gerät bestätigt, das Antippen scheiterte
+aber an der Koordinatenumrechnung -- das Telefon lag quer, und die
+Touch-Injektion rechnet in der Ausrichtung des Panels. Weiteres blindes Tippen
+auf einem fremden Gerät schien der falsche Weg.

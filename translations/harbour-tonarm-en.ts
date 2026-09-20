@@ -95,6 +95,61 @@
     </message>
 </context>
 <context>
+    <name>GroupPage</name>
+    <message>
+        <source>%1 dazugeschaltet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 abgetrennt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gruppe aufgelöst</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gruppe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zugeschaltete Lautsprecher spielen synchron dasselbe wie %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lautstärke der Gruppe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gruppe auflösen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lautsprecher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keine passenden Lautsprecher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dieser Player lässt sich mit keinem anderen zusammenschalten</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>nicht verfügbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>gehört zu %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>gehört zu einer anderen Gruppe</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>LibraryPage</name>
     <message>
         <source>%1 Einträge</source>
@@ -163,6 +218,22 @@
         <source>Angehängt auf %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Aus Favoriten entfernt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zu Favoriten hinzugefügt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Aus Favoriten</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zu Favoriten</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MediaListPage</name>
@@ -196,6 +267,22 @@
     </message>
     <message>
         <source>keiner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>nur Favoriten</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alle zeigen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nur Favoriten</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keine Favoriten</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -341,6 +428,14 @@
     </message>
     <message>
         <source>Als Ziel für die Bibliothek</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>gruppiert mit %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gruppieren</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

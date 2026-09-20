@@ -186,6 +186,16 @@ Page {
                         if (!Models.isAvailable(modelData)) {
                             return qsTr("nicht verfügbar")
                         }
+                        // Angeschlossene Lautsprecher sagen, woran sie
+                        // hängen -- sonst wundert man sich, warum sie das
+                        // Gleiche spielen und einzeln nicht reagieren.
+                        var leader = Models.groupLeaderOf(modelData)
+                        if (leader.length > 0) {
+                            var head = store.playerById(leader)
+                            if (head) {
+                                return qsTr("gruppiert mit %1").arg(Models.playerName(head))
+                            }
+                        }
                         if (row.track && row.track.title.length > 0) {
                             return row.track.artist.length > 0
                                     ? row.track.artist + " — " + row.track.title
@@ -247,6 +257,12 @@ Page {
                 MenuItem {
                     text: qsTr("Warteschlange")
                     onClicked: pageStack.push(Qt.resolvedUrl("QueuePage.qml"),
+                                              { mass: page.mass, store: page.store,
+                                                playerId: modelData.player_id })
+                }
+                MenuItem {
+                    text: qsTr("Gruppieren")
+                    onClicked: pageStack.push(Qt.resolvedUrl("GroupPage.qml"),
                                               { mass: page.mass, store: page.store,
                                                 playerId: modelData.player_id })
                 }
