@@ -1,0 +1,28 @@
+Steuere deinen eigenen Music-Assistant-Server von SailfishOS aus. Nicht mit dem Music-Assistant-Projekt verbunden — der Name gehört dessen Urhebern.
+
+FUNKTIONEN
+
+- Alle Player deiner Anlage auf einen Blick, mit dem was gerade läuft, Fortschrittsbalken und Play/Pause direkt in der Zeile. Nicht verfügbare Player bleiben sichtbar, nur ausgegraut.
+- Für jeden Player eine Seite mit Cover, Titel, Interpret, Album, Fortschrittsregler zum Springen, Weiter und Zurück, Lautstärke und Stummschaltung.
+- Bibliothek nach Interpreten, Alben, Titeln, Playlists und Radio, mit Anzahl je Bereich, seitenweise nachgeladen und je Liste durchsuchbar. Album- und Interpretenseiten mit Cover, Playlists mit ihren Titeln.
+- Suche über alle Medientypen auf einer Seite, nach Typ gruppiert, über Bibliothek und angebundene Anbieter.
+- Abspielen aus jeder Liste: jetzt spielen, als Nächstes einreihen oder anhängen. Auf welchem Player das landet, wählst du einmal aus.
+- Favoriten setzen und entfernen, als Stern in der Liste sichtbar; jede Liste lässt sich auf "Nur Favoriten" umstellen.
+- Warteschlange ansehen und bearbeiten: per Tippen zu einem Titel springen, Einträge nach oben, nach unten oder ans Ende schieben, einzeln entfernen. Zufällige Reihenfolge, Überblenden und Wiederholen. Die ganze Warteschlange an einen anderen Player übergeben, als Playlist speichern oder leeren.
+- Lautsprecher zusammenschalten: mehrere spielen synchron dasselbe, mit gemeinsamer Lautstärke. Angeboten werden nur Lautsprecher, die der Server auch wirklich synchronisieren kann.
+- Cover-Ansicht mit laufendem Titel, Albumbild und Play/Pause — bedienbar, ohne die App zu öffnen.
+- Sperrbildschirm und Medientasten steuern über MPRIS den entfernten Player. Titel, Interpret, Album, Cover und Spielzeit erscheinen dort; die App selbst gibt kein Audio aus.
+- Optionale Benachrichtigung bei Titelwechsel, standardmässig aus.
+- Alles aktualisiert sich über Server-Ereignisse, nicht durch Nachfragen: was anderswo geändert wird, ist sofort zu sehen.
+- Hochformat lässt sich festhalten.
+
+VORAUSSETZUNGEN
+
+- Ein erreichbarer Music-Assistant-Server im lokalen Netz (Standardport 8095). Läuft er als Home-Assistant-App, ist das die Adresse des HA-Rechners, nicht die Ingress-Adresse.
+- Ein Zugriffstoken, in der Music-Assistant-Oberfläche unter Einstellungen → Profil erzeugt.
+
+Adresse und Token liegen verschlüsselt in Sailfish Secrets und sind an die Gerätesperre gebunden.
+
+HINWEIS ZUR AUDIO-BERECHTIGUNG
+
+Die App verlangt die Audio-Berechtigung, obwohl sie weder aufzeichnet noch abspielt. Auf SailfishOS ist das die Berechtigung, die das Anmelden eines MPRIS-Dienstes erlaubt — also die Bedienelemente auf dem Sperrbildschirm. Einen feineren Weg dorthin gibt es nicht.

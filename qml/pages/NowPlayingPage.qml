@@ -18,7 +18,7 @@ Page {
     readonly property var track: Models.nowPlaying(player, queue)
     readonly property bool playing: Models.isPlaying(player)
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     // Lokal weitergezählte Spielzeit. Der Server meldet sie nur gelegentlich;
     // dazwischen rechnet MassModels.elapsedSeconds() hoch.

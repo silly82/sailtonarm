@@ -11,7 +11,7 @@ Page {
     property var mass
     property var store
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     // Damit die Zeilen mitlaufen, ohne dass jede einzelne einen eigenen Timer
     // hält: ein Taktgeber für die ganze Seite, der nur läuft, wenn die Seite

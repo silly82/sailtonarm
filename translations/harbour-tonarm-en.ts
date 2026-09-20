@@ -5,788 +5,800 @@
     <name>AlbumPage</name>
     <message>
         <source>Kein Player ausgewählt</source>
-        <translation type="unfinished"></translation>
+        <translation>No player selected</translation>
     </message>
     <message>
         <source>%1 Titel</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 tracks</translation>
     </message>
     <message>
         <source>Abspielen</source>
-        <translation type="unfinished"></translation>
+        <translation>Play</translation>
     </message>
     <message>
         <source>Läuft auf %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Playing on %1</translation>
     </message>
     <message>
         <source>Anhängen</source>
-        <translation type="unfinished"></translation>
+        <translation>Append</translation>
     </message>
     <message>
         <source>Angehängt auf %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Appended on %1</translation>
     </message>
     <message>
         <source>Ziel-Player: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Target player: %1</translation>
     </message>
     <message>
         <source>Fehler</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Keine Titel</source>
-        <translation type="unfinished"></translation>
+        <translation>No tracks</translation>
     </message>
     <message>
         <source>Nr. %1</source>
-        <translation type="unfinished"></translation>
+        <translation>No. %1</translation>
     </message>
     <message>
         <source>keiner</source>
-        <translation type="unfinished"></translation>
+        <translation>none</translation>
     </message>
 </context>
 <context>
     <name>ArtistPage</name>
     <message>
         <source>keiner</source>
-        <translation type="unfinished"></translation>
+        <translation>none</translation>
     </message>
     <message>
         <source>%1 Alben</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 albums</translation>
     </message>
     <message>
         <source>Ziel-Player: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Target player: %1</translation>
     </message>
     <message>
         <source>Fehler</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Keine Alben</source>
-        <translation type="unfinished"></translation>
+        <translation>No albums</translation>
     </message>
     <message>
         <source>Dieser Anbieter listet für den Interpreten keine Alben</source>
-        <translation type="unfinished"></translation>
+        <translation>This provider lists no albums for the artist</translation>
     </message>
 </context>
 <context>
     <name>CoverPage</name>
     <message>
         <source>Tonarm</source>
-        <translation type="unfinished"></translation>
+        <translation>Tonarm</translation>
     </message>
     <message>
         <source>nicht eingerichtet</source>
-        <translation type="unfinished"></translation>
+        <translation>not set up</translation>
     </message>
     <message>
         <source>getrennt</source>
-        <translation type="unfinished"></translation>
+        <translation>disconnected</translation>
     </message>
     <message>
         <source>nichts läuft</source>
-        <translation type="unfinished"></translation>
+        <translation>nothing playing</translation>
     </message>
 </context>
 <context>
     <name>GroupPage</name>
     <message>
         <source>%1 dazugeschaltet</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 joined</translation>
     </message>
     <message>
         <source>%1 abgetrennt</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 detached</translation>
     </message>
     <message>
         <source>Gruppe aufgelöst</source>
-        <translation type="unfinished"></translation>
+        <translation>Group disbanded</translation>
     </message>
     <message>
         <source>Gruppe</source>
-        <translation type="unfinished"></translation>
+        <translation>Group</translation>
     </message>
     <message>
         <source>Zugeschaltete Lautsprecher spielen synchron dasselbe wie %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Joined speakers play the same thing as %1, in sync.</translation>
     </message>
     <message>
         <source>Lautstärke der Gruppe</source>
-        <translation type="unfinished"></translation>
+        <translation>Group volume</translation>
     </message>
     <message>
         <source>Gruppe auflösen</source>
-        <translation type="unfinished"></translation>
+        <translation>Disband group</translation>
     </message>
     <message>
         <source>Lautsprecher</source>
-        <translation type="unfinished"></translation>
+        <translation>Speakers</translation>
     </message>
     <message>
         <source>Keine passenden Lautsprecher</source>
-        <translation type="unfinished"></translation>
+        <translation>No matching speakers</translation>
     </message>
     <message>
         <source>Dieser Player lässt sich mit keinem anderen zusammenschalten</source>
-        <translation type="unfinished"></translation>
+        <translation>This player cannot be grouped with any other</translation>
     </message>
     <message>
         <source>nicht verfügbar</source>
-        <translation type="unfinished"></translation>
+        <translation>unavailable</translation>
     </message>
     <message>
         <source>gehört zu %1</source>
-        <translation type="unfinished"></translation>
+        <translation>belongs to %1</translation>
     </message>
     <message>
         <source>gehört zu einer anderen Gruppe</source>
-        <translation type="unfinished"></translation>
+        <translation>belongs to another group</translation>
     </message>
 </context>
 <context>
     <name>LibraryPage</name>
     <message>
         <source>%1 Einträge</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 entries</translation>
     </message>
     <message>
         <source>Suchen</source>
-        <translation type="unfinished"></translation>
+        <translation>Search</translation>
     </message>
     <message>
         <source>Bibliothek</source>
-        <translation type="unfinished"></translation>
+        <translation>Library</translation>
     </message>
     <message>
         <source>Interpreten</source>
-        <translation type="unfinished"></translation>
+        <translation>Artists</translation>
     </message>
     <message>
         <source>Alben</source>
-        <translation type="unfinished"></translation>
+        <translation>Albums</translation>
     </message>
     <message>
         <source>Titel</source>
-        <translation type="unfinished"></translation>
+        <translation>Tracks</translation>
     </message>
     <message>
         <source>Playlists</source>
-        <translation type="unfinished"></translation>
+        <translation>Playlists</translation>
     </message>
     <message>
         <source>Radio</source>
-        <translation type="unfinished"></translation>
+        <translation>Radio</translation>
     </message>
     <message>
         <source>Keine Verbindung zum Server.</source>
-        <translation type="unfinished"></translation>
+        <translation>No connection to the server.</translation>
     </message>
 </context>
 <context>
     <name>MediaListItem</name>
     <message>
         <source>Kein Player ausgewählt</source>
-        <translation type="unfinished"></translation>
+        <translation>No player selected</translation>
     </message>
     <message>
         <source>Jetzt spielen</source>
-        <translation type="unfinished"></translation>
+        <translation>Play now</translation>
     </message>
     <message>
         <source>Läuft auf %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Playing on %1</translation>
     </message>
     <message>
         <source>Als Nächstes</source>
-        <translation type="unfinished"></translation>
+        <translation>Play next</translation>
     </message>
     <message>
         <source>Als Nächstes auf %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Queued next on %1</translation>
     </message>
     <message>
         <source>Anhängen</source>
-        <translation type="unfinished"></translation>
+        <translation>Append</translation>
     </message>
     <message>
         <source>Angehängt auf %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Appended on %1</translation>
     </message>
     <message>
         <source>Aus Favoriten entfernt</source>
-        <translation type="unfinished"></translation>
+        <translation>Removed from favourites</translation>
     </message>
     <message>
         <source>Zu Favoriten hinzugefügt</source>
-        <translation type="unfinished"></translation>
+        <translation>Added to favourites</translation>
     </message>
     <message>
         <source>Aus Favoriten</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove from favourites</translation>
     </message>
     <message>
         <source>Zu Favoriten</source>
-        <translation type="unfinished"></translation>
+        <translation>Add to favourites</translation>
     </message>
 </context>
 <context>
     <name>MediaListPage</name>
     <message>
         <source>%1 Einträge</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 entries</translation>
     </message>
     <message>
         <source>In der Bibliothek suchen</source>
-        <translation type="unfinished"></translation>
+        <translation>Search the library</translation>
     </message>
     <message>
         <source>Ziel-Player: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Target player: %1</translation>
     </message>
     <message>
         <source>Neu laden</source>
-        <translation type="unfinished"></translation>
+        <translation>Reload</translation>
     </message>
     <message>
         <source>Fehler</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Nichts gefunden</source>
-        <translation type="unfinished"></translation>
+        <translation>Nothing found</translation>
     </message>
     <message>
         <source>Nichts in der Bibliothek</source>
-        <translation type="unfinished"></translation>
+        <translation>Nothing in the library</translation>
     </message>
     <message>
         <source>keiner</source>
-        <translation type="unfinished"></translation>
+        <translation>none</translation>
     </message>
     <message>
         <source>nur Favoriten</source>
-        <translation type="unfinished"></translation>
+        <translation>favourites only</translation>
     </message>
     <message>
         <source>Alle zeigen</source>
-        <translation type="unfinished"></translation>
+        <translation>Show all</translation>
     </message>
     <message>
         <source>Nur Favoriten</source>
-        <translation type="unfinished"></translation>
+        <translation>Favourites only</translation>
     </message>
     <message>
         <source>Keine Favoriten</source>
-        <translation type="unfinished"></translation>
+        <translation>No favourites</translation>
     </message>
 </context>
 <context>
     <name>NowPlayingPage</name>
     <message>
         <source>Aktualisieren</source>
-        <translation type="unfinished"></translation>
+        <translation>Refresh</translation>
     </message>
     <message>
         <source>nicht verfügbar</source>
-        <translation type="unfinished"></translation>
+        <translation>unavailable</translation>
     </message>
     <message>
         <source>Auf diesem Player läuft gerade nichts.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nothing is playing on this player.</translation>
     </message>
     <message>
         <source>Lautstärke</source>
-        <translation type="unfinished"></translation>
+        <translation>Volume</translation>
     </message>
     <message>
         <source>Ausschalten</source>
-        <translation type="unfinished"></translation>
+        <translation>Switch off</translation>
     </message>
     <message>
         <source>Einschalten</source>
-        <translation type="unfinished"></translation>
+        <translation>Switch on</translation>
     </message>
     <message>
         <source>Warteschlange</source>
-        <translation type="unfinished"></translation>
+        <translation>Queue</translation>
     </message>
 </context>
 <context>
     <name>PlayerPickerPage</name>
     <message>
         <source>Ziel-Player</source>
-        <translation type="unfinished"></translation>
+        <translation>Target player</translation>
     </message>
     <message>
         <source>Hier landet, was du in der Bibliothek abspielst.</source>
-        <translation type="unfinished"></translation>
+        <translation>This is where anything you play from the library ends up.</translation>
     </message>
     <message>
         <source>Kein anderer Player</source>
-        <translation type="unfinished"></translation>
+        <translation>No other player</translation>
     </message>
 </context>
 <context>
     <name>PlayersPage</name>
     <message>
         <source>spielt</source>
-        <translation type="unfinished"></translation>
+        <translation>playing</translation>
     </message>
     <message>
         <source>pausiert</source>
-        <translation type="unfinished"></translation>
+        <translation>paused</translation>
     </message>
     <message>
         <source>bereit</source>
-        <translation type="unfinished"></translation>
+        <translation>ready</translation>
     </message>
     <message>
         <source>unbekannt</source>
-        <translation type="unfinished"></translation>
+        <translation>unknown</translation>
     </message>
     <message>
         <source>Tonarm</source>
-        <translation type="unfinished"></translation>
+        <translation>Tonarm</translation>
     </message>
     <message>
         <source>Zugangsdaten werden geladen …</source>
-        <translation type="unfinished"></translation>
+        <translation>Loading credentials …</translation>
     </message>
     <message>
         <source>Nicht eingerichtet — siehe Einstellungen</source>
-        <translation type="unfinished"></translation>
+        <translation>Not set up — see Settings</translation>
     </message>
     <message>
         <source>Verbinde …</source>
-        <translation type="unfinished"></translation>
+        <translation>Connecting …</translation>
     </message>
     <message>
         <source>Anmeldung läuft …</source>
-        <translation type="unfinished"></translation>
+        <translation>Signing in …</translation>
     </message>
     <message>
         <source>Keine Verbindung</source>
-        <translation type="unfinished"></translation>
+        <translation>No connection</translation>
     </message>
     <message>
         <source>Getrennt</source>
-        <translation type="unfinished"></translation>
+        <translation>Disconnected</translation>
     </message>
     <message>
         <source>Einstellungen</source>
-        <translation type="unfinished"></translation>
+        <translation>Settings</translation>
     </message>
     <message>
         <source>Aktualisieren</source>
-        <translation type="unfinished"></translation>
+        <translation>Refresh</translation>
     </message>
     <message>
         <source>Noch nicht eingerichtet</source>
-        <translation type="unfinished"></translation>
+        <translation>Not set up yet</translation>
     </message>
     <message>
         <source>Lade …</source>
-        <translation type="unfinished"></translation>
+        <translation>Loading …</translation>
     </message>
     <message>
         <source>Keine Player</source>
-        <translation type="unfinished"></translation>
+        <translation>No players</translation>
     </message>
     <message>
         <source>Adresse und Token im Pulley-Menü eintragen</source>
-        <translation type="unfinished"></translation>
+        <translation>Enter address and token from the pulley menu</translation>
     </message>
     <message>
         <source>Der Server ist gerade nicht erreichbar</source>
-        <translation type="unfinished"></translation>
+        <translation>The server cannot be reached right now</translation>
     </message>
     <message>
         <source>Music Assistant meldet keine Player</source>
-        <translation type="unfinished"></translation>
+        <translation>Music Assistant reports no players</translation>
     </message>
     <message>
         <source>nicht verfügbar</source>
-        <translation type="unfinished"></translation>
+        <translation>unavailable</translation>
     </message>
     <message>
         <source>Suchen</source>
-        <translation type="unfinished"></translation>
+        <translation>Search</translation>
     </message>
     <message>
         <source>Bibliothek</source>
-        <translation type="unfinished"></translation>
+        <translation>Library</translation>
     </message>
     <message>
         <source>Warteschlange</source>
-        <translation type="unfinished"></translation>
+        <translation>Queue</translation>
     </message>
     <message>
         <source>Als Ziel für die Bibliothek</source>
-        <translation type="unfinished"></translation>
+        <translation>Use as library target</translation>
     </message>
     <message>
         <source>gruppiert mit %1</source>
-        <translation type="unfinished"></translation>
+        <translation>grouped with %1</translation>
     </message>
     <message>
         <source>Gruppieren</source>
-        <translation type="unfinished"></translation>
+        <translation>Group</translation>
     </message>
 </context>
 <context>
     <name>PlaylistPage</name>
     <message>
         <source>Kein Player ausgewählt</source>
-        <translation type="unfinished"></translation>
+        <translation>No player selected</translation>
     </message>
     <message>
         <source>keiner</source>
-        <translation type="unfinished"></translation>
+        <translation>none</translation>
     </message>
     <message>
         <source>Abspielen</source>
-        <translation type="unfinished"></translation>
+        <translation>Play</translation>
     </message>
     <message>
         <source>Läuft auf %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Playing on %1</translation>
     </message>
     <message>
         <source>Anhängen</source>
-        <translation type="unfinished"></translation>
+        <translation>Append</translation>
     </message>
     <message>
         <source>Angehängt auf %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Appended on %1</translation>
     </message>
     <message>
         <source>Ziel-Player: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Target player: %1</translation>
     </message>
     <message>
         <source>Fehler</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Keine Titel</source>
-        <translation type="unfinished"></translation>
+        <translation>No tracks</translation>
     </message>
     <message>
         <source>Zufällig</source>
-        <translation type="unfinished"></translation>
+        <translation>Shuffle</translation>
     </message>
     <message>
         <source>Zufällig auf %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Shuffling on %1</translation>
     </message>
 </context>
 <context>
     <name>QueuePage</name>
     <message>
         <source>Wiederholen: aus</source>
-        <translation type="unfinished"></translation>
+        <translation>Repeat: off</translation>
     </message>
     <message>
         <source>Wiederholen: ein Titel</source>
-        <translation type="unfinished"></translation>
+        <translation>Repeat: one track</translation>
     </message>
     <message>
         <source>Wiederholen: alle</source>
-        <translation type="unfinished"></translation>
+        <translation>Repeat: all</translation>
     </message>
     <message>
         <source>Warteschlange</source>
-        <translation type="unfinished"></translation>
+        <translation>Queue</translation>
     </message>
     <message>
         <source>Zufällige Reihenfolge</source>
-        <translation type="unfinished"></translation>
+        <translation>Shuffle</translation>
     </message>
     <message>
         <source>Überblenden</source>
-        <translation type="unfinished"></translation>
+        <translation>Crossfade</translation>
     </message>
     <message>
         <source>Titel ineinander übergehen lassen</source>
-        <translation type="unfinished"></translation>
+        <translation>Let tracks blend into each other</translation>
     </message>
     <message>
         <source>An anderen Player übergeben</source>
-        <translation type="unfinished"></translation>
+        <translation>Hand over to another player</translation>
     </message>
     <message>
         <source>Übergeben an</source>
-        <translation type="unfinished"></translation>
+        <translation>Hand over to</translation>
     </message>
     <message>
         <source>Die Warteschlange wandert mitsamt Abspielposition dorthin.</source>
-        <translation type="unfinished"></translation>
+        <translation>The queue moves there along with the playback position.</translation>
     </message>
     <message>
         <source>Übergeben an %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Handed over to %1</translation>
     </message>
     <message>
         <source>Als Playlist speichern</source>
-        <translation type="unfinished"></translation>
+        <translation>Save as playlist</translation>
     </message>
     <message>
         <source>Als Playlist gespeichert</source>
-        <translation type="unfinished"></translation>
+        <translation>Saved as a playlist</translation>
     </message>
     <message>
         <source>Warteschlange leeren</source>
-        <translation type="unfinished"></translation>
+        <translation>Clear queue</translation>
     </message>
     <message>
         <source>Warteschlange wird geleert</source>
-        <translation type="unfinished"></translation>
+        <translation>Clearing the queue</translation>
     </message>
     <message>
         <source>Neu laden</source>
-        <translation type="unfinished"></translation>
+        <translation>Reload</translation>
     </message>
     <message>
         <source>Fehler</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Warteschlange leer</source>
-        <translation type="unfinished"></translation>
+        <translation>Queue is empty</translation>
     </message>
     <message>
         <source>Aus der Bibliothek etwas hinzufügen</source>
-        <translation type="unfinished"></translation>
+        <translation>Add something from the library</translation>
     </message>
     <message>
         <source>Nach oben</source>
-        <translation type="unfinished"></translation>
+        <translation>Move up</translation>
     </message>
     <message>
         <source>Nach unten</source>
-        <translation type="unfinished"></translation>
+        <translation>Move down</translation>
     </message>
     <message>
         <source>Ans Ende</source>
-        <translation type="unfinished"></translation>
+        <translation>Move to end</translation>
     </message>
     <message>
         <source>Entfernen</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove</translation>
     </message>
 </context>
 <context>
     <name>SavePlaylistDialog</name>
     <message>
         <source>Speichern</source>
-        <translation type="unfinished"></translation>
+        <translation>Save</translation>
     </message>
     <message>
         <source>Abbrechen</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <source>Name der Playlist</source>
-        <translation type="unfinished"></translation>
+        <translation>Playlist name</translation>
     </message>
     <message>
         <source>Warteschlange %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Queue %1</translation>
     </message>
 </context>
 <context>
     <name>SearchPage</name>
     <message>
         <source>Interpreten</source>
-        <translation type="unfinished"></translation>
+        <translation>Artists</translation>
     </message>
     <message>
         <source>Alben</source>
-        <translation type="unfinished"></translation>
+        <translation>Albums</translation>
     </message>
     <message>
         <source>Titel</source>
-        <translation type="unfinished"></translation>
+        <translation>Tracks</translation>
     </message>
     <message>
         <source>Playlists</source>
-        <translation type="unfinished"></translation>
+        <translation>Playlists</translation>
     </message>
     <message>
         <source>Radio</source>
-        <translation type="unfinished"></translation>
+        <translation>Radio</translation>
     </message>
     <message>
         <source>keiner</source>
-        <translation type="unfinished"></translation>
+        <translation>none</translation>
     </message>
     <message>
         <source>Suche</source>
-        <translation type="unfinished"></translation>
+        <translation>Search</translation>
     </message>
     <message>
         <source>Interpret, Album, Titel …</source>
-        <translation type="unfinished"></translation>
+        <translation>Artist, album, track …</translation>
     </message>
     <message>
         <source>Ziel-Player: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Target player: %1</translation>
     </message>
     <message>
         <source>Fehler</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Nichts gefunden</source>
-        <translation type="unfinished"></translation>
+        <translation>Nothing found</translation>
     </message>
     <message>
         <source>Durchsucht Bibliothek und Anbieter</source>
-        <translation type="unfinished"></translation>
+        <translation>Searches the library and the providers</translation>
     </message>
 </context>
 <context>
     <name>SettingsPage</name>
     <message>
         <source>Bitte zuerst eine Adresse eintragen.</source>
-        <translation type="unfinished"></translation>
+        <translation>Please enter an address first.</translation>
     </message>
     <message>
         <source>Frage %1 ab …</source>
-        <translation type="unfinished"></translation>
+        <translation>Querying %1 …</translation>
     </message>
     <message>
         <source>Erreichbar: %1 (Version %2, API-Schema %3)</source>
-        <translation type="unfinished"></translation>
+        <translation>Reachable: %1 (version %2, API schema %3)</translation>
     </message>
     <message>
         <source>Music Assistant</source>
-        <translation type="unfinished"></translation>
+        <translation>Music Assistant</translation>
     </message>
     <message>
         <source>Einstellungen</source>
-        <translation type="unfinished"></translation>
+        <translation>Settings</translation>
     </message>
     <message>
         <source>Serveradresse</source>
-        <translation type="unfinished"></translation>
+        <translation>Server address</translation>
     </message>
     <message>
         <source>musicassistant.local</source>
-        <translation type="unfinished"></translation>
+        <translation>musicassistant.local</translation>
     </message>
     <message>
         <source>Ohne Angabe wird http:// und Port 8095 ergänzt. Ergibt: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Without them, http:// and port 8095 are added. Result: %1</translation>
     </message>
     <message>
         <source>Läuft Music Assistant als Home-Assistant-App, ist das die Adresse des HA-Rechners: die App benutzt das Host-Netz, Port 8095 liegt also direkt dort. Nicht die Ingress-Adresse aus der HA-Oberfläche.</source>
-        <translation type="unfinished"></translation>
+        <translation>If Music Assistant runs as a Home Assistant app, this is the address of the HA machine: the app uses the host network, so port 8095 sits right there. Not the ingress address from the HA web interface.</translation>
     </message>
     <message>
         <source>Zugriffstoken</source>
-        <translation type="unfinished"></translation>
+        <translation>Access token</translation>
     </message>
     <message>
         <source>in MA: Einstellungen → Profil</source>
-        <translation type="unfinished"></translation>
+        <translation>in MA: Settings → Profile</translation>
     </message>
     <message>
         <source>Speichern fehlgeschlagen: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Saving failed: %1</translation>
     </message>
     <message>
         <source>Adresse und Token werden über Sailfish Secrets verschlüsselt gespeichert und sind an die Gerätesperre gebunden. Gespeichert wird, sobald beide Felder ausgefüllt sind und den Fokus verlassen.</source>
-        <translation type="unfinished"></translation>
+        <translation>Address and token are stored encrypted via Sailfish Secrets and tied to the device lock. They are saved once both fields are filled in and lose focus.</translation>
     </message>
     <message>
         <source>Prüfen</source>
-        <translation type="unfinished"></translation>
+        <translation>Check</translation>
     </message>
     <message>
         <source>prüfe …</source>
-        <translation type="unfinished"></translation>
+        <translation>checking …</translation>
     </message>
     <message>
         <source>Server erreichbar?</source>
-        <translation type="unfinished"></translation>
+        <translation>Server reachable?</translation>
     </message>
     <message>
         <source>Der Test spricht nur /info an — die einzige Route ohne Anmeldung. Er sagt also, ob der Server erreichbar ist, nicht ob das Token gültig ist. Das zeigt die Startseite.</source>
-        <translation type="unfinished"></translation>
+        <translation>The test only calls /info, the one route that needs no sign-in. So it tells you whether the server is reachable, not whether the token is valid — the start page shows that.</translation>
     </message>
     <message>
         <source>Zugangsdaten</source>
-        <translation type="unfinished"></translation>
+        <translation>Credentials</translation>
     </message>
     <message>
         <source>Zugangsdaten löschen</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete credentials</translation>
     </message>
     <message>
         <source>Zugangsdaten werden gelöscht</source>
-        <translation type="unfinished"></translation>
+        <translation>Deleting credentials</translation>
     </message>
     <message>
         <source>Jetzt neu verbinden</source>
-        <translation type="unfinished"></translation>
+        <translation>Reconnect now</translation>
     </message>
     <message>
         <source>Verbindung</source>
-        <translation type="unfinished"></translation>
+        <translation>Connection</translation>
     </message>
     <message>
         <source>Server</source>
-        <translation type="unfinished"></translation>
+        <translation>Server</translation>
     </message>
     <message>
         <source>unbenannt</source>
-        <translation type="unfinished"></translation>
+        <translation>unnamed</translation>
     </message>
     <message>
         <source>Version</source>
-        <translation type="unfinished"></translation>
+        <translation>Version</translation>
     </message>
     <message>
         <source>API-Schema</source>
-        <translation type="unfinished"></translation>
+        <translation>API schema</translation>
     </message>
     <message>
         <source>%1 (unterstützt ab %2)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (supported from %2)</translation>
     </message>
     <message>
         <source>Angemeldet als</source>
-        <translation type="unfinished"></translation>
+        <translation>Signed in as</translation>
     </message>
     <message>
         <source>—</source>
-        <translation type="unfinished"></translation>
+        <translation>—</translation>
     </message>
     <message>
         <source>Benachrichtigungen</source>
-        <translation type="unfinished"></translation>
+        <translation>Notifications</translation>
     </message>
     <message>
         <source>Bei jedem Titelwechsel melden</source>
-        <translation type="unfinished"></translation>
+        <translation>Notify on every track change</translation>
     </message>
     <message>
         <source>Standardmässig aus: bei einem Titel alle paar Minuten füllt das schnell den Benachrichtigungsbereich. Cover und Sperrbildschirm zeigen den laufenden Titel ohnehin.</source>
-        <translation type="unfinished"></translation>
+        <translation>Off by default: with a track every few minutes this fills up the notification area quickly, and the cover and lock screen already show what is playing.</translation>
+    </message>
+    <message>
+        <source>Anzeige</source>
+        <translation>Display</translation>
+    </message>
+    <message>
+        <source>Hochkant festhalten</source>
+        <translation>Keep portrait</translation>
+    </message>
+    <message>
+        <source>Die Seiten sind fürs Hochformat entworfen. Wer das Telefon beim Hören hinlegt, will meist nicht, dass die Liste dabei kippt.</source>
+        <translation>The pages are designed for portrait. If you put the phone down while listening, you usually do not want the list to flip.</translation>
     </message>
 </context>
 <context>
     <name>TrackNotifier</name>
     <message>
         <source>%1 · %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 · %2</translation>
     </message>
 </context>
 </TS>

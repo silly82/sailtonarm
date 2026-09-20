@@ -19,7 +19,7 @@ Page {
     // function(playerId). Ohne Angabe wird der Ziel-Player gesetzt.
     property var pickHandler: null
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     readonly property var choices: {
         if (!store) {

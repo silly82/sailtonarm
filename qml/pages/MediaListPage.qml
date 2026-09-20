@@ -19,7 +19,7 @@ Page {
     property string mediaType: "albums"
     property string title: ""
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     property var items: []
     property int totalCount: -1

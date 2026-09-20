@@ -1,0 +1,1 @@
+Fernbedienung für deinen Music-Assistant-Server — Player, Bibliothek, Suche, Warteschlange und Sperrbildschirm-Steuerung, ohne Cloud.

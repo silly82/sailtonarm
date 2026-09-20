@@ -34,7 +34,7 @@ Page {
     readonly property bool hasMembers:
         store && player ? Models.hasGroupMembers(player, store.players) : false
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: defaultAllowedOrientations
 
     // Gruppenlautstärke wie jeder andere Regler: nicht an den Serverwert
     // gebunden, sondern nachgezogen, solange niemand den Griff hält.

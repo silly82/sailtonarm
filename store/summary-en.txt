@@ -1,0 +1,1 @@
+A remote for your Music Assistant server — players, library, search, queue and lock screen controls, with no cloud involved.
