@@ -49,39 +49,70 @@ Vor Ort wählen, am ehesten passt etwas in Richtung Multimedia/Audio.
 
 ## Binaries
 
-Beide gebaut, beide geprüft, beide in `../RPMS/` (nicht im Repo — `RPMS/`
-steht in `.gitignore`; sie hängen zusätzlich am GitHub-Release):
+**Alle drei Architekturen werden gebraucht.** Die Harbour-FAQ ist da
+eindeutig:
 
-| Datei | Prüfung | Empfehlung |
+> "At the moment we support armv7hl and i486 architectures." · "If your
+> application contains compiled parts, it needs to be built for all the
+> supported architectures." · "If you do not provide RPM for certain
+> architecture, your application won't be available in store on devices with
+> that architecture."
+
+Tonarm hat mit `src/credentials.cpp` kompilierte Teile, ist also **kein
+`noarch`-Paket** -- die Abkürzung "ein einziges noarch-RPM für alle Geräte"
+steht hier nicht offen.
+
+`i486` ist dabei *nicht* die Emulator-Architektur, auch wenn der SDK-Emulator
+sie benutzt: es ist die Architektur des **Jolla Tablet**, und die FAQ führt sie
+ausdrücklich als unterstützt. (Ältere Fassungen dieser Datei behaupteten das
+Gegenteil -- das war falsch.)
+
+| Datei | Prüfung | Gerätetest |
 |---|---|---|
-| `harbour-tonarm-0.17-1.aarch64.rpm` | harbour: succeeded · rpmlint: 0/0/0 · **auf echter Hardware gelaufen** (Jolla Phone 2026) | hochladen |
-| `harbour-tonarm-0.17-1.armv7hl.rpm` | harbour: succeeded · rpmlint: 0/0/0 · nie auf echter armv7hl-Hardware ausgeführt | Entscheidung des Einreichenden |
+| `harbour-tonarm-0.17-1.aarch64.rpm` | harbour: succeeded · rpmlint: 0/0/0 | **auf echter Hardware gelaufen** (Jolla Phone 2026) |
+| `harbour-tonarm-0.17-1.armv7hl.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter armv7hl-Hardware |
+| `harbour-tonarm-0.17-1.i486.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter i486-Hardware |
 
-`aarch64` deckt die aktuellen 64-Bit-Geräte ab. `armv7hl` ist für ältere
-32-Bit-Geräte und baut sauber, ist aber ungetestet — wer ältere Geräte
-bedienen will, lädt es mit hoch und weiss, dass es ungeprüft ist.
+Alle drei liegen in `../RPMS/` (nicht im Repo -- `RPMS/` steht in
+`.gitignore`) und hängen am GitHub-Release.
 
-`i486` ist reine Emulator-Architektur und gehört nicht in eine Einreichung.
+Die FAQ nennt `aarch64` übrigens gar nicht; sie stammt sichtbar aus der Zeit
+vor den 64-Bit-Geräten. Hochgeladen wird es trotzdem -- ohne aarch64-Paket
+sähen die aktuellen Telefone die App nicht, und genau das ist das Gerät, auf
+dem sie geprüft ist.
 
-**Beim Bauen zwischen den Architekturen zwingend aufräumen**, sonst relinkt der
+### Bauen aller drei
+
+**Zwischen den Architekturen zwingend aufräumen**, sonst relinkt der
 In-Place-Build die Objektdateien der vorherigen Architektur still in das neue
-Paket:
+Paket. Und `no-fix-version` setzen, sobald ein Git-Tag existiert: sfdk leitet
+sonst eine Schnappschussversion aus dem Git-Zustand ab
+(`0.17+master.20260921182521.2366326-1`), und die Pakete hätten
+uneinheitliche Versionen.
 
 ```sh
-rm -f harbour-tonarm *.o moc_*.cpp moc_*.h Makefile .qmake.stash
-sfdk config target=SailfishOS-5.1.0.11-<arch> \
-  && sfdk config specfile=rpm/harbour-tonarm.spec \
-  && sfdk build
+for arch in aarch64 armv7hl i486; do
+  rm -f harbour-tonarm *.o moc_*.cpp moc_*.h Makefile .qmake.stash
+  sfdk config target=SailfishOS-5.1.0.11-$arch \
+    && sfdk config specfile=rpm/harbour-tonarm.spec \
+    && sfdk config no-fix-version \
+    && sfdk build
+done
 ```
 
-Gegenprobe, dass im Paket wirklich das richtige Binary steckt (auf dem
-Host fehlt `rpm2cpio`, deshalb in der Build-Umgebung):
+**`sfdk build` räumt dabei ältere Pakete aus `RPMS/` weg** -- die fertigen
+also nach jedem Durchgang wegkopieren und am Ende wieder zusammenlegen.
+
+Gegenprobe, dass im Paket wirklich das richtige Binary steckt (auf dem Host
+fehlt `rpm2cpio`, deshalb in der Build-Umgebung):
 
 ```sh
 sfdk tools exec SailfishOS-5.1.0.11-aarch64 sh -c \
   "cd $PWD && rpm2cpio RPMS/harbour-tonarm-<v>-1.<arch>.rpm \
    | cpio -i --to-stdout ./usr/bin/harbour-tonarm > /tmp/b; file /tmp/b"
 ```
+
+Erwartet: `ARM aarch64` / `ARM, EABI5` / `Intel 80386`.
 
 ## Compatibility → Device type
 
