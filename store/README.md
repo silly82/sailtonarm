@@ -49,13 +49,39 @@ Vor Ort wählen, am ehesten passt etwas in Richtung Multimedia/Audio.
 
 ## Binaries
 
-`../RPMS/harbour-tonarm-<version>-1.aarch64.rpm` — deckt aktuelle 64-Bit-Geräte
-ab und ist auf echter Hardware geprüft (Jolla Phone 2026).
+Beide gebaut, beide geprüft, beide in `../RPMS/` (nicht im Repo — `RPMS/`
+steht in `.gitignore`; sie hängen zusätzlich am GitHub-Release):
 
-`armv7hl` baut ebenfalls und besteht die Harbour-Prüfung, wurde aber nie auf
-echter armv7hl-Hardware ausgeführt. Nur mit hochladen, wenn Mehrarchitektur
-trotzdem gewünscht ist. `i486` ist reine Emulator-Architektur und gehört nicht
-in eine Einreichung.
+| Datei | Prüfung | Empfehlung |
+|---|---|---|
+| `harbour-tonarm-0.17-1.aarch64.rpm` | harbour: succeeded · rpmlint: 0/0/0 · **auf echter Hardware gelaufen** (Jolla Phone 2026) | hochladen |
+| `harbour-tonarm-0.17-1.armv7hl.rpm` | harbour: succeeded · rpmlint: 0/0/0 · nie auf echter armv7hl-Hardware ausgeführt | Entscheidung des Einreichenden |
+
+`aarch64` deckt die aktuellen 64-Bit-Geräte ab. `armv7hl` ist für ältere
+32-Bit-Geräte und baut sauber, ist aber ungetestet — wer ältere Geräte
+bedienen will, lädt es mit hoch und weiss, dass es ungeprüft ist.
+
+`i486` ist reine Emulator-Architektur und gehört nicht in eine Einreichung.
+
+**Beim Bauen zwischen den Architekturen zwingend aufräumen**, sonst relinkt der
+In-Place-Build die Objektdateien der vorherigen Architektur still in das neue
+Paket:
+
+```sh
+rm -f harbour-tonarm *.o moc_*.cpp moc_*.h Makefile .qmake.stash
+sfdk config target=SailfishOS-5.1.0.11-<arch> \
+  && sfdk config specfile=rpm/harbour-tonarm.spec \
+  && sfdk build
+```
+
+Gegenprobe, dass im Paket wirklich das richtige Binary steckt (auf dem
+Host fehlt `rpm2cpio`, deshalb in der Build-Umgebung):
+
+```sh
+sfdk tools exec SailfishOS-5.1.0.11-aarch64 sh -c \
+  "cd $PWD && rpm2cpio RPMS/harbour-tonarm-<v>-1.<arch>.rpm \
+   | cpio -i --to-stdout ./usr/bin/harbour-tonarm > /tmp/b; file /tmp/b"
+```
 
 ## Compatibility → Device type
 
