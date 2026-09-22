@@ -275,6 +275,14 @@ Vorgehen in Unterstufen:
   Ergebnis entscheidet, ob 5b überhaupt sinnvoll ist. Vorher zu klären:
   Welche Audio-API ist in Harbour erlaubt und was passiert bei
   Bildschirm-Aus/Anruf?
+
+> **Überholt.** Diese Stufe ist inzwischen ausgearbeitet und an der eigenen
+> Anlage vermessen: siehe [`KONZEPT-ENDPOINT.md`](KONZEPT-ENDPOINT.md) auf dem
+> Branch `sendspin-player`. Zwei Annahmen von hier haben sich dabei als falsch
+> erwiesen -- der Server verlangt inzwischen **Noise-Verschlüsselung** (nicht
+> mehr Klartext wie auf der Projektseite beschrieben), und `libFLAC`/`libopus`
+> liegen zwar auf dem Gerät, sind für Harbour aber **nicht erlaubt**, womit PCM
+> nicht bloss der einfachste, sondern der einzig mögliche Weg ist.
 - **5b:** Time-Filter + Drift-Korrektur bis die Sync-Anforderung erfüllt ist,
   FLAC-Decoder (`libFLAC` oder GStreamer) für Bandbreite/Qualität,
   Lautstärke-/Mute-Kommandos, Persistenz von `output_delay_ms`.
