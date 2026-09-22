@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.17
+Version:    0.18
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -67,6 +67,14 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Tue Sep 22 2026 silly82 <siliwalker@gmail.com> - 0.18-1
+- Neu in der Bibliothek: "Zuletzt gehört" zeigt über alle Medientypen
+  hinweg, was zuletzt lief -- ein Tippen führt dorthin, wo es herkommt.
+- Podcasts und Hörbücher sind jetzt eigene Bereiche der Bibliothek und
+  erscheinen auch in den Suchergebnissen. Ein Podcast lässt sich
+  aufklappen und zeigt seine Folgen; ein Hörbuch ist ein einzelnes
+  abspielbares Objekt und hat deshalb keine Unterseite.
+
 * Sun Sep 20 2026 silly82 <siliwalker@gmail.com> - 0.17-1
 - Das Tokenfeld in den Einstellungen zeigt ein hinterlegtes Token nicht
   mehr als seitenbreite Reihe von Passwortpunkten. Es bleibt leer und

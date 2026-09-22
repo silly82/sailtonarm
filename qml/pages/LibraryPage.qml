@@ -19,7 +19,8 @@ Page {
         if (!mass || !mass.ready) {
             return
         }
-        var types = ["artists", "albums", "tracks", "playlists", "radios"]
+        var types = ["artists", "albums", "tracks", "playlists", "radios",
+                     "podcasts", "audiobooks"]
         for (var i = 0; i < types.length; i++) {
             loadCount(types[i])
         }
@@ -78,13 +79,31 @@ Page {
 
             PageHeader { title: qsTr("Bibliothek") }
 
+            // Steht über den Medientypen, weil es keiner ist: eine gemischte
+            // Liste über alles, was zuletzt lief.
+            ListItem {
+                width: page.width
+                contentHeight: Theme.itemSizeMedium
+                onClicked: pageStack.push(Qt.resolvedUrl("RecentlyPlayedPage.qml"),
+                                          { mass: page.mass, store: page.store })
+
+                Label {
+                    x: Theme.horizontalPageMargin
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: qsTr("Zuletzt gehört")
+                    color: highlighted ? Theme.highlightColor : Theme.primaryColor
+                }
+            }
+
             Repeater {
                 model: [
                     { type: "artists", label: qsTr("Interpreten") },
                     { type: "albums", label: qsTr("Alben") },
                     { type: "tracks", label: qsTr("Titel") },
                     { type: "playlists", label: qsTr("Playlists") },
-                    { type: "radios", label: qsTr("Radio") }
+                    { type: "radios", label: qsTr("Radio") },
+                    { type: "podcasts", label: qsTr("Podcasts") },
+                    { type: "audiobooks", label: qsTr("Hörbücher") }
                 ]
 
                 ListItem {
