@@ -2,6 +2,7 @@ import QtQuick 2.6
 import Sailfish.Silica 1.0
 import "../components"
 import "../lib/MassModels.js" as Models
+import "../lib/Navigate.js" as Nav
 
 // Eine Bibliotheksliste für genau einen Medientyp. Dieselbe Seite bedient
 // Interpreten, Alben, Titel, Playlists und Radio -- der Unterschied sind der
@@ -108,22 +109,30 @@ Page {
         if (mediaType === "playlists" || mediaType === "radios") {
             return item.owner || ""
         }
+        if (mediaType === "podcasts") {
+            return item.publisher || ""
+        }
+        if (mediaType === "audiobooks") {
+            // Hörbücher führen Autoren und Sprecher als eigene Felder; welche
+            // davon gefüllt sind, hängt am Anbieter.
+            var authors = item.authors || []
+            if (authors.length > 0) {
+                return authors.join(", ")
+            }
+            return item.publisher || ""
+        }
         return ""
     }
 
+    // Titel, Radio und Hörbücher haben keine Unterseite -- die spielt man über
+    // das Kontextmenü, ein Tipper tut dort nichts.
     function openItem(item) {
-        if (mediaType === "albums") {
-            pageStack.push(Qt.resolvedUrl("AlbumPage.qml"),
-                           { mass: page.mass, store: page.store, album: item })
-        } else if (mediaType === "artists") {
-            pageStack.push(Qt.resolvedUrl("ArtistPage.qml"),
-                           { mass: page.mass, store: page.store, artist: item })
-        } else if (mediaType === "playlists") {
-            pageStack.push(Qt.resolvedUrl("PlaylistPage.qml"),
-                           { mass: page.mass, store: page.store, playlist: item })
+        var single = Nav.singular(page.mediaType)
+        var file = Nav.pageFor(single)
+        if (file.length > 0) {
+            pageStack.push(Qt.resolvedUrl(file),
+                           Nav.propsFor(single, item, page.mass, page.store))
         }
-        // Titel und Radio haben keine Unterseite -- die spielt man über das
-        // Kontextmenü, ein Tipper tut hier nichts.
     }
 
     Component.onCompleted: reload()

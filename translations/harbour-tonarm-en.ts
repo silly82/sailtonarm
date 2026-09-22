@@ -187,6 +187,18 @@
         <source>Keine Verbindung zum Server.</source>
         <translation>No connection to the server.</translation>
     </message>
+    <message>
+        <source>Zuletzt gehört</source>
+        <translation>Recently played</translation>
+    </message>
+    <message>
+        <source>Podcasts</source>
+        <translation>Podcasts</translation>
+    </message>
+    <message>
+        <source>Hörbücher</source>
+        <translation>Audiobooks</translation>
+    </message>
 </context>
 <context>
     <name>MediaListItem</name>
@@ -487,6 +499,53 @@
     </message>
 </context>
 <context>
+    <name>PodcastPage</name>
+    <message>
+        <source>Kein Player ausgewählt</source>
+        <translation>No player selected</translation>
+    </message>
+    <message>
+        <source>keiner</source>
+        <translation>none</translation>
+    </message>
+    <message>
+        <source>Folge %1</source>
+        <translation>Episode %1</translation>
+    </message>
+    <message>
+        <source>%1 Folgen</source>
+        <translation>%1 episodes</translation>
+    </message>
+    <message>
+        <source>Abspielen</source>
+        <translation>Play</translation>
+    </message>
+    <message>
+        <source>Läuft auf %1</source>
+        <translation>Playing on %1</translation>
+    </message>
+    <message>
+        <source>Anhängen</source>
+        <translation>Append</translation>
+    </message>
+    <message>
+        <source>Angehängt auf %1</source>
+        <translation>Appended on %1</translation>
+    </message>
+    <message>
+        <source>Ziel-Player: %1</source>
+        <translation>Target player: %1</translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation>Error</translation>
+    </message>
+    <message>
+        <source>Keine Folgen</source>
+        <translation>No episodes</translation>
+    </message>
+</context>
+<context>
     <name>QueuePage</name>
     <message>
         <source>Wiederholen: aus</source>
@@ -582,6 +641,69 @@
     </message>
 </context>
 <context>
+    <name>RecentlyPlayedPage</name>
+    <message>
+        <source>Interpret</source>
+        <translation>Artist</translation>
+    </message>
+    <message>
+        <source>Album</source>
+        <translation>Album</translation>
+    </message>
+    <message>
+        <source>Titel</source>
+        <translation>Track</translation>
+    </message>
+    <message>
+        <source>Playlist</source>
+        <translation>Playlist</translation>
+    </message>
+    <message>
+        <source>Radio</source>
+        <translation>Radio</translation>
+    </message>
+    <message>
+        <source>Podcast</source>
+        <translation>Podcast</translation>
+    </message>
+    <message>
+        <source>Podcast-Folge</source>
+        <translation>Podcast episode</translation>
+    </message>
+    <message>
+        <source>Hörbuch</source>
+        <translation>Audiobook</translation>
+    </message>
+    <message>
+        <source>keiner</source>
+        <translation>none</translation>
+    </message>
+    <message>
+        <source>Zuletzt gehört</source>
+        <translation>Recently played</translation>
+    </message>
+    <message>
+        <source>Ziel-Player: %1</source>
+        <translation>Target player: %1</translation>
+    </message>
+    <message>
+        <source>Neu laden</source>
+        <translation>Reload</translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation>Error</translation>
+    </message>
+    <message>
+        <source>Noch nichts gehört</source>
+        <translation>Nothing played yet</translation>
+    </message>
+    <message>
+        <source>Hier steht, was zuletzt gelaufen ist</source>
+        <translation>What has been playing shows up here</translation>
+    </message>
+</context>
+<context>
     <name>SavePlaylistDialog</name>
     <message>
         <source>Speichern</source>
@@ -649,6 +771,14 @@
     <message>
         <source>Durchsucht Bibliothek und Anbieter</source>
         <translation>Searches the library and the providers</translation>
+    </message>
+    <message>
+        <source>Podcasts</source>
+        <translation>Podcasts</translation>
+    </message>
+    <message>
+        <source>Hörbücher</source>
+        <translation>Audiobooks</translation>
     </message>
 </context>
 <context>

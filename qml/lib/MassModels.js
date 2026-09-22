@@ -183,14 +183,21 @@ function formatTime(seconds) {
 // anders: dort steht in `current_media.image_url` bereits eine fertige
 // Adresse, siehe nowPlaying().
 function imageProxyId(item) {
-    if (!item || !item.metadata || !item.metadata.images) {
+    if (!item) {
         return ""
     }
-    var images = item.metadata.images
+    // Zwei Formen, je nachdem woher das Objekt kommt: ein volles Medienobjekt
+    // aus der Bibliothek führt `metadata.images[]`, ein schlanker Verweis
+    // (ItemMapping, etwa aus "zuletzt gehört" oder aus der Interpretenliste
+    // eines Albums) dagegen ein einzelnes `image`. Beide tragen `proxy_id`.
+    var images = (item.metadata && item.metadata.images) ? item.metadata.images : []
     for (var i = 0; i < images.length; i++) {
         if (images[i] && images[i].proxy_id) {
             return images[i].proxy_id
         }
+    }
+    if (item.image && item.image.proxy_id) {
+        return item.image.proxy_id
     }
     return ""
 }

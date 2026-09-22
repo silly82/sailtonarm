@@ -6,7 +6,8 @@ Abschnitt 11, Zielserver vermessen in 12, Build und Harbour-Prüfung in 13,
 erster Gerätestart in 14, Stufe 1 in 15, Cover-Page und Stufe 2 in 16,
 Stufe 3 in 17, Stufe 4 in 18, deren Geräteprüfung in 19,
 nachgezogene Favoriten und Lautsprecher-Gruppen in 20,
-Zweisprachigkeit und Store-Material in 21, UI-Durchgang in 22.
+Zweisprachigkeit und Store-Material in 21, UI-Durchgang in 22,
+Zuletzt gehört/Podcasts/Hörbücher in 23.
 
 ## 1. Ausgangslage und Ziel
 
@@ -1093,3 +1094,71 @@ darin, weil er angezeigt wurde.
 
 Auf dem Gerät geprüft: Platzhalter erscheint, Zugangsdaten bleiben unberührt,
 die Verbindung steht weiterhin.
+
+## 23. Update 2026-09-22: Zuletzt gehört, Podcasts, Hörbücher (v0.18)
+
+Drei Dinge, die die Bibliothek abrunden -- die Kommandoliste des Servers bot
+sie längst an, die App benutzte sie nur nicht.
+
+### Zuletzt gehört
+
+`music/recently_played_items(limit)` liefert über alle Medientypen hinweg, was
+zuletzt lief. Zwei Eigenheiten prägen die Seite:
+
+- Zurück kommen **`ItemMapping`-Objekte, keine vollen Medienobjekte**: kein
+  `metadata`, dafür ein einzelnes `image`. `Models.imageProxyId()` kennt jetzt
+  beide Formen -- vorher hätte die Liste gar keine Bilder gezeigt.
+- Der `media_type` wechselt von Zeile zu Zeile. Wohin ein Tipper führt,
+  entscheidet sich deshalb je Eintrag, nicht einmal für die ganze Seite.
+
+Die Unterzeile nennt die Art des Eintrags statt Interpret oder Jahr -- die gibt
+es in einem ItemMapping nicht, und in einer gemischten Liste ist die Art
+ohnehin die nützlichere Angabe.
+
+### Podcasts und Hörbücher
+
+Beide sind jetzt eigene Bereiche der Bibliothek und erscheinen auch in den
+Suchergebnissen. Der Unterschied zwischen ihnen ergibt sich aus der API, nicht
+aus Geschmack:
+
+- Ein **Podcast** hat Folgen (`music/podcasts/podcast_episodes`) und damit eine
+  Unterseite. Das Kommando kennt **kein limit/offset** -- es liefert einen
+  Async-Generator, der Server schickt in 500er-Paketen mit `partial: true`.
+  Das ist der erste Ort, an dem die Stückelung aus `MassConnection` wirklich
+  gebraucht wird statt nur vorsorglich dazusein.
+- Ein **Hörbuch** hat kein Kapitel-Kommando; es ist ein einzelnes abspielbares
+  Objekt. Also keine Unterseite -- es läuft über das Kontextmenü, wie ein Titel
+  oder ein Radiosender.
+
+Auf der eigenen Anlage sind beide Bereiche leer (0 und 0), ebenso Radio. Die
+Einträge bleiben trotzdem sichtbar und zeigen "0 Einträge" -- sie füllen sich,
+sobald in Music Assistant ein entsprechender Anbieter eingerichtet ist.
+
+### Aufgeräumt nebenbei
+
+Die Fallunterscheidung "welcher Medientyp führt auf welche Seite" stand in drei
+Seiten; mit den gemischten Listen wären es fünf geworden. Sie liegt jetzt in
+`qml/lib/Navigate.js`.
+
+### Zwei Fehler, beide aus den eigenen Notizen wiedererkannt
+
+**Das Paket enthielt ein armv7hl-Binary in einer aarch64-Hülle.** Nach der
+Store-Arbeit (Abschnitt in `store/README.md`) war der Arbeitsbaum zuletzt auf
+armv7hl gebaut; der folgende aarch64-Build ohne Aufräumen relinkte die alten
+Objektdateien still mit. Auf dem Gerät äusserte sich das als
+`nothing provides 'libQt5Core.so.5'` -- genau das dokumentierte Symptom. Die
+Regel gilt also auch dann, wenn zwischen den beiden Builds Stunden und ein
+Dutzend Quelltextänderungen liegen.
+
+**`lrelease -nounfinished` verwarf 14 fertige Übersetzungen.** lupdate
+übernimmt eine identische Quellzeichenkette aus einem anderen Kontext,
+**lässt sie aber als `type="unfinished"` markiert** -- und genau die wirft
+`lrelease -nounfinished` weg. Sie wären auf einem englischen Gerät deutsch
+geblieben, ohne dass irgendetwas nach einem Fehler ausgesehen hätte. Das
+Hilfsskript setzt solche Einträge jetzt ebenfalls.
+
+Dabei ist auch aufgefallen, dass dieselbe deutsche Zeichenkette je Seite etwas
+anderes heissen kann: "Titel" ist in der Bibliotheksübersicht die Liste aller
+Titel (*Tracks*), in "Zuletzt gehört" die Art eines einzelnen Eintrags
+(*Track*). Qt hält Übersetzungen je Kontext getrennt; das wird jetzt ausgenutzt,
+statt die deutschen Texte zu verbiegen.

@@ -2,6 +2,7 @@ import QtQuick 2.6
 import Sailfish.Silica 1.0
 import "../components"
 import "../lib/MassModels.js" as Models
+import "../lib/Navigate.js" as Nav
 
 // Suche über alle Medientypen. `music/search` antwortet mit einem Objekt, das
 // je Typ eine Liste trägt (artists, albums, tracks, playlists, radio, ...) --
@@ -29,7 +30,9 @@ Page {
         { key: "albums", label: qsTr("Alben") },
         { key: "tracks", label: qsTr("Titel") },
         { key: "playlists", label: qsTr("Playlists") },
-        { key: "radio", label: qsTr("Radio") }
+        { key: "radio", label: qsTr("Radio") },
+        { key: "podcasts", label: qsTr("Podcasts") },
+        { key: "audiobooks", label: qsTr("Hörbücher") }
     ]
 
     function search() {
@@ -76,19 +79,19 @@ Page {
         if (row.type === "albums" || row.type === "tracks") {
             return Models.artistNames(row.item)
         }
+        if (row.type === "podcasts" || row.type === "audiobooks") {
+            var authors = row.item.authors || []
+            return authors.length > 0 ? authors.join(", ") : (row.item.publisher || "")
+        }
         return row.item.owner || ""
     }
 
     function openRow(row) {
-        if (row.type === "albums") {
-            pageStack.push(Qt.resolvedUrl("AlbumPage.qml"),
-                           { mass: page.mass, store: page.store, album: row.item })
-        } else if (row.type === "artists") {
-            pageStack.push(Qt.resolvedUrl("ArtistPage.qml"),
-                           { mass: page.mass, store: page.store, artist: row.item })
-        } else if (row.type === "playlists") {
-            pageStack.push(Qt.resolvedUrl("PlaylistPage.qml"),
-                           { mass: page.mass, store: page.store, playlist: row.item })
+        var single = Nav.singular(row.type)
+        var file = Nav.pageFor(single)
+        if (file.length > 0) {
+            pageStack.push(Qt.resolvedUrl(file),
+                           Nav.propsFor(single, row.item, page.mass, page.store))
         }
     }
 
