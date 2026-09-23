@@ -297,6 +297,14 @@
         <source>Keine Favoriten</source>
         <translation>No favourites</translation>
     </message>
+    <message>
+        <source>%1 Std.</source>
+        <translation>%1 h</translation>
+    </message>
+    <message>
+        <source>%1 Min.</source>
+        <translation>%1 min</translation>
+    </message>
 </context>
 <context>
     <name>NowPlayingPage</name>
