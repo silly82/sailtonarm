@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.18
+Version:    0.19
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -67,6 +67,13 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Wed Sep 23 2026 silly82 <siliwalker@gmail.com> - 0.19-1
+- Hörbücher zeigen jetzt die Spieldauer -- bei einem Hörbuch ist der
+  Unterschied zwischen drei und einunddreissig Stunden die interessanteste
+  Angabe. Und nur noch den ersten Autor: die Liste des Anbieters enthält
+  oft auch Übersetzer und Bearbeiter und füllte die Zeile, ohne etwas zu
+  sagen.
+
 * Tue Sep 22 2026 silly82 <siliwalker@gmail.com> - 0.18-1
 - Neu in der Bibliothek: "Zuletzt gehört" zeigt über alle Medientypen
   hinweg, was zuletzt lief -- ein Tippen führt dorthin, wo es herkommt.

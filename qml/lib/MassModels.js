@@ -301,3 +301,21 @@ function queueFor(queues, playerId) {
     }
     return queues[playerId] || null
 }
+
+// --- Hörbücher -----------------------------------------------------------
+
+// Der erste Autor eines Hörbuchs, und nur der. `authors` ist eine Liste, aber
+// welcher Anbieter was hineinschreibt, ist nicht einheitlich: manche liefern
+// je Person einen Eintrag, andere alle Beteiligten als **einen** Eintrag mit
+// Kommas darin ("Bonnie Garmus, Ulrike Wasel - Übersetzer, Klaus Berr -
+// Übersetzer"). Beides endet hier beim ersten Namen -- Übersetzer und
+// Bearbeiter füllen die Zeile, ohne etwas zu sagen. Dass dabei ein
+// "Nachname, Vorname" auseinanderfiele, ist bei diesen Anbietern kein Fall:
+// sie schreiben Namen ausgeschrieben, das Komma trennt Personen.
+function primaryAuthor(item) {
+    var authors = (item && item.authors) || []
+    if (authors.length === 0) {
+        return ""
+    }
+    return String(authors[0]).split(",")[0].trim()
+}

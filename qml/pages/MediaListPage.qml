@@ -113,15 +113,26 @@ Page {
             return item.publisher || ""
         }
         if (mediaType === "audiobooks") {
-            // Hörbücher führen Autoren und Sprecher als eigene Felder; welche
-            // davon gefüllt sind, hängt am Anbieter.
-            var authors = item.authors || []
-            if (authors.length > 0) {
-                return authors.join(", ")
-            }
-            return item.publisher || ""
+            return page.audiobookSubtitle(item)
         }
         return ""
+    }
+
+    // Nur der erste Autor (siehe Models.primaryAuthor), dazu die Spieldauer --
+    // bei einem Hörbuch ist der Unterschied zwischen drei und einunddreissig
+    // Stunden die eigentlich interessante Angabe.
+    function audiobookSubtitle(item) {
+        var parts = []
+        var author = Models.primaryAuthor(item)
+        if (author.length > 0) {
+            parts.push(author)
+        }
+        if (item.duration > 0) {
+            parts.push(item.duration >= 3600
+                       ? qsTr("%1 Std.").arg(Math.round(item.duration / 3600))
+                       : qsTr("%1 Min.").arg(Math.round(item.duration / 60)))
+        }
+        return parts.join(" · ")
     }
 
     // Titel, Radio und Hörbücher haben keine Unterseite -- die spielt man über

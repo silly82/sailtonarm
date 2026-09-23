@@ -80,8 +80,8 @@ Page {
             return Models.artistNames(row.item)
         }
         if (row.type === "podcasts" || row.type === "audiobooks") {
-            var authors = row.item.authors || []
-            return authors.length > 0 ? authors.join(", ") : (row.item.publisher || "")
+            // Nur der erste Autor, siehe Models.primaryAuthor().
+            return Models.primaryAuthor(row.item) || (row.item.publisher || "")
         }
         return row.item.owner || ""
     }
