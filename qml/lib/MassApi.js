@@ -105,6 +105,11 @@ function snapImageSize(px) {
 // imageId ist das Feld `proxy_id` aus `metadata.images[]` eines Medienobjekts,
 // nicht dessen `path` (der ist providerspezifisch und für den Proxy wertlos).
 function imageUrl(base, imageId, sizePx) {
+    // Im Demomodus sind die "Proxy-Ids" fertige Dateiadressen der
+    // mitgelieferten Cover (DemoData.js) -- unverändert durchreichen.
+    if (imageId && /^(file|qrc):/.test(String(imageId))) {
+        return String(imageId)
+    }
     if (!base || !imageId) {
         return ""
     }

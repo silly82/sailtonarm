@@ -60,6 +60,9 @@ gegen einen echten Server.
 - **Lautstärke folgt dem Finger**: sie ändert sich schon beim Ziehen, und der
   Regler springt danach nicht zurück
 - **Optionale Benachrichtigung** bei Titelwechsel (standardmässig aus)
+- **Demomodus** (Einstellungen): ein erfundener Server mit fünf Räumen, Musik,
+  Radio, einem Hörbuch und einem Podcast — zum Ausprobieren ohne eigenen
+  Server
 
 Die App verlangt dafür die **Audio**-Berechtigung, obwohl sie kein Audio
 ausgibt: auf SailfishOS ist das die Berechtigung, die das Anmelden eines

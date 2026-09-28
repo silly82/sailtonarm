@@ -136,14 +136,21 @@ In `screenshots/`, vom echten Gerät aufgenommen (1032×2272, Jolla Phone 2026):
 - `01-bibliothek.png` — Bibliotheksübersicht mit Anzahl je Bereich
 - `02-album.png` — Albumseite mit Cover und Titelliste
 - `03-titelliste.png` — Titelliste mit Suchfeld
+- `04-player.png` — Player-Liste *(Demomodus)*
+- `05-laeuft-gerade.png` — Läuft gerade mit Cover, Fortschritt, Lautstärke *(Demomodus)*
+- `06-warteschlange.png` — Warteschlange *(Demomodus)*
+- `07-hoerbuch.png` — Läuft gerade bei einem Hörbuch: Kapitel, −15 s/+30 s,
+  Tempo *(Demomodus)*
 
-**Bewusst nicht dabei:** Bildschirmfotos der Player-Liste, der
-Now-Playing-Seite und der Warteschlange. Die sehen zwar besser aus, zeigen
-aber zwangsläufig die eigenen Lautsprechernamen (also die Räume der Wohnung)
-und die zuletzt gehörte Musik. Für eine öffentliche Store-Anzeige ist das eine
-Entscheidung, die der Einreichende selbst treffen sollte — entweder mit
-umbenannten Testplayern neu aufnehmen oder die vorhandenen bewusst
-dazunehmen.
+Die Bilder 04–07 kommen aus dem **Demomodus** (Einstellungen → Demo): fünf
+erfundene Räume, erfundene Musik, abstrakte Cover ohne Schrift oder Marken
+(`generate-demo-art.py`). Damit zeigen sie weder die Räume einer echten
+Wohnung noch deren Hörhistorie — genau das, was die Player-Liste, Läuft gerade
+und die Warteschlange früher von den Store-Bildern ausgeschlossen hatte. Die
+Player-Liste trägt oben den Hinweis "Demomodus"; das ist ehrlich und bleibt so.
+
+Für Store-Bilder den Demomodus frisch einschalten (er beginnt dann immer beim
+selben Ausgangszustand) und danach wieder aus.
 
 Aufnahmerezept (Gerät im Hochformat, sonst kommt das Bild quer):
 

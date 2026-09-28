@@ -182,7 +182,7 @@ Page {
                         return qsTr("nur Favoriten")
                     }
                     return page.totalCount >= 0
-                            ? qsTr("%1 Einträge").arg(page.totalCount) : ""
+                            ? (page.totalCount === 1 ? qsTr("1 Eintrag") : qsTr("%1 Einträge").arg(page.totalCount)) : ""
                 }
             }
 

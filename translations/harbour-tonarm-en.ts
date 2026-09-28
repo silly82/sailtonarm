@@ -197,6 +197,17 @@
     </message>
 </context>
 <context>
+    <name>DemoConnection</name>
+    <message>
+        <source>Demo-Server</source>
+        <translation>Demo server</translation>
+    </message>
+    <message>
+        <source>Bibliothek</source>
+        <translation>Library</translation>
+    </message>
+</context>
+<context>
     <name>GroupPage</name>
     <message>
         <source>%1 dazugeschaltet</source>
@@ -308,6 +319,10 @@
     <message>
         <source>Weiterhören</source>
         <translation>Continue listening</translation>
+    </message>
+    <message>
+        <source>1 Eintrag</source>
+        <translation>1 entry</translation>
     </message>
 </context>
 <context>
@@ -422,6 +437,10 @@
     <message>
         <source>beendet</source>
         <translation>finished</translation>
+    </message>
+    <message>
+        <source>1 Eintrag</source>
+        <translation>1 entry</translation>
     </message>
 </context>
 <context>
@@ -549,10 +568,6 @@
         <translation>No players</translation>
     </message>
     <message>
-        <source>Adresse und Token im Pulley-Menü eintragen</source>
-        <translation>Enter address and token from the pulley menu</translation>
-    </message>
-    <message>
         <source>Der Server ist gerade nicht erreichbar</source>
         <translation>The server cannot be reached right now</translation>
     </message>
@@ -591,6 +606,14 @@
     <message>
         <source>Tippen, um sofort neu zu verbinden</source>
         <translation>Tap to reconnect now</translation>
+    </message>
+    <message>
+        <source>Demomodus</source>
+        <translation>Demo mode</translation>
+    </message>
+    <message>
+        <source>Adresse und Token in den Einstellungen eintragen — oder dort den Demomodus einschalten, um die App ohne Server auszuprobieren</source>
+        <translation>Enter address and token in Settings — or switch on demo mode there to try the app without a server</translation>
     </message>
 </context>
 <context>
@@ -1136,6 +1159,18 @@
     <message>
         <source>Heimadresse</source>
         <translation>Home address</translation>
+    </message>
+    <message>
+        <source>Demo</source>
+        <translation>Demo</translation>
+    </message>
+    <message>
+        <source>Demomodus</source>
+        <translation>Demo mode</translation>
+    </message>
+    <message>
+        <source>Ein erfundener Server mit fünf Räumen, Musik, Radio, einem Hörbuch und einem Podcast — zum Ausprobieren ohne eigenen Server. Die echte Verbindung ruht solange; die Zugangsdaten bleiben erhalten.</source>
+        <translation>A made-up server with five rooms, music, radio, an audiobook and a podcast — to try the app without a server of your own. The real connection rests meanwhile; your credentials are kept.</translation>
     </message>
 </context>
 <context>

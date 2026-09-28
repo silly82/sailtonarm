@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.23
+Version:    0.24
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -67,6 +67,14 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.24-1
+- Demomodus (Einstellungen): ein erfundener Server mit fünf Räumen,
+  Musik, Radio, einem Hörbuch und einem Podcast, ganz ohne Netz. Zum
+  Ausprobieren ohne eigenen Server und für Bildschirmfotos, die keine
+  echten Räume zeigen. Die echte Verbindung ruht solange, die
+  Zugangsdaten bleiben erhalten.
+- "1 Eintrag" statt "1 Einträge" in der Bibliothek.
+
 * Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.23-1
 - Zweite Serveradresse für unterwegs (VPN, Tailscale, Reverse-Proxy),
   optional in den Einstellungen. Die App versucht immer zuerst die
