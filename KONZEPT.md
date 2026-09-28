@@ -1441,3 +1441,58 @@ Bilder 04 bis 07 in `store/screenshots/` stammen aus diesem Durchgang.
 Nebenbei gefunden: "1 Einträge" in Bibliothek und Listen. Deutsch ist hier
 Quellsprache ohne eigene `.ts`, eine `%n`-Pluralform hülfe also nur dem
 Englischen; die Einzahl steht deshalb ausdrücklich im Code.
+
+## 29. Update 2026-09-28: Cover-Zwischenspeicher und Probe-Skript (v0.25)
+
+Die beiden letzten Punkte aus Abschnitt 6 von `TODO.md`.
+
+### Cover auf der Platte
+
+QMLs `Image` hält Bilder nur im Speicher, nach jedem Neustart kamen alle
+Cover erneut über das Netz. Der Bildproxy von MA 2.10.4 antwortet mit
+`Cache-Control: max-age=31536000` (ein Jahr; kein ETag, kein Last-Modified),
+und die Adressen sind stabil. Es genügt also ein `QNetworkDiskCache` in der
+Netzwerkschicht der QML-Engine; frische Einträge beantwortet QNAM dann
+selbst.
+
+- `src/covercache.{h,cpp}`: eine `QQmlNetworkAccessManagerFactory`, die jedem
+  Netzwerk-Manager der Engine einen Plattencache gibt. Die Engine legt für
+  asynchrones Bildladen eigene Manager in eigenen Threads an; jeder bekommt
+  seinen Cache auf dasselbe Verzeichnis, wie im Qt-Beispiel.
+- Verzeichnis: `QStandardPaths::CacheLocation` + `/covers`, auf dem Telefon
+  `~/.cache/io.github.silly82/tonarm/covers`, also unter dem Pfad, den
+  Sailjail freigibt. Höchstens 100 MB.
+- WebSocket und `XMLHttpRequest` (`/info`) sind nicht betroffen:
+  zwischengespeichert wird nur, was der Server als speicherbar kennzeichnet.
+- Die Einstellungen zeigen die Grösse und können den Cache leeren
+  (Kontext-Property `CoverCache`).
+- `QT += network`, `BuildRequires: pkgconfig(Qt5Network)`. Die
+  Harbour-Prüfung besteht, QtNetwork gehört zu den erlaubten Bibliotheken.
+
+**Auf dem Telefon gemessen** (über WLAN empfangene Bytes beim Öffnen
+derselben Bibliotheksseite nach einem Neustart der App): mit leerem Cache
+342 und 366 KB, mit gefülltem 79, 93 und 155 KB. Der Rest ist der
+Hintergrundverkehr (Server-Ereignisse, WLAN). Bei einer Albumliste mit vielen
+Covern ist der Unterschied entsprechend grösser.
+
+### Probe-Skript
+
+`scripts/ma-probe.mjs` (Node 22+), übernommen aus der iOS-App und erweitert.
+Mit beliebigem Kommando samt JSON-Argumenten, gleicht es vorher gegen
+`/api-docs/commands.json` ab (Tippfehler und Kommandos aus dem dev-Zweig
+fallen sofort auf), sammelt `partial`-Antworten wie `MassConnection`, kürzt
+lange Listen, sucht Kommandos ohne Token (`--find`) und schneidet Ereignisse
+mit (`--events`). Zugangsdaten in `.env` (in `.gitignore`).
+
+### Bei der Geräteprüfung passiert
+
+Das Telefon lief unter hoher Last (Load um 13), und die per Touch-Injektion
+geschickten Tipper kamen verspätet an. Sie trafen jeweils die Seite, die sich
+gerade öffnete. Ein langes Ziehen über eine Listenzeile wurde als langer
+Druck gelesen und öffnete das Kontextmenü, der Tipper zum Schliessen wählte
+"Jetzt spielen". Dadurch lief kurz Radio auf einem Lautsprecher, und ein
+verirrter Tipper startete die Wiedergabe in einem anderen Raum. Beides ist
+wieder angehalten. Home Assistant meldete dabei die ganze Zeit "idle", weil
+dessen MA-Anbindung für diesen Player keine Updates mehr bekam; den
+tatsächlichen Zustand zeigte nur die App. Für künftige Geräteprüfungen gilt
+deshalb: ein Tipper, 4–5 s warten, Kontrollbild, erst dann der nächste.

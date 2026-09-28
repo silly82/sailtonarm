@@ -24,10 +24,15 @@ CONFIG += link_pkgconfig c++11
 # the hard way in harbour-hacontrol.
 PKGCONFIG += sailfishsecrets sailfishapp
 
+# network: QNetworkDiskCache für die Cover (src/covercache.h).
+QT += network
+
 SOURCES += src/harbour-tonarm.cpp \
+    src/covercache.cpp \
     src/credentials.cpp
 
 HEADERS += \
+    src/covercache.h \
     src/credentials.h
 
 DISTFILES += qml/harbour-tonarm.qml \
