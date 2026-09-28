@@ -12,6 +12,7 @@ using namespace Sailfish::Secrets;
 
 static const QLatin1String BaseUrlSecretName("harbour-tonarm-baseUrl");
 static const QLatin1String TokenSecretName("harbour-tonarm-token");
+static const QLatin1String AwayUrlSecretName("harbour-tonarm-awayUrl");
 
 Credentials::Credentials(QObject *parent)
     : QObject(parent)
@@ -32,12 +33,16 @@ Credentials::Credentials(QObject *parent)
     m_tokenStore.setManager(&m_manager);
     m_baseUrlDelete.setManager(&m_manager);
     m_tokenDelete.setManager(&m_manager);
+    m_awayUrlLoad.setManager(&m_manager);
+    m_awayUrlStore.setManager(&m_manager);
+    m_awayUrlDelete.setManager(&m_manager);
     m_pluginInfo.setManager(&m_manager);
 
     // Systemvermittelte Interaktion, keine App-Dialoge: die eigenen Secrets
     // zurückzulesen darf den Nutzer zu nichts auffordern.
     m_baseUrlLoad.setUserInteractionMode(SecretManager::SystemInteraction);
     m_tokenLoad.setUserInteractionMode(SecretManager::SystemInteraction);
+    m_awayUrlLoad.setUserInteractionMode(SecretManager::SystemInteraction);
 
     connect(&m_pluginInfo, &PluginInfoRequest::statusChanged, this, [this]() {
         if (m_pluginInfo.status() != Request::Finished) {
@@ -83,11 +88,51 @@ Credentials::Credentials(QObject *parent)
         } else {
             qDebug() << "Credentials: token not loaded:" << result.errorMessage();
         }
+        // Die Adresse für unterwegs als drittes; fehlt sie, ist das der
+        // Normalfall und kein Fehler.
+        startAwayUrlLoad();
+    });
+
+    connect(&m_awayUrlLoad, &StoredSecretRequest::statusChanged, this, [this]() {
+        if (m_awayUrlLoad.status() != Request::Finished) {
+            return;
+        }
+        const Result result = m_awayUrlLoad.result();
+        if (result.code() == Result::Succeeded) {
+            setAwayUrl(QString::fromUtf8(m_awayUrlLoad.secret().data()));
+        }
         // Nur Längen -- nie die Werte selbst, das Journal lesen mehr als nur
         // diese App.
         qDebug() << "Credentials: loaded -- baseUrl" << m_baseUrl.length()
-                 << "chars, token" << m_token.length() << "chars";
+                 << "chars, token" << m_token.length() << "chars, awayUrl"
+                 << m_awayUrl.length() << "chars";
         setLoaded(true);
+    });
+
+    connect(&m_awayUrlDelete, &DeleteSecretRequest::statusChanged, this, [this]() {
+        if (m_awayUrlDelete.status() != Request::Finished) {
+            return;
+        }
+        // Leere Adresse: das Löschen war alles. Sonst jetzt schreiben -- der
+        // Daemon überschreibt nicht, siehe deleteThenStore().
+        if (m_awayUrl.isEmpty()) {
+            qDebug() << "Credentials: awayUrl removed";
+            return;
+        }
+        storeOne(&m_awayUrlStore, AwayUrlSecretName, m_awayUrl);
+    });
+
+    connect(&m_awayUrlStore, &StoreSecretRequest::statusChanged, this, [this]() {
+        if (m_awayUrlStore.status() != Request::Finished) {
+            return;
+        }
+        const Result result = m_awayUrlStore.result();
+        if (result.code() == Result::Succeeded) {
+            qDebug() << "Credentials: stored awayUrl";
+        } else {
+            setLastError(result.errorMessage());
+            qWarning() << "Credentials: storing awayUrl failed:" << result.errorMessage();
+        }
     });
 
     connect(&m_baseUrlStore, &StoreSecretRequest::statusChanged, this, [this]() {
@@ -121,6 +166,11 @@ QString Credentials::baseUrl() const
 QString Credentials::token() const
 {
     return m_token;
+}
+
+QString Credentials::awayUrl() const
+{
+    return m_awayUrl;
 }
 
 bool Credentials::loaded() const
@@ -218,11 +268,25 @@ void Credentials::save(const QString &baseUrl, const QString &token)
     deleteThenStore(&m_tokenDelete, &m_tokenStore, TokenSecretName);
 }
 
+void Credentials::saveAwayUrl(const QString &awayUrl)
+{
+    if (awayUrl == m_awayUrl) {
+        return;
+    }
+    setLastError(QString());
+    setAwayUrl(awayUrl);
+    m_awayUrlDelete.setIdentifier(
+        Secret::Identifier(AwayUrlSecretName, QString(), m_storagePluginName));
+    m_awayUrlDelete.setUserInteractionMode(SecretManager::SystemInteraction);
+    m_awayUrlDelete.startRequest();
+}
+
 void Credentials::reload()
 {
     setLoaded(false);
     setBaseUrl(QString());
     setToken(QString());
+    setAwayUrl(QString());
     startLoading();
 }
 
@@ -248,6 +312,14 @@ void Credentials::clear()
     m_tokenDelete.setUserInteractionMode(SecretManager::SystemInteraction);
     m_baseUrlDelete.startRequest();
     m_tokenDelete.startRequest();
+
+    // Die Adresse für unterwegs gehört dazu; ihr Delete-Handler schreibt bei
+    // leerer Adresse nichts zurück.
+    setAwayUrl(QString());
+    m_awayUrlDelete.setIdentifier(
+        Secret::Identifier(AwayUrlSecretName, QString(), m_storagePluginName));
+    m_awayUrlDelete.setUserInteractionMode(SecretManager::SystemInteraction);
+    m_awayUrlDelete.startRequest();
 }
 
 void Credentials::startLoading()
@@ -262,6 +334,13 @@ void Credentials::startTokenLoad()
     m_tokenLoad.setIdentifier(
         Secret::Identifier(TokenSecretName, QString(), m_storagePluginName));
     m_tokenLoad.startRequest();
+}
+
+void Credentials::startAwayUrlLoad()
+{
+    m_awayUrlLoad.setIdentifier(
+        Secret::Identifier(AwayUrlSecretName, QString(), m_storagePluginName));
+    m_awayUrlLoad.startRequest();
 }
 
 void Credentials::deleteThenStore(DeleteSecretRequest *request,
@@ -352,6 +431,15 @@ void Credentials::setToken(const QString &token)
     }
     m_token = token;
     Q_EMIT tokenChanged();
+}
+
+void Credentials::setAwayUrl(const QString &awayUrl)
+{
+    if (m_awayUrl == awayUrl) {
+        return;
+    }
+    m_awayUrl = awayUrl;
+    Q_EMIT awayUrlChanged();
 }
 
 void Credentials::setLoaded(bool loaded)

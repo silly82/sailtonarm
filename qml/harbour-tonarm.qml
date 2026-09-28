@@ -20,7 +20,9 @@ ApplicationWindow {
         // Werte erst, wenn der Secrets-Daemon geantwortet hat -- die Bindings
         // ziehen dann von selbst nach und der Socket geht auf.
         baseUrl: Credentials.baseUrl
+        awayUrl: Credentials.awayUrl
         token: Credentials.token
+        startAllowed: Credentials.loaded
     }
 
     // Zustand aller Player und Warteschlangen, per Server-Events aktuell

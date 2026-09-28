@@ -16,7 +16,7 @@ Page {
 
     readonly property var player: store ? store.playerById(playerId) : null
     readonly property var queue: store ? store.queueOf(playerId) : null
-    readonly property var track: Models.nowPlaying(player, queue, mass ? mass.baseUrl : "")
+    readonly property var track: Models.nowPlaying(player, queue, mass ? mass.activeBaseUrl : "")
     readonly property bool playing: Models.isPlaying(player)
 
     allowedOrientations: defaultAllowedOrientations

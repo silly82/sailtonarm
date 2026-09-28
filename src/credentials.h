@@ -32,6 +32,9 @@ class Credentials : public QObject
     // Stammadresse des MA-Servers, z.B. "http://musicassistant.local:8095".
     Q_PROPERTY(QString baseUrl READ baseUrl NOTIFY baseUrlChanged)
     Q_PROPERTY(QString token READ token NOTIFY tokenChanged)
+    // Optionale zweite Adresse desselben Servers für unterwegs (VPN,
+    // Tailscale, Reverse-Proxy). Leer heisst: nur die Heimadresse.
+    Q_PROPERTY(QString awayUrl READ awayUrl NOTIFY awayUrlChanged)
     // true, sobald der erste Ladeversuch durch ist (Erfolg oder "noch nichts
     // gespeichert") -- damit Settings leere Felder zeigt statt kurz
     // "nicht konfiguriert" aufblitzen zu lassen, solange der asynchrone
@@ -48,6 +51,7 @@ public:
 
     QString baseUrl() const;
     QString token() const;
+    QString awayUrl() const;
     bool loaded() const;
     QString lastError() const;
     bool saveBusy() const;
@@ -57,6 +61,10 @@ public:
     // neu) und schreibt sie asynchron in den Secrets-Daemon -- blockiert den
     // UI-Thread nie.
     Q_INVOKABLE void save(const QString &baseUrl, const QString &token);
+    // Eigener Weg, getrennt von save(): die Adresse für unterwegs ist
+    // optional und wird unabhängig von Heimadresse und Token geändert. Leer
+    // löscht sie.
+    Q_INVOKABLE void saveAwayUrl(const QString &awayUrl);
     Q_INVOKABLE void reload();
     // Löscht beide Secrets und leert die Properties (Settings: "Zugangsdaten
     // löschen"). Absichtlich ohne Rückfrage hier -- die stellt die UI.
@@ -65,6 +73,7 @@ public:
 Q_SIGNALS:
     void baseUrlChanged();
     void tokenChanged();
+    void awayUrlChanged();
     void loadedChanged();
     void lastErrorChanged();
     void saveBusyChanged();
@@ -86,6 +95,7 @@ private:
 
     void startLoading();
     void startTokenLoad();
+    void startAwayUrlLoad();
     void storeOne(Sailfish::Secrets::StoreSecretRequest *request, const QString &name, const QString &value);
     // Erst löschen macht das Schreiben zu einem Upsert; ein blosses Überschreiben
     // quittiert der Daemon mit SecretAlreadyExistsError, und das Löschen eines
@@ -95,6 +105,7 @@ private:
                          const QString &name);
     void setBaseUrl(const QString &baseUrl);
     void setToken(const QString &token);
+    void setAwayUrl(const QString &awayUrl);
     void setLoaded(bool loaded);
     void setLastError(const QString &lastError);
     void setSaveBusy(bool saveBusy);
@@ -112,9 +123,13 @@ private:
     Sailfish::Secrets::StoreSecretRequest m_tokenStore;
     Sailfish::Secrets::DeleteSecretRequest m_baseUrlDelete;
     Sailfish::Secrets::DeleteSecretRequest m_tokenDelete;
+    Sailfish::Secrets::StoredSecretRequest m_awayUrlLoad;
+    Sailfish::Secrets::StoreSecretRequest m_awayUrlStore;
+    Sailfish::Secrets::DeleteSecretRequest m_awayUrlDelete;
 
     QString m_baseUrl;
     QString m_token;
+    QString m_awayUrl;
     QString m_lastError;
     bool m_loaded;
     int m_pendingStores;

@@ -106,7 +106,7 @@ Page {
                 source: {
                     var id = Models.imageProxyId(page.podcast)
                     return id.length > 0
-                            ? MassApi.imageUrl(mass ? mass.baseUrl : "", id, 512) : ""
+                            ? MassApi.imageUrl(mass ? mass.activeBaseUrl : "", id, 512) : ""
                 }
             }
 

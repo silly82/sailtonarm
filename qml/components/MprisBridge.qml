@@ -22,7 +22,7 @@ Item {
 
     readonly property var player: store ? store.activePlayer : null
     readonly property var queue: (store && player) ? store.queueOf(player.player_id) : null
-    readonly property var track: Models.nowPlaying(player, queue, mass ? mass.baseUrl : "")
+    readonly property var track: Models.nowPlaying(player, queue, mass ? mass.activeBaseUrl : "")
     readonly property bool active: player !== null && mass && mass.ready
 
     // Achtung, zwei Einheiten: auf dem D-Bus stehen laut MPRIS-Spezifikation

@@ -14,7 +14,7 @@ CoverBackground {
 
     readonly property var player: store ? store.activePlayer : null
     readonly property var queue: (store && player) ? store.queueOf(player.player_id) : null
-    readonly property var track: Models.nowPlaying(player, queue, mass ? mass.baseUrl : "")
+    readonly property var track: Models.nowPlaying(player, queue, mass ? mass.activeBaseUrl : "")
     readonly property bool playing: Models.isPlaying(player)
 
     // Cover-Art als Hintergrund. Stark abgedunkelt, damit die Schrift darüber

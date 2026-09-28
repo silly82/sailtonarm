@@ -1328,3 +1328,56 @@ Ergebnisse so schnell, dass sich die Tastatur schloss und die nächsten
 Tipper eine Trefferzeile öffneten. Ausgelöst wurde dabei nichts (im Verlauf
 von Home Assistant geprüft). Bei der Touch-Injektion nach jedem Tipper auf
 der Tastatur ein Kontrollbild machen.
+
+## 27. Update 2026-09-28: Zweite Adresse für unterwegs (v0.23)
+
+Abschnitt 5 aus `TODO.md`. Abschnitt 2 (VPN/Tailscale statt eigenem
+Fernzugriff) gilt weiter; MAs WebRTC-Fernzugriff bleibt Nicht-Ziel.
+
+### Aufbau
+
+- **Neues Secret `harbour-tonarm-awayUrl`**, in `Credentials` mit eigenem
+  `saveAwayUrl()`. Die Adresse ist optional und wird unabhängig von
+  Heimadresse und Token geändert; leer löscht sie. `clear()` nimmt sie mit.
+  `loaded` springt erst um, wenn alle drei Secrets gelesen sind.
+- **`MassConnection` führt zwei Sockets und lässt sie um die Wette laufen.**
+  Die Heimadresse startet sofort, die Unterwegs-Adresse 0,5 s später, oder
+  sofort, wenn die Heimadresse vorher scheitert. Der erste Socket, von dem
+  ServerInfo kommt, gewinnt; der andere wird geschlossen. Statusmeldungen
+  eines Sockets, den die App selbst geschlossen hat (`active` false), werden
+  ignoriert. Jeder neue Versuch (Reconnect, Rückkehr aus dem Hintergrund)
+  beginnt wieder mit der Heimadresse.
+- **Ein Versuch gibt nach 10 s auf.** Eine Adresse, die nicht antwortet (etwa
+  Tailscale aus), hing sonst bis zum TCP-Timeout des Systems auf
+  "Verbinde …".
+- **`activeBaseUrl`** ist die Adresse, über die die Verbindung gerade läuft.
+  Alle Bildadressen bauen darauf auf, auch die umgeschriebene
+  `current_media.image_url` aus Abschnitt 24. Über die Unterwegs-Adresse
+  zeigten sie sonst auf die unerreichbare Heimadresse.
+- **Die Sockets starten erst, wenn die Zugangsdaten geladen sind**
+  (`startAllowed` an `Credentials.loaded`). Vorher ging das erste `auth`
+  potenziell mit leerem Token raus, weil Adresse und Token nacheinander
+  eintreffen. Geänderte Adressen verbinden nach 50 ms Sammelzeit neu.
+- Einstellungen: Feld "Adresse unterwegs (optional)", der Verbindungstest
+  prüft beide Adressen getrennt, und unter "Verbindung" steht, über welche
+  Adresse die App verbunden ist (nur, wenn eine zweite eingetragen ist).
+
+### Auf dem Telefon geprüft
+
+Auf dem Telefon läuft kein Tailscale; es kann den MagicDNS-Namen
+(`<host>.<tailnet>.ts.net`) nicht auflösen. Der Rückfall ist deshalb mit
+einem Ersatz geprüft: als Unterwegs-Adresse die zweite LAN-Adresse des
+Servers (`<ha-host-2>`), und die Heimadresse per `iptables` auf dem Telefon
+gesperrt (`-A OUTPUT -d <ha-host> -p tcp --dport 8095 -j REJECT`).
+
+- Ohne Sperre: verbunden über die Heimadresse, auch mit eingetragener zweiter
+  Adresse.
+- Mit Sperre: verbunden über die Unterwegs-Adresse; die Einstellungen zeigen
+  "Verbunden über: Adresse unterwegs", und die Cover in "Läuft gerade" laden,
+  also über die zweite Adresse.
+- Sperre wieder aufgehoben: zurück auf der Heimadresse.
+
+Danach ist der echte Tailscale-Name eingetragen. Der Verbindungstest meldet
+ihn vom Telefon aus als nicht erreichbar (erwartet), die App verbindet sofort
+über die Heimadresse. Wirklich unterwegs über Tailscale ist die App erst
+geprüft, wenn das Telefon selbst im Tailnet ist.

@@ -22,10 +22,21 @@ Item {
 
     // --- Konfiguration ---------------------------------------------------
     property string baseUrl: ""
+    // Optionale zweite Adresse desselben Servers für unterwegs (VPN,
+    // Tailscale, Reverse-Proxy), siehe _startAttempt().
+    property string awayUrl: ""
     property string token: ""
     property bool autoConnect: true
+    // Erst verbinden, wenn die Zugangsdaten vollständig geladen sind -- sonst
+    // ginge das erste auth mit leerem Token raus, weil Credentials Adresse,
+    // Token und Unterwegs-Adresse nacheinander liefert.
+    property bool startAllowed: true
 
     readonly property bool configured: MassApi.normalizeBaseUrl(baseUrl).length > 0
+    readonly property bool hasAway: {
+        var away = MassApi.normalizeBaseUrl(awayUrl)
+        return away.length > 0 && away !== MassApi.normalizeBaseUrl(baseUrl)
+    }
 
     // --- Zustand nach aussen ---------------------------------------------
     // "idle" | "connecting" | "authenticating" | "ready" | "error"
@@ -41,6 +52,13 @@ Item {
     // Aus baseUrl abgeleitet, damit Cover-Art ab Ausbaustufe 2 ohne
     // Authorization-Header geladen werden kann (siehe MassApi.streamBaseUrl).
     readonly property string streamBaseUrl: MassApi.streamBaseUrl(baseUrl)
+
+    // Die Adresse, über die die Verbindung gerade tatsächlich läuft -- für
+    // alle Bildadressen. Ohne Verbindung die Heimadresse.
+    readonly property string activeBaseUrl: _winnerUrl.length > 0
+                                            ? _winnerUrl : MassApi.normalizeBaseUrl(baseUrl)
+    // "home" | "away" | "" -- für die Anzeige in den Einstellungen.
+    property string connectedVia: ""
 
     // Ein Ereignis vom Server. eventType ist der MassEvent-Name
     // ("player_updated", "queue_updated", ...), message die ganze Nachricht
@@ -66,6 +84,11 @@ Item {
     // dass ein zweites auth rausgeht, wenn der Server ServerInfo erneut
     // schickt.
     property bool _authSent: false
+    // Der Socket, der das Rennen gewonnen hat (siehe _startAttempt), und
+    // dessen Stammadresse. null, solange keiner gewonnen hat.
+    property var _winner: null
+    property string _winnerUrl: ""
+    property bool _racing: false
 
     // --- API -------------------------------------------------------------
 
@@ -97,14 +120,13 @@ Item {
         _backoffMs = 2000
         lastError = ""
         _failAllPending({ hint: "Verbindung wird neu aufgebaut", detail: "", offline: true })
-        socket.active = false
-        socket.active = Qt.binding(function () { return conn.autoConnect && conn.configured })
+        _startAttempt()
     }
 
     function disconnect() {
         reconnectTimer.stop()
         autoConnect = false
-        socket.active = false
+        _stopSockets()
         _failAllPending({ hint: "Verbindung getrennt", detail: "" })
         connectionState = "idle"
     }
@@ -147,7 +169,7 @@ Item {
             }
             timeoutTimer.start()
         }
-        socket.sendTextMessage(MassApi.commandMessage(id, command, args))
+        _winner.sendTextMessage(MassApi.commandMessage(id, command, args))
         return id
     }
 
@@ -237,69 +259,215 @@ Item {
         })
     }
 
-    WebSocket {
-        id: socket
-        url: conn.configured ? MassApi.wsUrl(conn.baseUrl) : ""
-        active: conn.autoConnect && conn.configured
+    // --- Zwei Adressen ----------------------------------------------------
+    //
+    // Ein Verbindungsversuch ist ein Rennen: die Heimadresse startet sofort,
+    // die Adresse für unterwegs 0,5 s später (oder sofort, wenn die
+    // Heimadresse vorher scheitert). Der erste Socket, von dem ServerInfo
+    // kommt, gewinnt; der andere wird geschlossen. Zu Hause antwortet das LAN
+    // in Millisekunden, die Unterwegs-Adresse wird also nie angefasst.
+    //
+    // Jeder Versuch beginnt wieder mit der Heimadresse -- nach einem
+    // Netzwechsel (erkannt über die Rückkehr aus dem Hintergrund, siehe
+    // checkAfterResume) ist das die richtige Reihenfolge.
+    //
+    // Statusmeldungen eines Sockets, den die App selbst geschlossen hat
+    // (`active` false), werden ignoriert: das ist der Verlierer eines Rennens
+    // oder ein Versuch, der gerade durch einen neuen ersetzt wird.
 
-        onStatusChanged: {
-            if (status === WebSocket.Connecting) {
-                conn.connectionState = "connecting"
-            } else if (status === WebSocket.Open) {
-                // Noch nicht "ready": erst kommt ServerInfo, dann auth.
-                conn._authSent = false
-                conn.connectionState = "connecting"
-            } else if (status === WebSocket.Closed || status === WebSocket.Error) {
-                var wasReady = conn.connectionState === "ready"
-                conn._authSent = false
-                conn.userName = ""
-                if (status === WebSocket.Error && socket.errorString) {
-                    conn.lastError = socket.errorString
-                }
-                conn.connectionState = conn.configured ? "error" : "idle"
-                conn._failAllPending({ hint: "Verbindung abgebrochen", detail: conn.lastError,
-                                       offline: true })
-                if (conn.autoConnect && conn.configured) {
-                    // Nach einer stabilen Verbindung wieder kurz warten, sonst
-                    // den Abstand verdoppeln -- ein dauerhaft nicht erreichbarer
-                    // Server soll nicht im Sekundentakt angepingt werden.
-                    if (wasReady) {
-                        conn._backoffMs = 2000
-                    }
-                    reconnectTimer.interval = conn._backoffMs
-                    reconnectTimer.restart()
-                }
+    function _startAttempt() {
+        _stopSockets()
+        if (!autoConnect || !configured || !startAllowed) {
+            connectionState = "idle"
+            return
+        }
+        connectionState = "connecting"
+        _racing = true
+        homeSocket.url = MassApi.wsUrl(baseUrl)
+        homeSocket.active = true
+        if (hasAway) {
+            awayTimer.restart()
+        }
+        attemptTimer.restart()
+    }
+
+    function _startAway() {
+        if (!_racing || _winner !== null || !hasAway || awaySocket.active) {
+            return
+        }
+        awayTimer.stop()
+        awaySocket.url = MassApi.wsUrl(awayUrl)
+        awaySocket.active = true
+    }
+
+    function _stopSockets() {
+        awayTimer.stop()
+        attemptTimer.stop()
+        _racing = false
+        _winner = null
+        _winnerUrl = ""
+        connectedVia = ""
+        _authSent = false
+        userName = ""
+        homeSocket.active = false
+        awaySocket.active = false
+    }
+
+    function _scheduleReconnect(wasReady) {
+        if (!autoConnect || !configured) {
+            return
+        }
+        // Nach einer stabilen Verbindung wieder kurz warten, sonst den
+        // Abstand verdoppeln -- ein dauerhaft nicht erreichbarer Server soll
+        // nicht im Sekundentakt angepingt werden.
+        if (wasReady) {
+            _backoffMs = 2000
+        }
+        reconnectTimer.interval = _backoffMs
+        reconnectTimer.restart()
+    }
+
+    function _attemptFailed(reason) {
+        _stopSockets()
+        if (reason) {
+            lastError = reason
+        }
+        connectionState = configured ? "error" : "idle"
+        _failAllPending({ hint: "Verbindung abgebrochen", detail: lastError, offline: true })
+        _scheduleReconnect(false)
+    }
+
+    function _onSocketStatus(sock) {
+        if (!sock.active) {
+            return
+        }
+        if (sock.status !== WebSocket.Closed && sock.status !== WebSocket.Error) {
+            return
+        }
+        var reason = (sock.status === WebSocket.Error && sock.errorString)
+                ? sock.errorString : ""
+        if (sock === _winner) {
+            // Eine stehende Verbindung ist abgerissen.
+            var wasReady = connectionState === "ready"
+            _stopSockets()
+            if (reason) {
+                lastError = reason
             }
+            connectionState = configured ? "error" : "idle"
+            _failAllPending({ hint: "Verbindung abgebrochen", detail: lastError, offline: true })
+            _scheduleReconnect(wasReady)
+            return
+        }
+        sock.active = false
+        if (_winner !== null || !_racing) {
+            return
+        }
+        // Im Rennen gescheitert. Die Heimadresse als erste: dann nicht die
+        // halbe Sekunde abwarten, sondern die andere sofort starten.
+        if (sock === homeSocket && hasAway && !awaySocket.active) {
+            lastError = reason
+            _startAway()
+            return
+        }
+        if (homeSocket.active || awaySocket.active) {
+            lastError = reason
+            return
+        }
+        _attemptFailed(reason)
+    }
+
+    function _onSocketMessage(sock, message) {
+        var msg
+        try {
+            msg = JSON.parse(message)
+        } catch (e) {
+            lastError = "Unlesbare Nachricht vom Server"
+            return
         }
 
-        onTextMessageReceived: {
-            var msg
-            try {
-                msg = JSON.parse(message)
-            } catch (e) {
-                conn.lastError = "Unlesbare Nachricht vom Server"
-                return
+        var kind = MassApi.classify(msg)
+        if (kind === "server_info" && _winner === null && _racing) {
+            _winner = sock
+            _racing = false
+            awayTimer.stop()
+            attemptTimer.stop()
+            var viaHome = sock === homeSocket
+            _winnerUrl = MassApi.normalizeBaseUrl(viaHome ? baseUrl : awayUrl)
+            connectedVia = viaHome ? "home" : "away"
+            // Den Verlierer schliessen; seine Statusmeldung wird ignoriert.
+            if (viaHome) {
+                awaySocket.active = false
+            } else {
+                homeSocket.active = false
             }
+            console.log("MassConnection: verbunden über", viaHome ? "Heimadresse" : "Unterwegs-Adresse")
+        }
+        if (sock !== _winner) {
+            return
+        }
 
-            switch (MassApi.classify(msg)) {
-            case "server_info":
-                conn.serverInfo = msg
-                conn._sendAuth()
-                break
-            case "result":
-                conn._handleResult(msg)
-                break
-            case "error":
-                conn._handleError(msg)
-                break
-            case "event":
-                conn.serverEvent(msg.event, msg)
-                break
-            default:
-                break
+        switch (kind) {
+        case "server_info":
+            serverInfo = msg
+            _sendAuth()
+            break
+        case "result":
+            _handleResult(msg)
+            break
+        case "error":
+            _handleError(msg)
+            break
+        case "event":
+            serverEvent(msg.event, msg)
+            break
+        default:
+            break
+        }
+    }
+
+    WebSocket {
+        id: homeSocket
+        active: false
+        onStatusChanged: conn._onSocketStatus(homeSocket)
+        onTextMessageReceived: conn._onSocketMessage(homeSocket, message)
+    }
+
+    WebSocket {
+        id: awaySocket
+        active: false
+        onStatusChanged: conn._onSocketStatus(awaySocket)
+        onTextMessageReceived: conn._onSocketMessage(awaySocket, message)
+    }
+
+    Timer {
+        id: awayTimer
+        interval: 500
+        onTriggered: conn._startAway()
+    }
+
+    // Eine Adresse, die nicht antwortet, hängt sonst bis zum TCP-Timeout des
+    // Systems (Minuten) auf "Verbinde …".
+    Timer {
+        id: attemptTimer
+        interval: 10000
+        onTriggered: {
+            if (conn._winner === null) {
+                conn._attemptFailed("Zeitüberschreitung beim Verbinden")
             }
         }
     }
+
+    // Geänderte Zugangsdaten verbinden neu. Kurz gesammelt, weil Credentials
+    // mehrere Werte nacheinander setzt.
+    Timer {
+        id: restartTimer
+        interval: 50
+        onTriggered: conn.connectNow()
+    }
+    onBaseUrlChanged: restartTimer.restart()
+    onAwayUrlChanged: restartTimer.restart()
+    onAutoConnectChanged: if (autoConnect) restartTimer.restart()
+    onStartAllowedChanged: restartTimer.restart()
 
     onConnectionStateChanged: {
         if (connectionState === "ready") {
@@ -320,6 +488,7 @@ Item {
         if (connectionState !== "ready") {
             problemTimer.start()
         }
+        restartTimer.restart()
     }
 
     // Qt.application.state wird Active, wenn die App aus dem Hintergrund
@@ -334,20 +503,15 @@ Item {
     }
 
     // QtWebSockets verbindet von sich aus nicht neu. Nach Closed/Error mit
-    // wachsendem Abstand erneut versuchen, solange konfiguriert. active wird
-    // per Qt.binding() wiederhergestellt, damit spätere Änderungen an
-    // autoConnect/configured (z.B. Token in Settings gelöscht) den Socket
-    // weiterhin reaktiv deaktivieren.
+    // wachsendem Abstand erneut versuchen, solange konfiguriert -- jedes Mal
+    // ein neues Rennen, wieder mit der Heimadresse vorn.
     Timer {
         id: reconnectTimer
         interval: 2000
         repeat: false
         onTriggered: {
             conn._backoffMs = Math.min(conn._backoffMs * 2, 60000)
-            socket.active = false
-            socket.active = Qt.binding(function () {
-                return conn.autoConnect && conn.configured
-            })
+            conn._startAttempt()
         }
     }
 
