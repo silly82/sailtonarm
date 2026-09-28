@@ -22,7 +22,34 @@ ApplicationWindow {
         baseUrl: Credentials.baseUrl
         awayUrl: Credentials.awayUrl
         token: Credentials.token
-        startAllowed: Credentials.loaded
+        // Im Demomodus schweigt die echte Verbindung ganz.
+        startAllowed: Credentials.loaded && !appWindow.demoMode
+    }
+
+    // Der Demomodus: ein Server im Speicher mit erfundenen Räumen und Musik,
+    // für Store-Bildschirmfotos und für Leute ohne eigenen Server.
+    DemoConnection {
+        id: demoConnection
+        active: appWindow.demoMode
+    }
+
+    ConfigurationValue {
+        id: demoSetting
+        key: "/apps/harbour-tonarm/demoMode"
+        defaultValue: false
+    }
+    readonly property bool demoMode: demoSetting.value === true
+
+    // Die Verbindung, mit der die ganze App arbeitet. Seiten bekommen sie wie
+    // bisher per Property; beim Umschalten beginnt der Seitenstapel neu
+    // (SettingsPage), damit keine Seite an der alten hängt.
+    readonly property var mass: demoMode ? demoConnection : massConnection
+
+    function setDemoMode(on) {
+        demoSetting.value = on
+        // Der zuletzt geöffnete Player der jeweils anderen Welt gilt hier
+        // nicht.
+        playerStore.preferredPlayerId = on ? "" : preferredPlayerSetting.value
     }
 
     // Zustand aller Player und Warteschlangen, per Server-Events aktuell
@@ -30,9 +57,10 @@ ApplicationWindow {
     // müsste jede Rückkehr zur Liste alles neu laden.
     PlayerStore {
         id: playerStore
-        mass: massConnection
+        mass: appWindow.mass
         preferredPlayerId: preferredPlayerSetting.value
-        onPreferredPlayerIdChanged: preferredPlayerSetting.value = preferredPlayerId
+        // Demo-Räume gehören nicht in die Einstellung der echten Anlage.
+        onPreferredPlayerIdChanged: if (!appWindow.demoMode) preferredPlayerSetting.value = preferredPlayerId
     }
 
     // Meldet den laufenden Player als MPRIS-Dienst an: damit steuern
@@ -40,7 +68,7 @@ ApplicationWindow {
     // Wurzelfenster, weil der Dienst unabhängig von der gerade sichtbaren
     // Seite bestehen muss.
     MprisBridge {
-        mass: massConnection
+        mass: appWindow.mass
         store: playerStore
     }
 
@@ -77,10 +105,10 @@ ApplicationWindow {
     }
 
     initialPage: Component {
-        PlayersPage { mass: massConnection; store: playerStore }
+        PlayersPage { mass: appWindow.mass; store: playerStore }
     }
     cover: Component {
-        CoverPage { mass: massConnection; store: playerStore }
+        CoverPage { mass: appWindow.mass; store: playerStore }
     }
     allowedOrientations: portraitLockSetting.value === true
                          ? Orientation.Portrait : Orientation.All

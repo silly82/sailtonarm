@@ -54,7 +54,12 @@ Page {
         header: Column {
             width: listView.width
 
-            PageHeader { title: qsTr("Tonarm") }
+            PageHeader {
+                title: qsTr("Tonarm")
+                // Wer die Demo vergisst, soll nicht glauben, das seien seine
+                // Räume.
+                description: mass && mass.isDemo ? qsTr("Demomodus") : ""
+            }
 
             // Verbindungszeile -- nur wenn etwas nicht stimmt. Steht alles,
             // braucht niemand eine Zeile, die "alles gut" sagt. Erscheint erst
@@ -155,7 +160,7 @@ Page {
             }
             hintText: {
                 if (mass && !mass.configured) {
-                    return qsTr("Adresse und Token im Pulley-Menü eintragen")
+                    return qsTr("Adresse und Token in den Einstellungen eintragen — oder dort den Demomodus einschalten, um die App ohne Server auszuprobieren")
                 }
                 if (mass && !mass.ready) {
                     return qsTr("Der Server ist gerade nicht erreichbar")

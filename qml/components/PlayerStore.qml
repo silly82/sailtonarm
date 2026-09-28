@@ -56,6 +56,21 @@ Item {
     // geladen" von "gerade leer" unterscheiden kann.
     property bool loadedOnce: false
 
+    // Beim Wechsel zwischen echtem Server und Demo nichts vom anderen
+    // behalten.
+    onMassChanged: {
+        players = []
+        queues = {}
+        providerNames = {}
+        loadedOnce = false
+        lastError = ""
+        explicitTargetPlayerId = ""
+        if (mass && mass.ready) {
+            refresh()
+            loadProviders()
+        }
+    }
+
     function refresh() {
         if (!mass || !mass.ready) {
             return

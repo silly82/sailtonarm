@@ -44,7 +44,7 @@ Page {
 
     function countText(type) {
         return (page.counts[type] !== undefined)
-                ? qsTr("%1 Einträge").arg(page.counts[type]) : ""
+                ? (page.counts[type] === 1 ? qsTr("1 Eintrag") : qsTr("%1 Einträge").arg(page.counts[type])) : ""
     }
 
     function open(type, title) {

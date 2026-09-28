@@ -273,6 +273,24 @@ Page {
                 text: qsTr("Der Test spricht nur /info an — die einzige Route ohne Anmeldung. Er sagt also, ob der Server erreichbar ist, nicht ob das Token gültig ist. Das zeigt die Startseite.")
             }
 
+            SectionHeader { text: qsTr("Demo") }
+
+            TextSwitch {
+                width: parent.width
+                text: qsTr("Demomodus")
+                description: qsTr("Ein erfundener Server mit fünf Räumen, Musik, Radio, einem Hörbuch und einem Podcast — zum Ausprobieren ohne eigenen Server. Die echte Verbindung ruht solange; die Zugangsdaten bleiben erhalten.")
+                checked: mass && mass.isDemo
+                automaticCheck: false
+                onClicked: {
+                    page.saveIfComplete()
+                    page.saveAwayIfChanged()
+                    appWindow.setDemoMode(!checked)
+                    // Zurück zur Player-Liste: sie ist die einzige Seite
+                    // darunter und hängt an der gewechselten Verbindung.
+                    pageStack.pop()
+                }
+            }
+
             SectionHeader { text: qsTr("Anzeige") }
 
             TextSwitch {

@@ -27,6 +27,8 @@ Item {
     property string awayUrl: ""
     property string token: ""
     property bool autoConnect: true
+    // Gegenstück zu DemoConnection.isDemo.
+    readonly property bool isDemo: false
     // Erst verbinden, wenn die Zugangsdaten vollständig geladen sind -- sonst
     // ginge das erste auth mit leerem Token raus, weil Credentials Adresse,
     // Token und Unterwegs-Adresse nacheinander liefert.

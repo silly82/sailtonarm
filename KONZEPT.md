@@ -1381,3 +1381,63 @@ Danach ist der echte Tailscale-Name eingetragen. Der Verbindungstest meldet
 ihn vom Telefon aus als nicht erreichbar (erwartet), die App verbindet sofort
 über die Heimadresse. Wirklich unterwegs über Tailscale ist die App erst
 geprüft, wenn das Telefon selbst im Tailnet ist.
+
+## 28. Update 2026-09-28: Demomodus (v0.24)
+
+Aus Abschnitt 6 von `TODO.md`. Löst, was `store/README.md` offen liess:
+Bildschirmfotos von Player-Liste, Läuft gerade und Warteschlange, ohne die
+Räume und die Hörhistorie einer echten Wohnung zu zeigen. Dazu ein erster
+Blick für Leute ohne Server.
+
+### Aufbau
+
+- **`components/DemoConnection.qml`** ist ein Music-Assistant-Server im
+  Speicher mit derselben Schnittstelle wie `MassConnection` (`sendCommand`,
+  `serverEvent`, `authenticated`, `ready`, `activeBaseUrl`, ...). Die Seiten
+  bekommen wie bisher `mass` und wissen nicht, womit sie reden. Keine Seite
+  wurde für die Demo geändert.
+- **`lib/DemoData.js`** hält den Bestand: fünf Räume, sechs Interpreten, acht
+  Alben mit 42 Titeln, drei Playlists, zwei Sender, ein Hörbuch mit zwölf
+  Kapiteln, ein Podcast mit fünf Folgen und ein kleiner "Streaming-Katalog"
+  für die Suche "Überall". Die Felder heissen wie bei MA 2.10.4.
+- **Cover** erzeugt `store/generate-demo-art.py` (PIL): 23 abstrakte Motive,
+  512 px, zusammen etwa 400 KB, nach `qml/demo/art/`. Deterministisch, ohne
+  Schrift und ohne echte Alben. `MassApi.imageUrl()` reicht Dateiadressen
+  unverändert durch, die "Proxy-Ids" der Demo sind solche.
+- **Umschalten** in den Einstellungen (dconf `demoMode`). `harbour-tonarm.qml`
+  wählt die Verbindung (`appWindow.mass`); die echte Verbindung ruht dabei
+  ganz (`startAllowed`), Zugangsdaten bleiben unberührt. `PlayerStore`
+  verwirft beim Wechsel alles, was er von der anderen Verbindung hatte, und
+  der gemerkte Player der echten Anlage wird im Demomodus weder benutzt noch
+  überschrieben. Die Player-Liste sagt "Demomodus" im Kopf, damit niemand die
+  erfundenen Räume für seine hält.
+
+### Was die Demo nachbildet
+
+Nicht nur ein Stillleben, weil es auf Bildern falsch aussähe: Fortschritt und
+Titelwechsel laufen, Radiosender wechseln alle 45 s den ICY-Titel (als
+`title`, der Sender als `artist`, wie in Abschnitt 24), das Hörbuch hat
+Kapitel und Tempo, und Wohnzimmer und Esszimmer sind gruppiert. Dazu das in
+dieser Datei vermessene Verhalten: Zurück startet nach 5 s den Titel neu,
+`move_item` schiebt nichts vor den laufenden Eintrag, die Gruppenlautstärke
+skaliert nach unten im Verhältnis und nach oben Richtung 100, die gemeldete
+Gruppenlautstärke folgt dem lautesten Mitglied, Kommandos an ein Mitglied
+gehen an die Warteschlange des Anführers. Antworten kommen nie synchron,
+Kommandos, die die Demo nicht kennt, antworten mit einem Fehler.
+
+Jedes Einschalten beginnt beim selben Ausgangszustand. Das ist Absicht:
+Store-Bilder lassen sich so wiederholen.
+
+### Auf dem Telefon geprüft
+
+Über den Schalter in den Einstellungen ein- und wieder ausgeschaltet. Geprüft
+wurden die Player-Liste, Läuft gerade (Musik, Radio, Hörbuch mit Kapitel,
+Kapitelsprung und Tempo), die Warteschlange mit Springen, die Bibliothek, die
+Albumliste (Cover, Favoriten, zweizeiliger Titel), die Hörbuchseite und das
+App-Cover. Nach dem Ausschalten verband die App wieder mit dem echten Server,
+der gemerkte Player war unverändert, im Journal stand keine Warnung. Die
+Bilder 04 bis 07 in `store/screenshots/` stammen aus diesem Durchgang.
+
+Nebenbei gefunden: "1 Einträge" in Bibliothek und Listen. Deutsch ist hier
+Quellsprache ohne eigene `.ts`, eine `%n`-Pluralform hülfe also nur dem
+Englischen; die Einzahl steht deshalb ausdrücklich im Code.
