@@ -132,11 +132,18 @@ Page {
                        ? qsTr("%1 Std.").arg(Math.round(item.duration / 3600))
                        : qsTr("%1 Min.").arg(Math.round(item.duration / 60)))
         }
+        // Angefangen oder fertig ist beim Stöbern die zweitwichtigste Frage.
+        var progress = Models.listenProgress(item)
+        if (progress >= 0) {
+            parts.push(qsTr("%1 % gehört").arg(Math.round(progress * 100)))
+        } else if (Models.isFullyPlayed(item)) {
+            parts.push(qsTr("beendet"))
+        }
         return parts.join(" · ")
     }
 
-    // Titel, Radio und Hörbücher haben keine Unterseite -- die spielt man über
-    // das Kontextmenü, ein Tipper tut dort nichts.
+    // Titel und Radio haben keine Unterseite -- die spielt man über das
+    // Kontextmenü, ein Tipper tut dort nichts.
     function openItem(item) {
         var single = Nav.singular(page.mediaType)
         var file = Nav.pageFor(single)

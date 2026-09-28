@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
+import "../components"
 import "../lib/MassModels.js" as Models
 
 // Was auf einem Player gerade läuft, mit den Bedienelementen dazu. Alle
@@ -15,7 +16,7 @@ Page {
 
     readonly property var player: store ? store.playerById(playerId) : null
     readonly property var queue: store ? store.queueOf(playerId) : null
-    readonly property var track: Models.nowPlaying(player, queue)
+    readonly property var track: Models.nowPlaying(player, queue, mass ? mass.baseUrl : "")
     readonly property bool playing: Models.isPlaying(player)
 
     allowedOrientations: defaultAllowedOrientations
@@ -23,6 +24,35 @@ Page {
     // Lokal weitergezählte Spielzeit. Der Server meldet sie nur gelegentlich;
     // dazwischen rechnet MassModels.elapsedSeconds() hoch.
     property real elapsed: 0
+
+    // Hörbuch mit Kapiteln: das Kapitel, in dem die Position liegt.
+    readonly property var chapter: (track && track.isSpoken)
+                                   ? Models.currentChapter(track.chapters, elapsed) : null
+
+    // Tempo gibt es nur, wo die Queue `playback_speed` meldet.
+    readonly property bool hasSpeed: track !== null && track.isSpoken
+                                     && queue !== null && typeof queue.playback_speed === "number"
+    readonly property var speeds: [0.75, 1, 1.25, 1.5, 1.75, 2]
+
+    function speedLabel(speed) {
+        return String(speed).replace(".", Qt.locale().decimalPoint) + "×"
+    }
+
+    // Wie beim Lautstärkeregler kein Binding: die Auswahl nachziehen, wenn
+    // der Server ein neues Tempo meldet.
+    function syncSpeed() {
+        if (!hasSpeed) {
+            return
+        }
+        var best = 0
+        for (var i = 1; i < speeds.length; i++) {
+            if (Math.abs(speeds[i] - queue.playback_speed)
+                    < Math.abs(speeds[best] - queue.playback_speed)) {
+                best = i
+            }
+        }
+        speedBox.currentIndex = best
+    }
 
     function refreshElapsed() {
         elapsed = Models.elapsedSeconds(queue, player, Date.now())
@@ -33,21 +63,14 @@ Page {
         }
     }
 
-    // Lautstärke wird bewusst *nicht* an den Serverwert gebunden: käme während
-    // des Ziehens ein player_updated herein, spränge der Griff unter dem Finger
-    // weg. Stattdessen wird nachgezogen, solange niemand ihn hält.
-    function syncVolume() {
-        if (!volumeSlider.pressed && player && player.volume_level !== undefined
-                && player.volume_level !== null) {
-            volumeSlider.value = player.volume_level
-        }
-    }
-
-    onPlayerChanged: syncVolume()
-    onQueueChanged: refreshElapsed()
-    Component.onCompleted: {
-        syncVolume()
+    onQueueChanged: {
         refreshElapsed()
+        syncSpeed()
+    }
+    onHasSpeedChanged: syncSpeed()
+    Component.onCompleted: {
+        refreshElapsed()
+        syncSpeed()
     }
 
     Timer {
@@ -184,18 +207,63 @@ Page {
                 onReleased: store.seek(page.playerId, value)
             }
 
+            // Ein Sender hat keine Länge und keinen Regler -- statt einer
+            // Lücke sagen, dass es live ist.
+            Label {
+                anchors.horizontalCenter: parent.horizontalCenter
+                visible: page.track !== null && page.track.isLive
+                font.pixelSize: Theme.fontSizeSmall
+                font.bold: true
+                color: Theme.highlightColor
+                text: qsTr("Live")
+            }
+
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * Theme.horizontalPageMargin
+                horizontalAlignment: Text.AlignHCenter
+                truncationMode: TruncationMode.Fade
+                visible: page.chapter !== null
+                font.pixelSize: Theme.fontSizeSmall
+                color: Theme.secondaryHighlightColor
+                text: page.chapter ? page.chapter.name : ""
+            }
+
             // --- Transport -----------------------------------------------
+            // Bei Gesprochenem zusätzlich -15 s / +30 s. Weiter und Zurück
+            // springen dort zwischen Kapiteln (PlayerStore.nextOrChapter).
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
-                spacing: Theme.paddingLarge
+                spacing: page.track && page.track.isSpoken ? Theme.paddingMedium
+                                                           : Theme.paddingLarge
 
-                IconButton {
-                    icon.source: "image://theme/icon-m-previous"
-                    enabled: page.transportEnabled
-                    onClicked: store.previous(page.playerId)
+                Column {
+                    visible: page.track !== null && page.track.isSpoken
+                    anchors.verticalCenter: parent.verticalCenter
+                    IconButton {
+                        id: backButton
+                        icon.source: "image://theme/icon-m-media-rewind"
+                        enabled: page.transportEnabled
+                        onClicked: store.skip(page.playerId, -15)
+                    }
+                    Label {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        font.pixelSize: Theme.fontSizeTiny
+                        color: Theme.secondaryColor
+                        opacity: backButton.enabled ? 1.0 : Theme.opacityLow
+                        text: qsTr("%1 s").arg(15)
+                    }
                 }
 
                 IconButton {
+                    anchors.verticalCenter: parent.verticalCenter
+                    icon.source: "image://theme/icon-m-previous"
+                    enabled: page.transportEnabled
+                    onClicked: store.previousOrChapter(page.playerId)
+                }
+
+                IconButton {
+                    anchors.verticalCenter: parent.verticalCenter
                     icon.source: page.playing ? "image://theme/icon-l-pause"
                                               : "image://theme/icon-l-play"
                     enabled: page.transportEnabled
@@ -203,24 +271,60 @@ Page {
                 }
 
                 IconButton {
+                    anchors.verticalCenter: parent.verticalCenter
                     icon.source: "image://theme/icon-m-next"
                     enabled: page.transportEnabled
-                    onClicked: store.next(page.playerId)
+                    onClicked: store.nextOrChapter(page.playerId)
+                }
+
+                Column {
+                    visible: page.track !== null && page.track.isSpoken
+                    anchors.verticalCenter: parent.verticalCenter
+                    IconButton {
+                        id: forwardButton
+                        icon.source: "image://theme/icon-m-media-forward"
+                        enabled: page.transportEnabled
+                        onClicked: store.skip(page.playerId, 30)
+                    }
+                    Label {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        font.pixelSize: Theme.fontSizeTiny
+                        color: Theme.secondaryColor
+                        opacity: forwardButton.enabled ? 1.0 : Theme.opacityLow
+                        text: qsTr("%1 s").arg(30)
+                    }
+                }
+            }
+
+            ComboBox {
+                id: speedBox
+                width: parent.width
+                visible: page.hasSpeed
+                enabled: page.controlsEnabled
+                label: qsTr("Tempo")
+                menu: ContextMenu {
+                    Repeater {
+                        model: page.speeds
+                        MenuItem {
+                            text: page.speedLabel(modelData)
+                            onClicked: store.setPlaybackSpeed(page.playerId, modelData)
+                        }
+                    }
                 }
             }
 
             // --- Lautstärke ----------------------------------------------
-            Slider {
+            // Geht schon beim Ziehen raus und springt danach nicht zurück,
+            // siehe VolumeSlider.
+            VolumeSlider {
                 id: volumeSlider
                 width: parent.width
                 visible: Models.hasFeature(page.player, Models.FEATURE_VOLUME_SET)
                 enabled: page.controlsEnabled
                 label: qsTr("Lautstärke")
-                minimumValue: 0
-                maximumValue: 100
-                stepSize: 1
-                valueText: Math.round(value) + " %"
-                onReleased: store.setVolume(page.playerId, value)
+                serverLevel: (page.player && typeof page.player.volume_level === "number")
+                             ? page.player.volume_level : -1
+                onLevelRequested: store.setVolume(page.playerId, level)
             }
 
             Row {

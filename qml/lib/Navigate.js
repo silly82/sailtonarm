@@ -8,16 +8,18 @@
 // die aufrufende Seite löst ihn mit Qt.resolvedUrl() gegen ihr eigenes
 // Verzeichnis auf.
 
-// Leerer Rückgabewert heisst: keine Unterseite. Titel, Radio und Hörbücher
+// Leerer Rückgabewert heisst: keine Unterseite. Titel, Radio und Podcast-Folgen
 // sind einzelne abspielbare Objekte -- für sie gibt es nichts aufzuklappen,
-// sie laufen über das Kontextmenü. (Hörbücher hätten Kapitel, aber der Server
-// bietet dafür kein Kommando an, anders als bei Podcast-Episoden.)
+// sie laufen über das Kontextmenü. Ein Hörbuch hat eine Seite: Kapitel,
+// Fortschritt, Weiterhören oder von vorn (Kapitel stehen in
+// `metadata.chapters`, geholt über `music/audiobooks/get`).
 function pageFor(mediaType) {
     switch (mediaType) {
     case "album": return "AlbumPage.qml"
     case "artist": return "ArtistPage.qml"
     case "playlist": return "PlaylistPage.qml"
     case "podcast": return "PodcastPage.qml"
+    case "audiobook": return "AudiobookPage.qml"
     }
     return ""
 }
@@ -31,6 +33,7 @@ function propsFor(mediaType, item, mass, store) {
     case "artist": props.artist = item; break
     case "playlist": props.playlist = item; break
     case "podcast": props.podcast = item; break
+    case "audiobook": props.audiobook = item; break
     }
     return props
 }

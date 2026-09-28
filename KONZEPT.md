@@ -1162,3 +1162,132 @@ anderes heissen kann: "Titel" ist in der Bibliotheksübersicht die Liste aller
 Titel (*Tracks*), in "Zuletzt gehört" die Art eines einzelnen Eintrags
 (*Track*). Qt hält Übersetzungen je Kontext getrennt; das wird jetzt ausgenutzt,
 statt die deutschen Texte zu verbiegen.
+
+## 24. Update 2026-09-28: Radio, Hörbücher, Verbindung (v0.20)
+
+Umgesetzt sind die Abschnitte 1 und 4 aus `TODO.md`, also die Erkenntnisse aus
+der iOS-App. Alles ist auf dem Telefon gegen den echten Server geprüft, mit
+einem echten Hörbuch (64 Kapitel) und einem echten Sender, gespielt auf einem
+Lautsprecher bei niedriger Lautstärke. Im Journal ist über die ganze Sitzung
+keine einzige QML-Warnung aufgetaucht.
+
+### Radio
+
+Während ein Sender läuft, schickt MA 2.10.4 den ICY-Titel als `title`, den
+Sender als `artist` und dessen Bibliothekseintrag ("Radio SRF 3 (AAC 192)")
+als `album`. `MassModels.nowPlaying()` erkennt Live-Medien jetzt an
+`media_type === "radio"` (aus `current_media` oder aus dem Queue-Eintrag) und
+lässt eine Albumzeile weg, die mit dem Sendernamen beginnt. "Läuft gerade"
+zeigt statt des Reglers "Live"; die Warteschlange blendet Zufall und
+Wiederholen aus.
+
+### Hörbücher
+
+- **Kapitel stehen im Queue-Eintrag.** `queue.current_item.media_item.metadata.chapters`
+  (position, name, start, end; Sekunden ab Buchbeginn) ist beim Abspielen
+  bereits da, für "Läuft gerade" braucht es also keine zusätzliche Abfrage.
+  Die Detailseite holt sie über `music/audiobooks/get(item_id,
+  provider_instance_id_or_domain)`.
+- **Kapitel von Sekundenbruchteilen.** Der Anbieter führt Zwischentitel
+  ("Erstes Buch") als eigenes Kapitel mit praktisch null Länge. Die Länge wird
+  deshalb erst ab einer Sekunde angezeigt.
+- **Weiter/Zurück springen zwischen Kapiteln** (`PlayerStore.nextOrChapter` /
+  `previousOrChapter`), per `seek`. Knöpfe, Cover und MPRIS rufen dieselbe
+  Funktion auf. Zurück geht innerhalb von 5 s nach einem Kapitelbeginn ins
+  vorige Kapitel, sonst an den Anfang des laufenden. Ohne Kapitel oder nach
+  dem letzten Kapitel gilt das normale `next`/`previous`.
+- **Tempo:** Die Queue meldet `playback_speed` bei gesprochenen Inhalten
+  tatsächlich, und `player_queues/set_playback_speed(queue_id, speed)` wirkt.
+  Die lokal weitergezählte Spielzeit rechnet das Tempo nicht ein; das fällt
+  nicht auf, weil `queue_time_updated` jede Sekunde nachkorrigiert.
+- **`music/mark_unplayed`** mit dem Buch, wie der Server es geschickt hat,
+  setzt Fortschritt und "beendet" zurück. "Von vorn" schickt es vor dem
+  Abspielen, weil der Server ein begonnenes Buch sonst fortsetzt. Das Menü
+  bietet es auch für angefangene Bücher an, nicht nur für beendete: Nach dem
+  Test stand das Buch bei 5 %, und genau so liess es sich aufräumen.
+- **`music/in_progress_items`** ("Weiterhören") liefert schlanke Verweise ohne
+  Position, deshalb zeigt die Liste dort keinen Prozentwert. Die
+  Bibliotheksliste der Hörbücher zeigt ihn, weil deren Objekte
+  `resume_position_ms` tragen.
+- **Die Hörbuchseite öffnete mitten in den Kapiteln.** Der Kopf einer
+  `ListView` wuchs, als das Cover und dann das geladene Buch ankamen, und
+  schob sich dabei aus dem Bild. Jetzt ist der Platz fürs Cover von Anfang an
+  reserviert, und nach dem ersten Laden springt die Liste einmal an den Anfang.
+
+### Verbindung
+
+- **Die Bildadresse von `current_media.image_url` stimmt auch im Heimnetz
+  nicht mit der verbundenen Adresse überein.** Der Server baut sie aus seiner
+  eigenen `base_url`, und die zeigte beim Test auf eine andere LAN-Adresse als
+  die, über die die App verbunden ist (`<ha-host>`). `MassApi.rebaseImageUrl`
+  behält alles ab `/imageproxy` und setzt die konfigurierte Stammadresse
+  davor. Das ist also nicht nur für VPN nötig.
+- **Rückkehr aus dem Hintergrund:** Bei `Qt.ApplicationActive` geht ein `info`
+  mit 3 s Frist raus. Kommt keine Antwort, wird sofort neu verbunden; kommt
+  eine, lösen `resynced()` das Neuladen von Playern, Queues und der offenen
+  Warteschlange aus. `connectNow()` beendet dabei offene Anfragen, statt sie
+  20 s in die Zeitüberschreitung laufen zu lassen.
+- **Fehler "Keine Verbindung" tragen `offline: true`.** `PlayerStore`
+  schreibt sie nicht mehr unter die Bedienelemente, weil die Statuszeile das
+  schon sagt. Die Statuszeile erscheint erst nach 1,5 s ohne Verbindung
+  (`problemVisible`), und ein Tippen darauf verbindet sofort neu.
+- `auth` schickt `device_name: "Tonarm (Sailfish)"` mit.
+
+### Nebenbei
+
+Nach dem Update fragte SailfishOS zweimal, ob `harbour-tonarm` seine
+gespeicherten Geheimnisse (Adresse, Token) lesen darf. Grund ist das neu
+gebaute Binary. Ein Tippen per Touch-Injection auf "Bestätigen" hatte beim
+ersten Mal nicht gegriffen; mit einem längeren Druck (150 ms statt 80 ms)
+ging es.
+
+## 25. Update 2026-09-28: Lautstärke live, Einzelregler in Gruppen (v0.21)
+
+Abschnitt 2 aus `TODO.md`, auf dem Gerät mit zwei Lautsprechern geprüft, die
+dabei nichts spielten. Danach waren Gruppe und Lautstärken wie vorher.
+
+### Lautstärke beim Ziehen
+
+Neu ist `components/VolumeSlider.qml`, benutzt auf "Läuft gerade" und auf der
+Gruppenseite:
+
+- Beim Ziehen geht höchstens alle 150 ms ein Wert raus: die erste Änderung
+  sofort, danach jeweils der neueste Wert als nachlaufender Versand. Beim
+  Loslassen folgt der Endwert, falls er noch nicht verschickt ist.
+- Nach dem Loslassen behält der Regler seinen eigenen Wert, bis der Server den
+  zuletzt gesendeten meldet (±1) oder 3 s vergehen. Vorher sprang der Griff
+  kurz auf den alten Stand zurück, weil `player_updated` erst etwas später
+  kommt.
+- `PlayerStore._sendVolume` schickt Lautstärkebefehle je Player (und je
+  Gruppe) nacheinander, nie parallel. Kommt während eines laufenden Befehls
+  ein neuer Wert, wird nur der neueste nachgeschickt.
+
+Im Verlauf von Home Assistant ist ein langsames Ziehen von 20 auf 28 % als
+22, 23, … 28 im Abstand von 150–200 ms zu sehen. Der letzte Wert ist die
+Endstellung.
+
+### Einzelregler in einer Gruppe
+
+Die Gruppenseite zeigt unter der Gruppenlautstärke einen Regler je
+Lautsprecher, den Anführer zuerst (`Models.groupMembers`). Ein fester
+Gruppen-Player (`type === "group"`) spielt nicht selbst und erscheint dort
+nicht.
+
+**Die Regler hängen an einem `ListModel` mit Ids, nicht direkt am
+Player-Array.** Dieses Array ist bei jedem `player_updated` neu, und ein
+Repeater baut dann alle Delegates neu auf, auch den Regler unter dem Finger.
+Das Ziehen löst selbst solche Ereignisse aus. Das Modell wird deshalb nur neu
+gebaut, wenn sich die Zusammensetzung der Gruppe ändert.
+
+### Semantik der Gruppenlautstärke (MA 2.10.4)
+
+- `players/cmd/group_volume` skaliert die Mitglieder ausgehend von einer
+  Momentaufnahme ihrer Werte: nach unten im Verhältnis, nach oben jedes um
+  denselben Anteil Richtung 100. Auf dem Gerät gesehen: 28/30 bei Gruppe 30
+  wurden bei Gruppe 19 zu 18/19.
+- Die gemeldete `group_volume` folgt einem Einzelregler: Als "Küche" (das
+  lauteste Mitglied) von 34 auf 30 ging, stand die Gruppe danach ebenfalls
+  auf 30.
+- Laut iOS-App: Verlässt der Anführer seine Gruppe, übernimmt das
+  verbleibende Mitglied die Warteschlange und spielt nach einigen Sekunden
+  weiter. Hier nicht eigens nachgeprüft.

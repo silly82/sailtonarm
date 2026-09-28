@@ -38,6 +38,7 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/components/StatusToast.qml \
     qml/components/MprisBridge.qml \
     qml/components/TrackNotifier.qml \
+    qml/components/VolumeSlider.qml \
     qml/lib/MassApi.js \
     qml/lib/MassModels.js \
     qml/lib/Navigate.js \
@@ -49,6 +50,7 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/pages/ArtistPage.qml \
     qml/pages/PlaylistPage.qml \
     qml/pages/PodcastPage.qml \
+    qml/pages/AudiobookPage.qml \
     qml/pages/RecentlyPlayedPage.qml \
     qml/pages/SearchPage.qml \
     qml/pages/QueuePage.qml \

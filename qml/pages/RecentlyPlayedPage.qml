@@ -12,11 +12,16 @@ import "../lib/Navigate.js" as Nav
 // zu Zeile. Beides ist berücksichtigt -- `Models.imageProxyId()` kennt jetzt
 // beide Formen, und wohin ein Tipper führt, entscheidet `Navigate.js` je
 // Zeile statt einmal für die ganze Seite.
+//
+// Dieselbe Seite zeigt mit `inProgress: true` die angefangenen Hörbücher und
+// Podcast-Folgen ("Weiterhören", `music/in_progress_items`) -- ebenfalls eine
+// gemischte Liste, nur mit Fortschritt in der Unterzeile.
 Page {
     id: page
 
     property var mass
     property var store
+    property bool inProgress: false
 
     allowedOrientations: defaultAllowedOrientations
 
@@ -30,7 +35,8 @@ Page {
         }
         loading = true
         errorText = ""
-        mass.sendCommand("music/recently_played_items", { limit: 50 },
+        mass.sendCommand(inProgress ? "music/in_progress_items"
+                                    : "music/recently_played_items", { limit: 50 },
                          function (err, result) {
             page.loading = false
             if (err) {
@@ -56,6 +62,16 @@ Page {
         case "audiobook": return qsTr("Hörbuch")
         }
         return ""
+    }
+
+    function subtitleFor(item) {
+        var label = typeLabel(item.media_type)
+        var progress = Models.listenProgress(item)
+        if (progress < 0) {
+            return label
+        }
+        var done = qsTr("%1 % gehört").arg(Math.round(progress * 100))
+        return label.length > 0 ? label + " · " + done : done
     }
 
     function open(item) {
@@ -86,7 +102,9 @@ Page {
         anchors.fill: parent
         model: page.items
 
-        header: PageHeader { title: qsTr("Zuletzt gehört") }
+        header: PageHeader {
+            title: page.inProgress ? qsTr("Weiterhören") : qsTr("Zuletzt gehört")
+        }
 
         PullDownMenu {
             MenuItem {
@@ -103,10 +121,14 @@ Page {
 
         ViewPlaceholder {
             enabled: page.items.length === 0 && !page.loading
-            text: page.errorText.length > 0 ? qsTr("Fehler") : qsTr("Noch nichts gehört")
+            text: page.errorText.length > 0
+                  ? qsTr("Fehler")
+                  : (page.inProgress ? qsTr("Nichts angefangen") : qsTr("Noch nichts gehört"))
             hintText: page.errorText.length > 0
                       ? page.errorText
-                      : qsTr("Hier steht, was zuletzt gelaufen ist")
+                      : (page.inProgress
+                         ? qsTr("Hier stehen begonnene Hörbücher und Podcast-Folgen")
+                         : qsTr("Hier steht, was zuletzt gelaufen ist"))
         }
 
         delegate: MediaListItem {
@@ -114,7 +136,7 @@ Page {
             store: page.store
             toast: pageToast
             mediaItem: modelData
-            subtitle: page.typeLabel(modelData.media_type)
+            subtitle: page.subtitleFor(modelData)
             onActivated: page.open(modelData)
         }
 

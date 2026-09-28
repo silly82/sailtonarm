@@ -22,7 +22,7 @@ Item {
 
     readonly property var player: store ? store.activePlayer : null
     readonly property var queue: (store && player) ? store.queueOf(player.player_id) : null
-    readonly property var track: Models.nowPlaying(player, queue)
+    readonly property var track: Models.nowPlaying(player, queue, mass ? mass.baseUrl : "")
     readonly property bool active: player !== null && mass && mass.ready
 
     // Achtung, zwei Einheiten: auf dem D-Bus stehen laut MPRIS-Spezifikation
@@ -149,11 +149,14 @@ Item {
         // Stop verwirft die Abspielposition.
         onStopRequested: if (bridge.active && Models.isPlaying(bridge.player))
                              store.playPause(bridge.player.player_id)
-        onNextRequested: if (bridge.active) store.next(bridge.player.player_id)
+        // In einem Hörbuch mit Kapiteln springen Weiter/Zurück zwischen den
+        // Kapiteln, wie die Knöpfe in der App (PlayerStore.nextOrChapter).
+        onNextRequested: if (bridge.active) store.nextOrChapter(bridge.player.player_id)
         // Zurück springt in Music Assistant an den Anfang des laufenden
         // Titels, wenn dieser schon eine Weile läuft, und erst danach zum
-        // vorherigen -- übliches Verhalten, kein Fehler.
-        onPreviousRequested: if (bridge.active) store.previous(bridge.player.player_id)
+        // vorherigen -- übliches Verhalten, kein Fehler, und hier auch nicht
+        // nachgebessert.
+        onPreviousRequested: if (bridge.active) store.previousOrChapter(bridge.player.player_id)
 
         // offset ist relativ und in Millisekunden (Amber hat die
         // Mikrosekunden vom Bus bereits umgerechnet).

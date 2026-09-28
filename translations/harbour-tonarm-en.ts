@@ -76,6 +76,108 @@
     </message>
 </context>
 <context>
+    <name>AudiobookPage</name>
+    <message>
+        <source>keiner</source>
+        <translation>none</translation>
+    </message>
+    <message>
+        <source>Kein Player ausgewählt</source>
+        <translation>No player selected</translation>
+    </message>
+    <message>
+        <source>Läuft von vorn auf %1</source>
+        <translation>Playing from the start on %1</translation>
+    </message>
+    <message>
+        <source>Als beendet markiert</source>
+        <translation>Marked as finished</translation>
+    </message>
+    <message>
+        <source>Als nicht begonnen markiert</source>
+        <translation>Marked as not started</translation>
+    </message>
+    <message>
+        <source>%1 Std. %2 Min.</source>
+        <translation>%1 h %2 min</translation>
+    </message>
+    <message>
+        <source>%1 Min.</source>
+        <translation>%1 min</translation>
+    </message>
+    <message>
+        <source>Beendet</source>
+        <translation>Finished</translation>
+    </message>
+    <message>
+        <source>%1 % gehört, noch %2</source>
+        <translation>%1 % listened, %2 left</translation>
+    </message>
+    <message>
+        <source>Nicht begonnen</source>
+        <translation>Not started</translation>
+    </message>
+    <message>
+        <source>Gelesen von %1</source>
+        <translation>Read by %1</translation>
+    </message>
+    <message>
+        <source>Weiterhören</source>
+        <translation>Continue listening</translation>
+    </message>
+    <message>
+        <source>Abspielen</source>
+        <translation>Play</translation>
+    </message>
+    <message>
+        <source>Läuft auf %1</source>
+        <translation>Playing on %1</translation>
+    </message>
+    <message>
+        <source>Von vorn</source>
+        <translation>From start</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n Kapitel</source>
+        <translation>
+            <numerusform>%n chapter</numerusform>
+            <numerusform>%n chapters</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Tippen springt zum Kapitel</source>
+        <translation>Tap a chapter to jump there</translation>
+    </message>
+    <message>
+        <source>Ziel-Player: %1</source>
+        <translation>Target player: %1</translation>
+    </message>
+    <message>
+        <source>Als nicht begonnen markieren</source>
+        <translation>Mark as not started</translation>
+    </message>
+    <message>
+        <source>Als beendet markieren</source>
+        <translation>Mark as finished</translation>
+    </message>
+    <message>
+        <source>Anhängen</source>
+        <translation>Append</translation>
+    </message>
+    <message>
+        <source>Angehängt auf %1</source>
+        <translation>Appended on %1</translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation>Error</translation>
+    </message>
+    <message>
+        <source>Kapitel %1</source>
+        <translation>Chapter %1</translation>
+    </message>
+</context>
+<context>
     <name>CoverPage</name>
     <message>
         <source>Tonarm</source>
@@ -148,6 +250,10 @@
         <source>gehört zu einer anderen Gruppe</source>
         <translation>belongs to another group</translation>
     </message>
+    <message>
+        <source>Einzeln</source>
+        <translation>Individual speakers</translation>
+    </message>
 </context>
 <context>
     <name>LibraryPage</name>
@@ -198,6 +304,10 @@
     <message>
         <source>Hörbücher</source>
         <translation>Audiobooks</translation>
+    </message>
+    <message>
+        <source>Weiterhören</source>
+        <translation>Continue listening</translation>
     </message>
 </context>
 <context>
@@ -305,6 +415,14 @@
         <source>%1 Min.</source>
         <translation>%1 min</translation>
     </message>
+    <message>
+        <source>%1 % gehört</source>
+        <translation>%1 % listened</translation>
+    </message>
+    <message>
+        <source>beendet</source>
+        <translation>finished</translation>
+    </message>
 </context>
 <context>
     <name>NowPlayingPage</name>
@@ -335,6 +453,18 @@
     <message>
         <source>Warteschlange</source>
         <translation>Queue</translation>
+    </message>
+    <message>
+        <source>Live</source>
+        <translation>Live</translation>
+    </message>
+    <message>
+        <source>%1 s</source>
+        <translation>%1 s</translation>
+    </message>
+    <message>
+        <source>Tempo</source>
+        <translation>Speed</translation>
     </message>
 </context>
 <context>
@@ -457,6 +587,10 @@
     <message>
         <source>Gruppieren</source>
         <translation>Group</translation>
+    </message>
+    <message>
+        <source>Tippen, um sofort neu zu verbinden</source>
+        <translation>Tap to reconnect now</translation>
     </message>
 </context>
 <context>
@@ -709,6 +843,22 @@
     <message>
         <source>Hier steht, was zuletzt gelaufen ist</source>
         <translation>What has been playing shows up here</translation>
+    </message>
+    <message>
+        <source>%1 % gehört</source>
+        <translation>%1 % listened</translation>
+    </message>
+    <message>
+        <source>Weiterhören</source>
+        <translation>Continue listening</translation>
+    </message>
+    <message>
+        <source>Nichts angefangen</source>
+        <translation>Nothing in progress</translation>
+    </message>
+    <message>
+        <source>Hier stehen begonnene Hörbücher und Podcast-Folgen</source>
+        <translation>Audiobooks and podcast episodes you have started appear here</translation>
     </message>
 </context>
 <context>

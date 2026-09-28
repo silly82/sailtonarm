@@ -14,7 +14,7 @@ CoverBackground {
 
     readonly property var player: store ? store.activePlayer : null
     readonly property var queue: (store && player) ? store.queueOf(player.player_id) : null
-    readonly property var track: Models.nowPlaying(player, queue)
+    readonly property var track: Models.nowPlaying(player, queue, mass ? mass.baseUrl : "")
     readonly property bool playing: Models.isPlaying(player)
 
     // Cover-Art als Hintergrund. Stark abgedunkelt, damit die Schrift darüber
@@ -91,7 +91,7 @@ CoverBackground {
 
         CoverAction {
             iconSource: "image://theme/icon-cover-next-song"
-            onTriggered: store.next(cover.player.player_id)
+            onTriggered: store.nextOrChapter(cover.player.player_id)
         }
     }
 }
