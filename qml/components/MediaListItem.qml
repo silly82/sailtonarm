@@ -21,7 +21,12 @@ ListItem {
 
     signal activated()
 
-    contentHeight: showImage ? Theme.itemSizeLarge : Theme.itemSizeMedium
+    readonly property bool inListView: !!row.ListView.view
+                                       || (!!row.parent && !!row.parent.ListView.view)
+
+    // Mit zweizeiligem Titel wächst die Zeile über die Normalhöhe hinaus.
+    contentHeight: Math.max(showImage ? Theme.itemSizeLarge : Theme.itemSizeMedium,
+                            textColumn.height + 2 * Theme.paddingMedium)
     // Nicht spielbares bleibt sichtbar, aber gedämpft: ein Titel aus einem
     // abgemeldeten Dienst verschwindet sonst scheinbar grundlos.
     opacity: Models.isPlayable(mediaItem) ? 1.0 : Theme.opacityLow
@@ -61,8 +66,10 @@ ListItem {
         asynchronous: true
         // Erst laden, wenn die Zeile wirklich zu sehen ist. Bei ein paar
         // tausend Alben lädt eine Liste sonst beim Durchwischen alles, was
-        // je vorbeikam.
-        source: (row.showImage && row.ListView.view && proxyId.length > 0)
+        // je vorbeikam. Auf der Suchseite steckt die Zeile in einem Loader,
+        // dann trägt dieser das ListView-Attached -- ohne diesen zweiten
+        // Blick blieben dort alle Bilder leer.
+        source: (row.showImage && row.inListView && proxyId.length > 0)
                 ? MassApi.imageUrl(mass ? mass.baseUrl : "", proxyId, Theme.itemSizeMedium)
                 : ""
         property string proxyId: Models.imageProxyId(row.mediaItem)
@@ -75,6 +82,7 @@ ListItem {
     }
 
     Column {
+        id: textColumn
         anchors.verticalCenter: parent.verticalCenter
         x: row.showImage ? (thumb.x + thumb.width + Theme.paddingMedium)
                          : Theme.horizontalPageMargin
@@ -84,9 +92,13 @@ ListItem {
         width: parent.width - x - Theme.horizontalPageMargin
                - (favoriteMark.visible ? favoriteMark.width + Theme.paddingMedium : 0)
 
+        // Zwei Zeilen statt Ausblenden: lange Titel unterscheiden sich oft
+        // erst am Ende ("... (Live)", "... Remastered 2011", "Buch 3").
         Label {
             width: parent.width
-            truncationMode: TruncationMode.Fade
+            wrapMode: Text.Wrap
+            maximumLineCount: 2
+            elide: Text.ElideRight
             text: row.mediaItem ? row.mediaItem.name : ""
             color: row.highlighted ? Theme.highlightColor : Theme.primaryColor
         }

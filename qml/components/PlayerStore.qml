@@ -88,6 +88,60 @@ Item {
         })
     }
 
+    // --- Anbieter ---------------------------------------------------------
+
+    // Instanz-Id bzw. Domain -> Anzeigename ("Apple Music"), einmal je
+    // Verbindung geladen. Damit sagt ein Suchtreffer ausserhalb der
+    // Bibliothek, woher er kommt.
+    property var providerNames: ({})
+
+    function loadProviders() {
+        if (!mass || !mass.ready) {
+            return
+        }
+        mass.sendCommand("providers", {}, function (err, result) {
+            if (err) {
+                return
+            }
+            var names = {}
+            var list = result || []
+            for (var i = 0; i < list.length; i++) {
+                var p = list[i]
+                if (!p || !p.name) {
+                    continue
+                }
+                if (p.instance_id) {
+                    names[p.instance_id] = p.name
+                }
+                if (p.domain && names[p.domain] === undefined) {
+                    names[p.domain] = p.name
+                }
+            }
+            store.providerNames = names
+        })
+    }
+
+    // Name des Dienstes, aus dem ein Eintrag stammt; "" für
+    // Bibliothekseinträge. Instanz-Ids sehen aus wie "spotify--a1b2c3" --
+    // fehlt die Instanz in der Liste, hilft die Domain davor, und zur Not
+    // wird die Domain selbst lesbar gemacht.
+    function sourceName(item) {
+        var provider = (item && item.provider) ? String(item.provider) : ""
+        if (provider.length === 0 || provider === "library") {
+            return ""
+        }
+        if (providerNames[provider]) {
+            return providerNames[provider]
+        }
+        var domain = provider.split("--")[0]
+        if (providerNames[domain]) {
+            return providerNames[domain]
+        }
+        return domain.replace(/_/g, " ").replace(/\b[a-z]/g, function (c) {
+            return c.toUpperCase()
+        })
+    }
+
     function playerById(playerId) {
         for (var i = 0; i < players.length; i++) {
             if (players[i].player_id === playerId) {
@@ -517,7 +571,10 @@ Item {
 
     Connections {
         target: mass
-        onAuthenticated: store.refresh()
+        onAuthenticated: {
+            store.refresh()
+            store.loadProviders()
+        }
         onResynced: store.refresh()
         onServerEvent: {
             switch (eventType) {

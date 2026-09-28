@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
+import Nemo.Configuration 1.0
 import "../components"
 import "../lib/MassModels.js" as Models
 import "../lib/Navigate.js" as Nav
@@ -23,6 +24,16 @@ Page {
     property string errorText: ""
     property string query: ""
 
+    // Überall (Bibliothek und alle Anbieter) oder nur die Bibliothek. Bleibt
+    // über Neustarts gemerkt -- wer nur in der eigenen Sammlung sucht, tut das
+    // meistens immer.
+    ConfigurationValue {
+        id: libraryOnlySetting
+        key: "/apps/harbour-tonarm/searchLibraryOnly"
+        defaultValue: false
+    }
+    readonly property bool libraryOnly: libraryOnlySetting.value === true
+
     // Reihenfolge und Beschriftung der Abschnitte. `radio` heisst im Ergebnis
     // wirklich so (Einzahl), anders als der Bibliotheks-Präfix `radios`.
     readonly property var sections: [
@@ -42,11 +53,16 @@ Page {
         loading = true
         errorText = ""
         var requestedFor = query
-        mass.sendCommand("music/search",
-                         { search_query: query, limit: 12 },
-                         function (err, result) {
+        var requestedScope = libraryOnly
+        var args = { search_query: query, limit: 12 }
+        // `providers: ["library"]` statt des älteren `library_only`, das der
+        // Server als veraltet führt.
+        if (libraryOnly) {
+            args.providers = ["library"]
+        }
+        mass.sendCommand("music/search", args, function (err, result) {
             page.loading = false
-            if (requestedFor !== page.query) {
+            if (requestedFor !== page.query || requestedScope !== page.libraryOnly) {
                 return
             }
             page.searched = true
@@ -75,7 +91,7 @@ Page {
         return out
     }
 
-    function subtitleFor(row) {
+    function ownSubtitle(row) {
         if (row.type === "albums" || row.type === "tracks") {
             return Models.artistNames(row.item)
         }
@@ -84,6 +100,18 @@ Page {
             return Models.primaryAuthor(row.item) || (row.item.publisher || "")
         }
         return row.item.owner || ""
+    }
+
+    // Treffer ausserhalb der Bibliothek nennen vorn ihren Dienst ("Apple
+    // Music · Interpret") -- sonst sieht ein Streaming-Treffer genauso aus
+    // wie der gleichnamige in der eigenen Sammlung.
+    function subtitleFor(row) {
+        var own = ownSubtitle(row)
+        var source = store ? store.sourceName(row.item) : ""
+        if (source.length === 0) {
+            return own
+        }
+        return own.length > 0 ? source + " · " + own : source
     }
 
     function openRow(row) {
@@ -140,6 +168,26 @@ Page {
                     page.search()
                 }
             }
+
+            ComboBox {
+                width: parent.width
+                label: qsTr("Suchen in")
+                currentIndex: page.libraryOnly ? 1 : 0
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("Überall") }
+                    MenuItem { text: qsTr("Bibliothek") }
+                }
+                onCurrentIndexChanged: {
+                    var only = currentIndex === 1
+                    if (only !== page.libraryOnly) {
+                        libraryOnlySetting.value = only
+                        if (page.query.length > 0) {
+                            debounce.stop()
+                            page.search()
+                        }
+                    }
+                }
+            }
         }
 
         PullDownMenu {
@@ -160,16 +208,28 @@ Page {
             }
             hintText: page.errorText.length > 0
                       ? page.errorText
-                      : (page.searched ? "" : qsTr("Durchsucht Bibliothek und Anbieter"))
+                      : (page.searched ? ""
+                                       : (page.libraryOnly ? qsTr("Durchsucht die Bibliothek")
+                                                           : qsTr("Durchsucht Bibliothek und Anbieter")))
         }
 
         delegate: Loader {
             width: listView.width
             sourceComponent: modelData.section !== undefined ? sectionHeader : mediaRow
 
+            // In ein Item gepackt: der Loader zwingt seinem Inhalt die volle
+            // Listenbreite auf, und die SectionHeader rückt sich selbst um den
+            // Seitenrand ein -- zusammen ragte sie rechts hinaus und wurde
+            // abgeschnitten ("Interpret" statt "Interpreten").
             Component {
                 id: sectionHeader
-                SectionHeader { text: modelData.section }
+                Item {
+                    height: headerLabel.height
+                    SectionHeader {
+                        id: headerLabel
+                        text: modelData.section
+                    }
+                }
             }
 
             Component {

@@ -1291,3 +1291,40 @@ gebaut, wenn sich die Zusammensetzung der Gruppe ändert.
 - Laut iOS-App: Verlässt der Anführer seine Gruppe, übernimmt das
   verbleibende Mitglied die Warteschlange und spielt nach einigen Sekunden
   weiter. Hier nicht eigens nachgeprüft.
+
+## 26. Update 2026-09-28: Suche und Listen (v0.22)
+
+Abschnitt 3 aus `TODO.md`, auf dem Gerät gegen den echten Server geprüft.
+
+- **Suchbereich:** "Suchen in: Überall / Bibliothek", gespeichert in dconf
+  (`searchLibraryOnly`). Die Bibliothek wird über `providers: ["library"]`
+  gewählt. `library_only` gibt es noch, aber `/api-docs/commands.json` führt
+  es als veraltet. Beim Umschalten läuft eine laufende Suche sofort neu;
+  eine Antwort für den alten Bereich wird verworfen.
+- **Streaming-Dienst nennen:** `PlayerStore` lädt `providers` einmal je
+  Anmeldung (Instanz-Id und Domain → Name). Suchtreffer mit `provider` ≠
+  `library` zeigen den Namen vorn in der zweiten Zeile, etwa
+  "Apple Music · Sigur Rós". Instanz-Ids haben die Form `domain--xyz`;
+  fehlt die Instanz, hilft die Domain. Angewandt nur in der Suche: In den
+  anderen Listen kommen solche Treffer kaum vor, und bei Podcast-Folgen
+  stünde sonst in jeder Zeile derselbe Dienst.
+- **Zweizeilige Titel** in `MediaListItem` und in der Warteschlange: umbrechen
+  statt ausblenden, höchstens zwei Zeilen, und die Zeile wächst mit.
+
+### Zwei ältere Fehler der Suchseite, dabei gefunden
+
+- **Keine Vorschaubilder in der Suche, seit es sie gibt.** `MediaListItem`
+  lädt sein Bild erst, wenn `ListView.view` gesetzt ist, damit lange Listen
+  nicht alles auf einmal holen. Auf der Suchseite steckt die Zeile aber in
+  einem `Loader` (Überschrift oder Treffer), und das ListView-Attached trägt
+  dieser, nicht die Zeile. Jetzt zählt auch das des Elternelements.
+- **Abgeschnittene Abschnittsüberschriften** ("Interpret", "Alb"): Der
+  `Loader` zwingt seinem Inhalt die volle Listenbreite auf, und die
+  `SectionHeader` rückt sich selbst um den Seitenrand ein. Zusammen ragte
+  sie rechts hinaus. Sie steckt jetzt in einem `Item`.
+
+Beim Test auf dem Gerät: Nach dem ersten getippten Buchstaben kamen die
+Ergebnisse so schnell, dass sich die Tastatur schloss und die nächsten
+Tipper eine Trefferzeile öffneten. Ausgelöst wurde dabei nichts (im Verlauf
+von Home Assistant geprüft). Bei der Touch-Injektion nach jedem Tipper auf
+der Tastatur ein Kontrollbild machen.
