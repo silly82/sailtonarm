@@ -1546,9 +1546,20 @@ Der Demo-Server kennt beides: erfundene Songtexte für "Weite Felder" und
 "Sommerregen" (alle anderen Titel liefern wie Instrumentals nichts) und
 einen Einschlaftimer, der beim Ablauf anhält. Auf dem Telefon im Demomodus
 geprüft: mitlaufender Songtext, Sprung per Tipper, Timer "bis Titelende"
-stellen, Anzeige der Restzeit, Anhalten beim Ablauf. Gegen den echten Server
-ist die Songtext-Abfrage selbst geprüft (siehe oben), der Timer nicht. Beim
-Echtbetrieb hätte der Test Musik in einem Raum laufen lassen müssen.
+stellen, Anzeige der Restzeit, Anhalten beim Ablauf.
+
+**Danach auch gegen den echten Server**, mit einem Titel leise auf einem
+Lautsprecher (gestartet über Home Assistant, nicht per Touch):
+
+- Der Songtext lief mit dem echten Lied mit; die hervorgehobene Zeile passte
+  zur Spielposition.
+- Der Einschlaftimer "Ende des Titels" wurde angenommen, der Server meldete
+  `sleep_timer_expires_at` zurück, und die Restzeit stimmte. Ein erster
+  Durchgang war nicht beweiskräftig: Der Titel war der einzige in der
+  Warteschlange, er hätte auch ohne Timer dort aufgehört. Im zweiten
+  Durchgang lief deshalb "Wiederholen: ein Titel" -- ohne Timer wäre das
+  Lied von vorn losgegangen. Es pausierte bei 5:37 von 5:39: der Timer des
+  Servers hat gegriffen.
 
 Nebenbei: "Läuft gerade" zog die Spielzeit nach der Rückkehr von einer
 Unterseite erst mit dem nächsten Takt nach und zeigte unter Last einige
