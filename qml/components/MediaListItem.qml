@@ -70,7 +70,7 @@ ListItem {
         // dann trägt dieser das ListView-Attached -- ohne diesen zweiten
         // Blick blieben dort alle Bilder leer.
         source: (row.showImage && row.inListView && proxyId.length > 0)
-                ? MassApi.imageUrl(mass ? mass.baseUrl : "", proxyId, Theme.itemSizeMedium)
+                ? MassApi.imageUrl(mass ? mass.activeBaseUrl : "", proxyId, Theme.itemSizeMedium)
                 : ""
         property string proxyId: Models.imageProxyId(row.mediaItem)
 

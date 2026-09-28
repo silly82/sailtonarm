@@ -255,7 +255,7 @@ Page {
                     source: {
                         var id = Models.imageProxyId(page.book)
                         return id.length > 0
-                                ? MassApi.imageUrl(mass ? mass.baseUrl : "", id, 512) : ""
+                                ? MassApi.imageUrl(mass ? mass.activeBaseUrl : "", id, 512) : ""
                     }
                 }
             }

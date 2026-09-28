@@ -1101,6 +1101,42 @@
         <source>Adresse und Token werden über Sailfish Secrets verschlüsselt gespeichert und sind an die Gerätesperre gebunden. Gespeichert wird beim Verlassen eines Feldes. Ein leeres Tokenfeld lässt das hinterlegte Token unverändert — zum Entfernen den Knopf unten benutzen.</source>
         <translation>Address and token are stored encrypted via Sailfish Secrets and tied to the device lock. They are saved when a field loses focus. An empty token field leaves the stored token untouched — use the button below to remove it.</translation>
     </message>
+    <message>
+        <source>Unterwegs: frage %1 ab …</source>
+        <translation>Away: querying %1 …</translation>
+    </message>
+    <message>
+        <source>Unterwegs-Adresse erreichbar</source>
+        <translation>Away address reachable</translation>
+    </message>
+    <message>
+        <source>Unterwegs-Adresse: %1</source>
+        <translation>Away address: %1</translation>
+    </message>
+    <message>
+        <source>Adresse unterwegs (optional)</source>
+        <translation>Away address (optional)</translation>
+    </message>
+    <message>
+        <source>z. B. server.tailnet.ts.net</source>
+        <translation>e.g. server.tailnet.ts.net</translation>
+    </message>
+    <message>
+        <source>Derselbe Server über VPN, Tailscale oder einen Reverse-Proxy. Die App versucht immer zuerst die Heimadresse und eine halbe Sekunde später diese; es gilt, was zuerst antwortet. Zu Hause wird sie also nie benutzt.</source>
+        <translation>The same server through a VPN, Tailscale or a reverse proxy. The app always tries the home address first and this one half a second later; whichever answers first is used. At home it is therefore never touched.</translation>
+    </message>
+    <message>
+        <source>Verbunden über</source>
+        <translation>Connected through</translation>
+    </message>
+    <message>
+        <source>Adresse unterwegs</source>
+        <translation>Away address</translation>
+    </message>
+    <message>
+        <source>Heimadresse</source>
+        <translation>Home address</translation>
+    </message>
 </context>
 <context>
     <name>TrackNotifier</name>

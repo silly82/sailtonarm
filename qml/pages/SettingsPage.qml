@@ -49,6 +49,15 @@ Page {
         tokenField.text = ""
     }
 
+    // Die Adresse für unterwegs ist optional und wird für sich gespeichert:
+    // leer heisst "keine".
+    function saveAwayIfChanged() {
+        var url = MassApi.normalizeBaseUrl(awayUrlField.text)
+        if (url !== Credentials.awayUrl) {
+            Credentials.saveAwayUrl(url)
+        }
+    }
+
     function testConnection() {
         var url = MassApi.normalizeBaseUrl(baseUrlField.text)
         if (url.length === 0) {
@@ -71,9 +80,50 @@ Page {
             page.probeText = err.hint + (err.detail ? " — " + err.detail : "")
         })
         probeTimeout.restart()
+        testAway()
     }
 
-    onStatusChanged: if (status === PageStatus.Deactivating) saveIfComplete()
+    // Die Unterwegs-Adresse wird im selben Zug geprüft, getrennt gemeldet.
+    // Zu Hause ist sie oft nicht erreichbar (Tailscale aus), das ist dann
+    // kein Fehler der Einstellungen.
+    property string awayProbeState: ""
+    property string awayProbeText: ""
+    property var _awayProbeHandle: null
+
+    function testAway() {
+        var url = MassApi.normalizeBaseUrl(awayUrlField.text)
+        if (url.length === 0) {
+            awayProbeState = ""
+            awayProbeText = ""
+            return
+        }
+        awayProbeState = "running"
+        awayProbeText = qsTr("Unterwegs: frage %1 ab …").arg(url + "/info")
+        _awayProbeHandle = MassApi.fetchServerInfo(url, 8000, function () {
+            awayProbeTimeout.stop()
+            page.awayProbeState = "ok"
+            page.awayProbeText = qsTr("Unterwegs-Adresse erreichbar")
+        }, function (err) {
+            awayProbeTimeout.stop()
+            page.awayProbeState = "failed"
+            page.awayProbeText = qsTr("Unterwegs-Adresse: %1").arg(err.hint)
+        })
+        awayProbeTimeout.restart()
+    }
+
+    onStatusChanged: {
+        if (status === PageStatus.Deactivating) {
+            saveIfComplete()
+            saveAwayIfChanged()
+        }
+    }
+
+    Timer {
+        id: awayProbeTimeout
+        interval: 8000
+        repeat: false
+        onTriggered: if (page._awayProbeHandle) page._awayProbeHandle.abort()
+    }
 
     // QMLs XMLHttpRequest ruft bei einem nicht erreichbaren Host keinen der
     // beiden Callbacks auf, bis das TCP-Timeout des Systems nach Minuten
@@ -125,6 +175,27 @@ Page {
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryHighlightColor
                 text: qsTr("Läuft Music Assistant als Home-Assistant-App, ist das die Adresse des HA-Rechners: die App benutzt das Host-Netz, Port 8095 liegt also direkt dort. Nicht die Ingress-Adresse aus der HA-Oberfläche.")
+            }
+
+            TextField {
+                id: awayUrlField
+                width: parent.width
+                label: qsTr("Adresse unterwegs (optional)")
+                placeholderText: qsTr("z. B. server.tailnet.ts.net")
+                inputMethodHints: Qt.ImhUrlCharactersOnly | Qt.ImhNoAutoUppercase
+                text: Credentials.awayUrl
+                EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: tokenField.focus = true
+                onActiveFocusChanged: if (!activeFocus) page.saveAwayIfChanged()
+            }
+
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * Theme.horizontalPageMargin
+                wrapMode: Text.Wrap
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryHighlightColor
+                text: qsTr("Derselbe Server über VPN, Tailscale oder einen Reverse-Proxy. Die App versucht immer zuerst die Heimadresse und eine halbe Sekunde später diese; es gilt, was zuerst antwortet. Zu Hause wird sie also nie benutzt.")
             }
 
             TextField {
@@ -180,6 +251,17 @@ Page {
                 text: probeText
                 color: probeState === "failed" ? Theme.errorColor
                                                : Theme.secondaryHighlightColor
+            }
+
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * Theme.horizontalPageMargin
+                wrapMode: Text.Wrap
+                font.pixelSize: Theme.fontSizeSmall
+                visible: awayProbeText.length > 0
+                text: awayProbeText
+                color: awayProbeState === "failed" ? Theme.errorColor
+                                                   : Theme.secondaryHighlightColor
             }
 
             Label {
@@ -254,6 +336,12 @@ Page {
                 visible: mass && mass.serverInfo !== null
             }
             DetailItem {
+                label: qsTr("Verbunden über")
+                value: (mass && mass.connectedVia === "away") ? qsTr("Adresse unterwegs")
+                                                              : qsTr("Heimadresse")
+                visible: mass && mass.connectionState === "ready" && mass.hasAway
+            }
+            DetailItem {
                 label: qsTr("Angemeldet als")
                 value: (mass && mass.userName.length > 0) ? mass.userName : qsTr("—")
                 visible: mass && mass.connectionState === "ready"
@@ -275,10 +363,12 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Zugangsdaten löschen")
                 enabled: !Credentials.saveBusy
-                         && (Credentials.baseUrl.length > 0 || Credentials.token.length > 0)
+                         && (Credentials.baseUrl.length > 0 || Credentials.token.length > 0
+                             || Credentials.awayUrl.length > 0)
                 onClicked: remorse.execute(qsTr("Zugangsdaten werden gelöscht"), function () {
                     Credentials.clear()
                     baseUrlField.text = ""
+                    awayUrlField.text = ""
                     tokenField.text = ""
                 })
             }
@@ -293,6 +383,7 @@ Page {
                 enabled: mass && mass.configured
                 onClicked: {
                     page.saveIfComplete()
+                    page.saveAwayIfChanged()
                     mass.autoConnect = true
                     mass.connectNow()
                 }

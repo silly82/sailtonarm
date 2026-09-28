@@ -70,6 +70,9 @@ aufzeichnen und abspielen" -- einen feineren Weg gibt es nicht.
   `queue_time_updated`) statt durch Nachfragen; zwischen zwei Meldungen zählt
   die Spielzeit lokal weiter. Nach der Rückkehr aus dem Hintergrund prüft die
   App die Verbindung und lädt nach, was verpasst sein kann
+- **Zweite Adresse für unterwegs** (VPN, Tailscale, Reverse-Proxy): die App
+  versucht zuerst die Heimadresse, eine halbe Sekunde später die andere, und
+  nimmt, was zuerst antwortet
 - Serveradresse und Zugriffstoken verschlüsselt über Sailfish Secrets
   (`src/credentials.{h,cpp}`), Erreichbarkeitstest gegen `GET /info`
 - WebSocket-Verbindung mit `ServerInfo`/`auth`-Handshake, automatischer

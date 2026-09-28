@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.22
+Version:    0.23
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -67,6 +67,17 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.23-1
+- Zweite Serveradresse für unterwegs (VPN, Tailscale, Reverse-Proxy),
+  optional in den Einstellungen. Die App versucht immer zuerst die
+  Heimadresse und eine halbe Sekunde später die andere; es gilt, was zuerst
+  antwortet. Die Einstellungen zeigen, über welche Adresse die App gerade
+  verbunden ist, und der Verbindungstest prüft beide.
+- Ein Verbindungsversuch gibt nach 10 s auf und versucht es erneut, statt
+  bis zum Timeout des Systems auf "Verbinde ..." zu stehen.
+- Die Verbindung startet erst, wenn Adresse und Token vollständig geladen
+  sind, statt sich einmal mit leerem Token anzumelden.
+
 * Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.22-1
 - Die Suche lässt sich auf die Bibliothek beschränken ("Suchen in:
   Überall / Bibliothek"); die Wahl bleibt gemerkt.

@@ -1,6 +1,6 @@
 # TODO: lessons from the iOS app
 
-Findings from [Tonarm for iOS](https://github.com/silly82/Tonarm) (SwiftUI, same Music Assistant API, same server MA 2.10.4, schema 65) that apply to this Sailfish client. Checked against the code of v0.18 on 2026-09-27; each item says what is here today. Ordered by value for effort. Sections 1 and 4 are done in v0.20 (KONZEPT section 24), section 2 in v0.21 (section 25), section 3 in v0.22 (section 26).
+Findings from [Tonarm for iOS](https://github.com/silly82/Tonarm) (SwiftUI, same Music Assistant API, same server MA 2.10.4, schema 65) that apply to this Sailfish client. Checked against the code of v0.18 on 2026-09-27; each item says what is here today. Ordered by value for effort. Sections 1 and 4 are done in v0.20 (KONZEPT section 24), section 2 in v0.21 (section 25), section 3 in v0.22 (section 26), section 5 in v0.23 (section 27).
 
 ## 1. Bugs and gaps that are cheap to close
 
@@ -33,7 +33,7 @@ Today an audiobook plays from the context menu only. The API facts from Tonarm (
 
 ## 5. Remote access
 
-- [ ] **Second ("away") address with fallback.** Tonarm keeps home and away address of the same server (away e.g. `http://<host>.<tailnet>.ts.net:8095`) and tries them staggered: the last one that worked starts at once, the next 0.5 s later, the first `ServerInfo` wins, the other socket is closed. At home the LAN answers in milliseconds, so the away address is never touched. After a network change start over with the home address. On Sailfish: two `WebSocket` objects in `MassConnection`, credentials entry `harbour-tonarm-awayUrl`; network change from `Qt.application.state` plus reconnect is enough to start with. Needs the artwork rebase from section 1.
+- [x] **Second ("away") address with fallback.** Tonarm keeps home and away address of the same server (away e.g. `http://<host>.<tailnet>.ts.net:8095`) and tries them staggered: the last one that worked starts at once, the next 0.5 s later, the first `ServerInfo` wins, the other socket is closed. At home the LAN answers in milliseconds, so the away address is never touched. After a network change start over with the home address. On Sailfish: two `WebSocket` objects in `MassConnection`, credentials entry `harbour-tonarm-awayUrl`; network change from `Qt.application.state` plus reconnect is enough to start with. Needs the artwork rebase from section 1.
 - [ ] **MA's own WebRTC remote access stays a non-goal.** Tonarm proved it works (Remote ID, signaling server, `http_proxy` data channel for artwork, DTLS fingerprint check), but it needs libwebrtc, which is neither in Harbour's allowed libraries nor reasonable to ship in an RPM. VPN/Tailscale remains the way (KONZEPT section 2 stands).
 
 ## 6. Store, tests, tooling
@@ -49,7 +49,7 @@ Not applicable: Siri/App Intents, keyboard shortcuts and menu bar, iPhone Duo fo
 
 # TODO: Erkenntnisse aus der iOS-App (Deutsch)
 
-Befunde aus [Tonarm für iOS](https://github.com/silly82/Tonarm) (SwiftUI, dieselbe Music-Assistant-API, derselbe Server MA 2.10.4, Schema 65), die auf diesen Sailfish-Client passen. Am 27.9.2026 gegen den Code von v0.18 geprüft; jeder Punkt sagt, was hier heute steht. Sortiert nach Nutzen pro Aufwand. Abschnitte 1 und 4 sind in v0.20 erledigt (KONZEPT Abschnitt 24), Abschnitt 2 in v0.21 (Abschnitt 25), Abschnitt 3 in v0.22 (Abschnitt 26).
+Befunde aus [Tonarm für iOS](https://github.com/silly82/Tonarm) (SwiftUI, dieselbe Music-Assistant-API, derselbe Server MA 2.10.4, Schema 65), die auf diesen Sailfish-Client passen. Am 27.9.2026 gegen den Code von v0.18 geprüft; jeder Punkt sagt, was hier heute steht. Sortiert nach Nutzen pro Aufwand. Abschnitte 1 und 4 sind in v0.20 erledigt (KONZEPT Abschnitt 24), Abschnitt 2 in v0.21 (Abschnitt 25), Abschnitt 3 in v0.22 (Abschnitt 26), Abschnitt 5 in v0.23 (Abschnitt 27).
 
 ## 1. Fehler und Lücken, die sich billig schliessen lassen
 
@@ -82,7 +82,7 @@ Heute spielt ein Hörbuch nur über das Kontextmenü. Die API-Fakten aus Tonarm 
 
 ## 5. Fernzugriff
 
-- [ ] **Zweite Adresse ("unterwegs") mit Rückfall.** Tonarm hält Heim- und Unterwegs-Adresse desselben Servers (unterwegs z. B. `http://<host>.<tailnet>.ts.net:8095`) und probiert sie gestaffelt: die zuletzt funktionierende startet sofort, die nächste 0,5 s später, das erste `ServerInfo` gewinnt, der andere Socket wird geschlossen. Zu Hause antwortet das LAN in Millisekunden, die Unterwegs-Adresse wird also nie angefasst. Nach einem Netzwechsel wieder mit der Heimadresse beginnen. Auf Sailfish: zwei `WebSocket`-Objekte in `MassConnection`, Secrets-Eintrag `harbour-tonarm-awayUrl`; als Netzwechsel genügt für den Anfang `Qt.application.state` plus Reconnect. Braucht die Cover-Umschreibung aus Abschnitt 1.
+- [x] **Zweite Adresse ("unterwegs") mit Rückfall.** Tonarm hält Heim- und Unterwegs-Adresse desselben Servers (unterwegs z. B. `http://<host>.<tailnet>.ts.net:8095`) und probiert sie gestaffelt: die zuletzt funktionierende startet sofort, die nächste 0,5 s später, das erste `ServerInfo` gewinnt, der andere Socket wird geschlossen. Zu Hause antwortet das LAN in Millisekunden, die Unterwegs-Adresse wird also nie angefasst. Nach einem Netzwechsel wieder mit der Heimadresse beginnen. Auf Sailfish: zwei `WebSocket`-Objekte in `MassConnection`, Secrets-Eintrag `harbour-tonarm-awayUrl`; als Netzwechsel genügt für den Anfang `Qt.application.state` plus Reconnect. Braucht die Cover-Umschreibung aus Abschnitt 1.
 - [ ] **MAs eigener WebRTC-Fernzugriff bleibt Nicht-Ziel.** Tonarm hat gezeigt, dass er funktioniert (Remote-ID, Signaling-Server, `http_proxy`-Datenkanal für Cover, Prüfung des DTLS-Fingerabdrucks), aber er braucht libwebrtc, das weder zu Harbours erlaubten Bibliotheken gehört noch sinnvoll in ein RPM passt. VPN/Tailscale bleibt der Weg (KONZEPT Abschnitt 2 gilt weiter).
 
 ## 6. Store, Tests, Werkzeuge
