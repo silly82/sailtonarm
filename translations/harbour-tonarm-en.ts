@@ -938,6 +938,22 @@
         <source>Hörbücher</source>
         <translation>Audiobooks</translation>
     </message>
+    <message>
+        <source>Suchen in</source>
+        <translation>Search in</translation>
+    </message>
+    <message>
+        <source>Überall</source>
+        <translation>Everywhere</translation>
+    </message>
+    <message>
+        <source>Bibliothek</source>
+        <translation>Library</translation>
+    </message>
+    <message>
+        <source>Durchsucht die Bibliothek</source>
+        <translation>Searches the library</translation>
+    </message>
 </context>
 <context>
     <name>SettingsPage</name>

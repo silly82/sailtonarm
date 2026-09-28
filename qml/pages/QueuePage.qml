@@ -214,7 +214,8 @@ Page {
 
         delegate: ListItem {
             id: row
-            contentHeight: Theme.itemSizeMedium
+            contentHeight: Math.max(Theme.itemSizeMedium,
+                                    textColumn.height + 2 * Theme.paddingSmall)
 
             readonly property bool current:
                 page.queue && page.queue.current_index === index
@@ -240,6 +241,7 @@ Page {
             }
 
             Column {
+                id: textColumn
                 anchors.verticalCenter: parent.verticalCenter
                 x: Theme.horizontalPageMargin
                 // Die Dauer hängt am rechten Rand *mit* Seitenabstand -- der
@@ -249,9 +251,12 @@ Page {
                 width: parent.width - x - Theme.horizontalPageMargin
                        - durationLabel.width - Theme.paddingMedium
 
+                // Zwei Zeilen statt Ausblenden, wie in MediaListItem.
                 Label {
                     width: parent.width
-                    truncationMode: TruncationMode.Fade
+                    wrapMode: Text.Wrap
+                    maximumLineCount: 2
+                    elide: Text.ElideRight
                     text: modelData.name || ""
                     color: row.current ? Theme.highlightColor
                                        : (row.highlighted ? Theme.highlightColor

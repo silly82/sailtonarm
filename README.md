@@ -36,7 +36,9 @@ gegen einen echten Server.
 - **Hörbuchseite**: Autoren, Sprecher, Fortschritt, Weiterhören oder von vorn,
   als beendet bzw. nicht begonnen markieren, und die Kapitel -- läuft das
   Buch, ist das aktuelle markiert und ein Tippen springt dorthin
-- **Suche** über alle Medientypen auf einer Seite, nach Typ gruppiert
+- **Suche** über alle Medientypen auf einer Seite, nach Typ gruppiert --
+  überall oder nur in der Bibliothek; Treffer eines Streaming-Dienstes nennen
+  ihn ("Apple Music · Interpret")
 - **Abspielen aus jeder Liste** per Kontextmenü (jetzt spielen, als Nächstes,
   anhängen); auf welchem Player das landet, wählt man einmal aus
 - **Warteschlange**: sehen, was noch kommt, per Tippen dorthin springen,

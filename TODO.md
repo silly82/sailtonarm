@@ -1,6 +1,6 @@
 # TODO: lessons from the iOS app
 
-Findings from [Tonarm for iOS](https://github.com/silly82/Tonarm) (SwiftUI, same Music Assistant API, same server MA 2.10.4, schema 65) that apply to this Sailfish client. Checked against the code of v0.18 on 2026-09-27; each item says what is here today. Ordered by value for effort. Sections 1 and 4 are done in v0.20 (KONZEPT section 24), section 2 in v0.21 (section 25).
+Findings from [Tonarm for iOS](https://github.com/silly82/Tonarm) (SwiftUI, same Music Assistant API, same server MA 2.10.4, schema 65) that apply to this Sailfish client. Checked against the code of v0.18 on 2026-09-27; each item says what is here today. Ordered by value for effort. Sections 1 and 4 are done in v0.20 (KONZEPT section 24), section 2 in v0.21 (section 25), section 3 in v0.22 (section 26).
 
 ## 1. Bugs and gaps that are cheap to close
 
@@ -18,9 +18,9 @@ Findings from [Tonarm for iOS](https://github.com/silly82/Tonarm) (SwiftUI, same
 
 ## 3. Search and library
 
-- [ ] **Search scope.** `music/search` takes `library_only` (bool). Offer "Library" and "Everywhere" (streaming providers included); today the app always searches both (the placeholder says so) and cannot narrow it.
-- [ ] **Name the streaming service.** Load `providers` once per connect and put the service in front of the subtitle for items outside the library ("Apple Music · Artist").
-- [ ] **Two-line titles** in `MediaListItem` and the queue instead of fade truncation (Tonarm did this after its UI tours; long titles often differ only at the end).
+- [x] **Search scope.** `music/search` takes `library_only` (bool). Offer "Library" and "Everywhere" (streaming providers included); today the app always searches both (the placeholder says so) and cannot narrow it.
+- [x] **Name the streaming service.** Load `providers` once per connect and put the service in front of the subtitle for items outside the library ("Apple Music · Artist").
+- [x] **Two-line titles** in `MediaListItem` and the queue instead of fade truncation (Tonarm did this after its UI tours; long titles often differ only at the end).
 
 ## 4. Audiobooks and podcasts (bigger)
 
@@ -49,7 +49,7 @@ Not applicable: Siri/App Intents, keyboard shortcuts and menu bar, iPhone Duo fo
 
 # TODO: Erkenntnisse aus der iOS-App (Deutsch)
 
-Befunde aus [Tonarm für iOS](https://github.com/silly82/Tonarm) (SwiftUI, dieselbe Music-Assistant-API, derselbe Server MA 2.10.4, Schema 65), die auf diesen Sailfish-Client passen. Am 27.9.2026 gegen den Code von v0.18 geprüft; jeder Punkt sagt, was hier heute steht. Sortiert nach Nutzen pro Aufwand. Abschnitte 1 und 4 sind in v0.20 erledigt (KONZEPT Abschnitt 24), Abschnitt 2 in v0.21 (Abschnitt 25).
+Befunde aus [Tonarm für iOS](https://github.com/silly82/Tonarm) (SwiftUI, dieselbe Music-Assistant-API, derselbe Server MA 2.10.4, Schema 65), die auf diesen Sailfish-Client passen. Am 27.9.2026 gegen den Code von v0.18 geprüft; jeder Punkt sagt, was hier heute steht. Sortiert nach Nutzen pro Aufwand. Abschnitte 1 und 4 sind in v0.20 erledigt (KONZEPT Abschnitt 24), Abschnitt 2 in v0.21 (Abschnitt 25), Abschnitt 3 in v0.22 (Abschnitt 26).
 
 ## 1. Fehler und Lücken, die sich billig schliessen lassen
 
@@ -67,9 +67,9 @@ Befunde aus [Tonarm für iOS](https://github.com/silly82/Tonarm) (SwiftUI, diese
 
 ## 3. Suche und Bibliothek
 
-- [ ] **Suchbereich.** `music/search` nimmt `library_only` (bool). "Bibliothek" und "Überall" (inkl. Streaming-Anbieter) anbieten; heute sucht die App immer in beidem (der Platzhalter sagt es) und lässt sich nicht einschränken.
-- [ ] **Streaming-Dienst nennen.** `providers` einmal pro Verbindung laden und bei Einträgen ausserhalb der Bibliothek den Dienst vor die Unterzeile setzen ("Apple Music · Interpret").
-- [ ] **Zweizeilige Titel** in `MediaListItem` und der Warteschlange statt Ausblenden (in Tonarm nach den UI-Durchgängen umgesetzt; lange Titel unterscheiden sich oft erst am Ende).
+- [x] **Suchbereich.** `music/search` nimmt `library_only` (bool). "Bibliothek" und "Überall" (inkl. Streaming-Anbieter) anbieten; heute sucht die App immer in beidem (der Platzhalter sagt es) und lässt sich nicht einschränken.
+- [x] **Streaming-Dienst nennen.** `providers` einmal pro Verbindung laden und bei Einträgen ausserhalb der Bibliothek den Dienst vor die Unterzeile setzen ("Apple Music · Interpret").
+- [x] **Zweizeilige Titel** in `MediaListItem` und der Warteschlange statt Ausblenden (in Tonarm nach den UI-Durchgängen umgesetzt; lange Titel unterscheiden sich oft erst am Ende).
 
 ## 4. Hörbücher und Podcasts (grösser)
 

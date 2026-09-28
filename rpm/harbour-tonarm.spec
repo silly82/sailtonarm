@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.21
+Version:    0.22
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -67,6 +67,16 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.22-1
+- Die Suche lässt sich auf die Bibliothek beschränken ("Suchen in:
+  Überall / Bibliothek"); die Wahl bleibt gemerkt.
+- Suchtreffer ausserhalb der Bibliothek nennen vorn ihren Dienst, etwa
+  "Apple Music · Interpret".
+- Lange Titel in Listen und in der Warteschlange stehen auf zwei Zeilen,
+  statt am Zeilenende ausgeblendet zu werden.
+- Die Suche zeigt jetzt Vorschaubilder, und ihre Abschnittsüberschriften
+  sind nicht mehr rechts abgeschnitten.
+
 * Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.21-1
 - Die Lautstärke ändert sich schon beim Ziehen des Reglers, nicht erst
   beim Loslassen, und der Regler springt danach nicht mehr kurz auf den
