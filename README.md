@@ -27,7 +27,9 @@ gegen einen echten Server.
   Netzschalter, falls der Player einen hat. Bei Radio steht "Live" statt
   eines Reglers; bei Hörbüchern und Podcast-Folgen gibt es das aktuelle
   Kapitel, Sprünge um -15 s / +30 s, das Tempo, und Weiter/Zurück springen
-  zwischen Kapiteln
+  zwischen Kapiteln. Im Pulley-Menü: **Songtext**, mitlaufend mit
+  hervorgehobener Zeile (Tippen springt dorthin), und ein **Einschlaftimer**
+  (15–90 Minuten oder bis Titel-/Kapitelende; läuft auf dem Server)
 - **Bibliothek**: Interpreten, Alben, Titel, Playlists, Radio, Podcasts und
   Hörbücher mit Anzahl, seitenweise nachgeladen und je Liste durchsuchbar;
   Album- und Interpretenseiten mit Cover, Playlists mit ihren Titeln,
@@ -147,6 +149,8 @@ qml/pages/ArtistPage.qml           Interpret mit Alben
 qml/pages/PlaylistPage.qml         Playlist mit Titeln
 qml/pages/PodcastPage.qml          Podcast mit Folgen
 qml/pages/AudiobookPage.qml        Hörbuch: Fortschritt, Weiterhören, Kapitel
+qml/pages/LyricsPage.qml           Songtext, mitlaufend
+qml/pages/SleepTimerPage.qml       Einschlaftimer
 qml/pages/SearchPage.qml           Suche über alle Medientypen, überall oder nur Bibliothek
 qml/pages/QueuePage.qml            Warteschlange ansehen und bearbeiten
 qml/pages/GroupPage.qml            Lautsprecher zusammenschalten, Einzellautstärken

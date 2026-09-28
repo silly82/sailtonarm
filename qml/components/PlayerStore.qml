@@ -442,6 +442,16 @@ Item {
                                       position: Math.round(positionSeconds) })
     }
 
+    // Einschlaftimer: nach `seconds` hält der Server die Wiedergabe an.
+    function setSleepTimer(playerId, seconds, callback) {
+        _sendWithResult("players/sleep_timer/set",
+                        { player_id: playerId, seconds: Math.max(1, Math.round(seconds)) }, callback)
+    }
+
+    function clearSleepTimer(playerId, callback) {
+        _sendWithResult("players/sleep_timer/clear", { player_id: playerId }, callback)
+    }
+
     function setVolume(playerId, level) {
         _sendVolume("player:" + playerId, "players/cmd/volume_set",
                     { player_id: playerId, volume_level: Math.round(level) })

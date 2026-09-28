@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.25
+Version:    0.26
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -68,6 +68,14 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.26-1
+- Songtexte: im Pulley-Menü von "Läuft gerade". Mit Zeitmarken läuft der
+  Text mit -- die aktuelle Zeile ist hervorgehoben und bleibt in der
+  Mitte, ein Tippen auf eine Zeile springt dorthin.
+- Einschlaftimer: 15 bis 90 Minuten oder bis zum Ende des Titels bzw.
+  Kapitels. Er läuft auf dem Server und greift auch, wenn das Telefon
+  schläft; "Läuft gerade" zeigt die Restzeit.
+
 * Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.25-1
 - Cover bleiben auf dem Gerät (höchstens 100 MB) und kommen nach einem
   Neustart nicht wieder über das Netz -- das spart unterwegs

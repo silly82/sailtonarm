@@ -326,6 +326,41 @@
     </message>
 </context>
 <context>
+    <name>LyricsPage</name>
+    <message>
+        <source>Songtext</source>
+        <translation>Lyrics</translation>
+    </message>
+    <message>
+        <source>Neu laden</source>
+        <translation>Reload</translation>
+    </message>
+    <message>
+        <source>Kein Titel</source>
+        <translation>No track</translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation>Error</translation>
+    </message>
+    <message>
+        <source>Kein Songtext</source>
+        <translation>No lyrics</translation>
+    </message>
+    <message>
+        <source>Songtexte gibt es nur für Musiktitel, nicht für Radio, Hörbücher oder Podcasts</source>
+        <translation>Lyrics exist only for music tracks, not for radio, audiobooks or podcasts</translation>
+    </message>
+    <message>
+        <source>Für diesen Titel liefert der Server keinen Text</source>
+        <translation>The server has no lyrics for this track</translation>
+    </message>
+    <message>
+        <source>Der Server fragt seine Quellen — beim ersten Mal kann das eine halbe Minute dauern.</source>
+        <translation>The server is asking its sources — the first time this can take half a minute.</translation>
+    </message>
+</context>
+<context>
     <name>MediaListItem</name>
     <message>
         <source>Kein Player ausgewählt</source>
@@ -484,6 +519,26 @@
     <message>
         <source>Tempo</source>
         <translation>Speed</translation>
+    </message>
+    <message>
+        <source>Einschlaftimer: noch %1 Min.</source>
+        <translation>Sleep timer: %1 min left</translation>
+    </message>
+    <message>
+        <source>Einschlaftimer</source>
+        <translation>Sleep timer</translation>
+    </message>
+    <message>
+        <source>Songtext</source>
+        <translation>Lyrics</translation>
+    </message>
+    <message>
+        <source>Einschlaftimer: stoppt in %1 Min.</source>
+        <translation>Sleep timer: stops in %1 min</translation>
+    </message>
+    <message>
+        <source>Einschlaftimer: stoppt in %1 s</source>
+        <translation>Sleep timer: stops in %1 s</translation>
     </message>
 </context>
 <context>
@@ -1191,6 +1246,57 @@
     <message>
         <source>Einmal geladene Cover bleiben auf dem Gerät (höchstens 100 MB) und kommen nach einem Neustart nicht wieder über das Netz — das spart unterwegs Mobilfunkdaten.</source>
         <translation>Artwork stays on the device once loaded (up to 100 MB) and does not come over the network again after a restart — this saves mobile data when you are out.</translation>
+    </message>
+</context>
+<context>
+    <name>SleepTimerPage</name>
+    <message>
+        <source>%1:%2 Std.</source>
+        <translation>%1:%2 h</translation>
+    </message>
+    <message>
+        <source>%1 Min.</source>
+        <translation>%1 min</translation>
+    </message>
+    <message>
+        <source>%1 s</source>
+        <translation>%1 s</translation>
+    </message>
+    <message>
+        <source>Einschlaftimer</source>
+        <translation>Sleep timer</translation>
+    </message>
+    <message>
+        <source>Stoppt in %1</source>
+        <translation>Stops in %1</translation>
+    </message>
+    <message>
+        <source>Timer aus</source>
+        <translation>Timer off</translation>
+    </message>
+    <message>
+        <source>Neu stellen</source>
+        <translation>Set again</translation>
+    </message>
+    <message>
+        <source>Stoppen nach</source>
+        <translation>Stop after</translation>
+    </message>
+    <message>
+        <source>%1 Minuten</source>
+        <translation>%1 minutes</translation>
+    </message>
+    <message>
+        <source>Ende des Kapitels (%1)</source>
+        <translation>End of chapter (%1)</translation>
+    </message>
+    <message>
+        <source>Ende des Titels (%1)</source>
+        <translation>End of track (%1)</translation>
+    </message>
+    <message>
+        <source>Der Timer läuft auf dem Server. Er greift auch, wenn das Telefon schläft oder die App geschlossen ist.</source>
+        <translation>The timer runs on the server. It works even when the phone is asleep or the app is closed.</translation>
     </message>
 </context>
 <context>

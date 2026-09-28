@@ -462,3 +462,74 @@ function listenProgress(item) {
     var resume = resumeSeconds(item)
     return resume > 0 ? Math.min(resume / item.duration, 1) : -1
 }
+
+// --- Songtexte -------------------------------------------------------------
+
+// Zerlegt einen LRC-Text ("[01:23.45] Zeile") in [{ time, text }], nach Zeit
+// sortiert. MA 2.10.4 liefert Songtexte über metadata/get_track_lyrics als
+// Paar [einfach, lrc]; auf der eigenen Anlage kam nur die LRC-Fassung
+// (KONZEPT.md Abschnitt 30). Eine Zeile kann mehrere Zeitmarken tragen
+// (Refrain), Kopfzeilen wie [ar:...] fallen weg, [offset:+/-ms] wird
+// angewandt. Leere Zeilen bleiben als Pause stehen.
+function parseLrc(text) {
+    var out = []
+    var offset = 0
+    var lines = String(text || "").split(/\r?\n/)
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i]
+        var off = /^\[offset:\s*([+-]?\d+)\]/i.exec(line)
+        if (off) {
+            offset = parseInt(off[1], 10) / 1000
+            continue
+        }
+        var times = []
+        var m
+        var rest = line
+        while ((m = /^\[(\d+):(\d+(?:[.:]\d+)?)\]/.exec(rest)) !== null) {
+            times.push(parseInt(m[1], 10) * 60 + parseFloat(m[2].replace(":", ".")))
+            rest = rest.substring(m[0].length)
+        }
+        if (times.length === 0) {
+            continue
+        }
+        for (var t = 0; t < times.length; t++) {
+            out.push({ time: Math.max(0, times[t] - offset), text: rest.trim() })
+        }
+    }
+    out.sort(function (a, b) { return a.time - b.time })
+    return out
+}
+
+// Songtext ohne Zeitmarken als Zeilen mit time -1.
+function plainLyricLines(text) {
+    var out = []
+    var lines = String(text || "").split(/\r?\n/)
+    for (var i = 0; i < lines.length; i++) {
+        out.push({ time: -1, text: lines[i].trim() })
+    }
+    return out
+}
+
+// Index der Zeile, die gerade läuft, oder -1 vor der ersten.
+function currentLyricIndex(lines, elapsed) {
+    var found = -1
+    for (var i = 0; i < (lines || []).length; i++) {
+        if (lines[i].time >= 0 && lines[i].time <= elapsed) {
+            found = i
+        } else if (lines[i].time > elapsed) {
+            break
+        }
+    }
+    return found
+}
+
+// --- Einschlaftimer --------------------------------------------------------
+
+// Restzeit in Sekunden oder 0. Der Server führt das Ablaufdatum als
+// Unix-Zeit am Player (`sleep_timer_expires_at`).
+function sleepRemaining(player, nowMs) {
+    if (!player || !(player.sleep_timer_expires_at > 0)) {
+        return 0
+    }
+    return Math.max(0, player.sleep_timer_expires_at - nowMs / 1000)
+}
