@@ -57,38 +57,58 @@ Page {
             PageHeader { title: qsTr("Tonarm") }
 
             // Verbindungszeile -- nur wenn etwas nicht stimmt. Steht alles,
-            // braucht niemand eine Zeile, die "alles gut" sagt.
-            Item {
+            // braucht niemand eine Zeile, die "alles gut" sagt. Erscheint erst
+            // nach kurzer Verzögerung (MassConnection.problemVisible), damit
+            // ein schnelles Neuverbinden nicht aufblitzt. Ein Tippen verbindet
+            // sofort neu, statt den Backoff abzuwarten.
+            BackgroundItem {
+                id: connectionRow
                 width: parent.width
-                height: connectionLabel.visible ? Theme.itemSizeExtraSmall : 0
+                visible: mass && mass.problemVisible
+                height: visible ? Math.max(Theme.itemSizeExtraSmall,
+                                           connectionColumn.height + 2 * Theme.paddingSmall) : 0
+                enabled: mass && mass.configured
+                onClicked: mass.connectNow()
 
-                Label {
-                    id: connectionLabel
+                Column {
+                    id: connectionColumn
                     x: Theme.horizontalPageMargin
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width - 2 * Theme.horizontalPageMargin
-                    wrapMode: Text.Wrap
-                    font.pixelSize: Theme.fontSizeSmall
-                    visible: mass && mass.connectionState !== "ready"
-                    color: (mass && mass.connectionState === "error")
-                           ? Theme.errorColor : Theme.secondaryHighlightColor
-                    text: {
-                        if (!mass) {
-                            return ""
+
+                    Label {
+                        id: connectionLabel
+                        width: parent.width
+                        wrapMode: Text.Wrap
+                        font.pixelSize: Theme.fontSizeSmall
+                        color: (mass && mass.connectionState === "error")
+                               ? Theme.errorColor : Theme.secondaryHighlightColor
+                        text: {
+                            if (!mass) {
+                                return ""
+                            }
+                            if (!Credentials.loaded) {
+                                return qsTr("Zugangsdaten werden geladen …")
+                            }
+                            if (!mass.configured) {
+                                return qsTr("Nicht eingerichtet — siehe Einstellungen")
+                            }
+                            switch (mass.connectionState) {
+                            case "connecting": return qsTr("Verbinde …")
+                            case "authenticating": return qsTr("Anmeldung läuft …")
+                            case "error": return mass.lastError.length > 0
+                                                 ? mass.lastError : qsTr("Keine Verbindung")
+                            }
+                            return qsTr("Getrennt")
                         }
-                        if (!Credentials.loaded) {
-                            return qsTr("Zugangsdaten werden geladen …")
-                        }
-                        if (!mass.configured) {
-                            return qsTr("Nicht eingerichtet — siehe Einstellungen")
-                        }
-                        switch (mass.connectionState) {
-                        case "connecting": return qsTr("Verbinde …")
-                        case "authenticating": return qsTr("Anmeldung läuft …")
-                        case "error": return mass.lastError.length > 0
-                                             ? mass.lastError : qsTr("Keine Verbindung")
-                        }
-                        return qsTr("Getrennt")
+                    }
+
+                    Label {
+                        width: parent.width
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        color: Theme.secondaryColor
+                        visible: connectionRow.enabled && mass.connectionState === "error"
+                        text: qsTr("Tippen, um sofort neu zu verbinden")
                     }
                 }
             }

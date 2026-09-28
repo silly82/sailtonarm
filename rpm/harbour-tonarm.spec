@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.19
+Version:    0.21
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -67,6 +67,35 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.21-1
+- Die Lautstärke ändert sich schon beim Ziehen des Reglers, nicht erst
+  beim Loslassen, und der Regler springt danach nicht mehr kurz auf den
+  alten Wert zurück.
+- In einer Gruppe lässt sich jeder Lautsprecher einzeln regeln, zusätzlich
+  zur Lautstärke der ganzen Gruppe.
+
+* Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.20-1
+- Hörbücher haben eine eigene Seite: Autoren, Sprecher, Fortschritt,
+  Weiterhören oder von vorn, als beendet bzw. nicht begonnen markieren,
+  und die Kapitel. Läuft das Buch, ist das aktuelle Kapitel markiert und
+  ein Tippen springt dorthin.
+- Läuft ein Hörbuch oder eine Podcast-Folge, zeigt "Läuft gerade" das
+  Kapitel, Sprünge um -15 s / +30 s und das Tempo. Weiter und Zurück
+  springen zwischen Kapiteln, auch vom Sperrbildschirm und vom Cover aus.
+- "Weiterhören" in der Bibliothek listet angefangene Hörbücher und
+  Podcast-Folgen.
+- Radio: statt eines leeren Reglers steht "Live" da, die Albumzeile
+  wiederholt nicht mehr den Sender, Zufall und Wiederholen fehlen dafür in
+  der Warteschlange.
+- Das Cover lädt auch über VPN oder einen Reverse-Proxy: die Bildadresse
+  des Servers wird auf die Adresse umgeschrieben, über die die App
+  verbunden ist.
+- Nach der Rückkehr aus dem Hintergrund prüft die App, ob die Verbindung
+  noch steht, verbindet sonst sofort neu und lädt nach, was verpasst sein
+  kann. Kurze Unterbrechungen blitzen nicht mehr als Fehler auf; ein
+  Tippen auf die Statuszeile verbindet sofort neu.
+- Der Server führt die App als "Tonarm (Sailfish)".
+
 * Wed Sep 23 2026 silly82 <siliwalker@gmail.com> - 0.19-1
 - Hörbücher zeigen jetzt die Spieldauer -- bei einem Hörbuch ist der
   Unterschied zwischen drei und einunddreissig Stunden die interessanteste

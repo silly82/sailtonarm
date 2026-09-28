@@ -79,8 +79,8 @@ Page {
 
             PageHeader { title: qsTr("Bibliothek") }
 
-            // Steht über den Medientypen, weil es keiner ist: eine gemischte
-            // Liste über alles, was zuletzt lief.
+            // Stehen über den Medientypen, weil sie keine sind: gemischte
+            // Listen über alles, was zuletzt lief bzw. angefangen ist.
             ListItem {
                 width: page.width
                 contentHeight: Theme.itemSizeMedium
@@ -91,6 +91,22 @@ Page {
                     x: Theme.horizontalPageMargin
                     anchors.verticalCenter: parent.verticalCenter
                     text: qsTr("Zuletzt gehört")
+                    color: highlighted ? Theme.highlightColor : Theme.primaryColor
+                }
+            }
+
+            // Angefangene Hörbücher und Podcast-Folgen, über alle Anbieter.
+            ListItem {
+                width: page.width
+                contentHeight: Theme.itemSizeMedium
+                onClicked: pageStack.push(Qt.resolvedUrl("RecentlyPlayedPage.qml"),
+                                          { mass: page.mass, store: page.store,
+                                            inProgress: true })
+
+                Label {
+                    x: Theme.horizontalPageMargin
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: qsTr("Weiterhören")
                     color: highlighted ? Theme.highlightColor : Theme.primaryColor
                 }
             }

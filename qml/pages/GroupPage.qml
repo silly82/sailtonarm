@@ -34,19 +34,36 @@ Page {
     readonly property bool hasMembers:
         store && player ? Models.hasGroupMembers(player, store.players) : false
 
-    allowedOrientations: defaultAllowedOrientations
+    // Die Lautsprecher der Gruppe, der Anführer zuerst -- für die
+    // Einzellautstärken. Ein fester Gruppen-Player (MA-Typ "group") ist selbst
+    // kein Lautsprecher, dann nur seine Mitglieder.
+    readonly property var members: store && player
+                                   ? Models.groupMembers(player, store.players) : []
 
-    // Gruppenlautstärke wie jeder andere Regler: nicht an den Serverwert
-    // gebunden, sondern nachgezogen, solange niemand den Griff hält.
-    function syncGroupVolume() {
-        if (!groupVolume.pressed && player && player.group_volume !== undefined
-                && player.group_volume !== null) {
-            groupVolume.value = player.group_volume
+    // Die Regler hängen an einem ListModel mit den Ids, nicht direkt an
+    // `members`: das ist bei jedem player_updated ein neues Array, und ein
+    // Repeater baut dann alle Delegates neu -- auch den Regler, den man gerade
+    // zieht, und das Ziehen selbst löst solche Ereignisse aus. Neu aufgebaut
+    // wird nur, wenn sich die Zusammensetzung ändert.
+    readonly property string memberKey: {
+        var ids = []
+        for (var i = 0; i < members.length; i++) {
+            ids.push(members[i].player_id)
+        }
+        return ids.join("|")
+    }
+    function rebuildMembers() {
+        memberModel.clear()
+        for (var i = 0; i < members.length; i++) {
+            memberModel.append({ memberId: members[i].player_id })
         }
     }
+    onMemberKeyChanged: rebuildMembers()
+    Component.onCompleted: rebuildMembers()
 
-    onPlayerChanged: syncGroupVolume()
-    Component.onCompleted: syncGroupVolume()
+    ListModel { id: memberModel }
+
+    allowedOrientations: defaultAllowedOrientations
 
     function toggleMember(other, shouldBeMember) {
         if (shouldBeMember) {
@@ -111,16 +128,39 @@ Page {
                       .arg(page.player ? Models.playerName(page.player) : "")
             }
 
-            Slider {
+            // Die Gruppenlautstärke zieht die Einzelwerte im Verhältnis mit
+            // (PlayerStore.setGroupVolume); die Regler darunter folgen dem
+            // über die Ereignisse vom Server.
+            VolumeSlider {
                 id: groupVolume
                 width: parent.width
                 visible: page.hasMembers
+                enabled: mass && mass.ready
                 label: qsTr("Lautstärke der Gruppe")
-                minimumValue: 0
-                maximumValue: 100
-                stepSize: 1
-                valueText: Math.round(value) + " %"
-                onReleased: store.setGroupVolume(page.playerId, value)
+                serverLevel: (page.player && typeof page.player.group_volume === "number")
+                             ? page.player.group_volume : -1
+                onLevelRequested: store.setGroupVolume(page.playerId, level)
+            }
+
+            SectionHeader {
+                visible: page.hasMembers && page.members.length > 0
+                text: qsTr("Einzeln")
+            }
+
+            Repeater {
+                model: memberModel
+
+                VolumeSlider {
+                    readonly property var member: store ? store.playerById(memberId) : null
+                    width: parent.width
+                    visible: page.hasMembers
+                             && Models.hasFeature(member, Models.FEATURE_VOLUME_SET)
+                    enabled: mass && mass.ready && Models.isAvailable(member)
+                    label: Models.playerName(member)
+                    serverLevel: (member && typeof member.volume_level === "number")
+                                 ? member.volume_level : -1
+                    onLevelRequested: store.setVolume(memberId, level)
+                }
             }
 
             Button {

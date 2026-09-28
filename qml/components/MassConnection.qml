@@ -47,6 +47,15 @@ Item {
     // (event, object_id, data).
     signal serverEvent(string eventType, var message)
     signal authenticated()
+    // Die App war im Hintergrund oder das Telefon hat geschlafen, und die
+    // Verbindung hat die Rückkehr überlebt. Ereignisse aus der Zwischenzeit
+    // können aber verloren sein -- wer Zustand hält, lädt ihn neu.
+    signal resynced()
+
+    // Erst nach etwa 1,5 s ohne Verbindung wahr. Ein kurzes Neuverbinden
+    // (Rückkehr aus dem Hintergrund, Netzwechsel) soll nicht als Fehlerzeile
+    // aufblitzen; hält der Zustand an, steht er da.
+    property bool problemVisible: false
 
     // --- Intern ----------------------------------------------------------
     property int _nextId: 1
@@ -64,20 +73,30 @@ Item {
     // sonst { hint, detail }. Kommandos vor dem Verbindungsaufbau werden
     // abgelehnt statt gepuffert -- in Ausbaustufe 0 ruft nur die UI auf, und
     // die kennt den Zustand.
-    function sendCommand(command, args, callback) {
+    //
+    // Fehler, die nur sagen "gerade keine Verbindung", tragen `offline: true`:
+    // die Statuszeile erklärt das bereits, Aufrufer zeigen sie nicht noch
+    // einmal an.
+    //
+    // timeoutMs ist optional (Standard 20 s).
+    function sendCommand(command, args, callback, timeoutMs) {
         if (connectionState !== "ready") {
             if (callback) {
-                callback({ hint: "Keine Verbindung", detail: "Zustand: " + connectionState }, null)
+                callback({ hint: "Keine Verbindung", detail: "Zustand: " + connectionState,
+                           offline: true }, null)
             }
             return -1
         }
-        return _send(command, args, callback)
+        return _send(command, args, callback, timeoutMs)
     }
 
+    // Sofort (neu) verbinden, ohne Backoff -- aus den Einstellungen, per
+    // Tippen auf die Statuszeile und nach einer toten Verbindung.
     function connectNow() {
         reconnectTimer.stop()
         _backoffMs = 2000
         lastError = ""
+        _failAllPending({ hint: "Verbindung wird neu aufgebaut", detail: "", offline: true })
         socket.active = false
         socket.active = Qt.binding(function () { return conn.autoConnect && conn.configured })
     }
@@ -92,7 +111,31 @@ Item {
 
     // --- Implementierung -------------------------------------------------
 
-    function _send(command, args, callback) {
+    // Beim Zurückkommen in den Vordergrund: steht die Verbindung noch? Ein
+    // Socket kann nach dem Schlafen tot sein, während der Zustand weiterhin
+    // "ready" sagt -- dann liefe jeder Tipper 20 s in die Zeitüberschreitung.
+    // Also ein billiges `info` mit kurzer Frist: keine Antwort heisst sofort
+    // neu verbinden, eine Antwort heisst neu laden, was verpasst sein kann.
+    // Wartet gerade ein Reconnect mit langem Backoff, wird er vorgezogen.
+    function checkAfterResume() {
+        if (!configured || !autoConnect) {
+            return
+        }
+        if (connectionState === "ready") {
+            sendCommand("info", {}, function (err) {
+                if (err) {
+                    console.log("MassConnection: keine Antwort nach Rückkehr, verbinde neu")
+                    conn.connectNow()
+                } else {
+                    conn.resynced()
+                }
+            }, 3000)
+        } else if (connectionState === "error" || connectionState === "idle") {
+            connectNow()
+        }
+    }
+
+    function _send(command, args, callback, timeoutMs) {
         var id = _nextId
         _nextId += 1
         if (callback) {
@@ -100,7 +143,7 @@ Item {
                 callback: callback,
                 items: [],
                 command: command,
-                deadline: Date.now() + 20000
+                deadline: Date.now() + (timeoutMs > 0 ? timeoutMs : 20000)
             }
             timeoutTimer.start()
         }
@@ -172,7 +215,10 @@ Item {
         }
         _authSent = true
         connectionState = "authenticating"
-        _send("auth", { token: token, locale: Qt.locale().name }, function (err, result) {
+        // device_name: damit der Server den Client beim Namen führt statt als
+        // namenlose Sitzung.
+        _send("auth", { token: token, locale: Qt.locale().name,
+                        device_name: "Tonarm (Sailfish)" }, function (err, result) {
             if (err) {
                 // Ein Server ohne angelegte Benutzer braucht kein Token und
                 // lehnt den leeren auth-Aufruf trotzdem ab -- die Verbindung
@@ -211,7 +257,8 @@ Item {
                     conn.lastError = socket.errorString
                 }
                 conn.connectionState = conn.configured ? "error" : "idle"
-                conn._failAllPending({ hint: "Verbindung abgebrochen", detail: conn.lastError })
+                conn._failAllPending({ hint: "Verbindung abgebrochen", detail: conn.lastError,
+                                       offline: true })
                 if (conn.autoConnect && conn.configured) {
                     // Nach einer stabilen Verbindung wieder kurz warten, sonst
                     // den Abstand verdoppeln -- ein dauerhaft nicht erreichbarer
@@ -250,6 +297,38 @@ Item {
                 break
             default:
                 break
+            }
+        }
+    }
+
+    onConnectionStateChanged: {
+        if (connectionState === "ready") {
+            problemTimer.stop()
+            problemVisible = false
+        } else if (!problemVisible && !problemTimer.running) {
+            problemTimer.start()
+        }
+    }
+
+    Timer {
+        id: problemTimer
+        interval: 1500
+        onTriggered: conn.problemVisible = conn.connectionState !== "ready"
+    }
+
+    Component.onCompleted: {
+        if (connectionState !== "ready") {
+            problemTimer.start()
+        }
+    }
+
+    // Qt.application.state wird Active, wenn die App aus dem Hintergrund
+    // (oder das Telefon aus dem Schlaf) zurückkommt.
+    Connections {
+        target: Qt.application
+        onStateChanged: {
+            if (Qt.application.state === Qt.ApplicationActive) {
+                conn.checkAfterResume()
             }
         }
     }

@@ -24,10 +24,18 @@ gegen einen echten Server.
   Player bleiben sichtbar, aber ausgegraut
 - **Now Playing** je Player: Cover, Titel/Interpret/Album, Fortschrittsregler
   zum Springen, Weiter/Zurück, Lautstärke, Stummschaltung -- und einen
-  Netzschalter, falls der Player einen hat
-- **Bibliothek**: Interpreten, Alben, Titel, Playlists und Radio mit Anzahl,
-  seitenweise nachgeladen und je Liste durchsuchbar; Album- und
-  Interpretenseiten mit Cover, Playlists mit ihren Titeln
+  Netzschalter, falls der Player einen hat. Bei Radio steht "Live" statt
+  eines Reglers; bei Hörbüchern und Podcast-Folgen gibt es das aktuelle
+  Kapitel, Sprünge um -15 s / +30 s, das Tempo, und Weiter/Zurück springen
+  zwischen Kapiteln
+- **Bibliothek**: Interpreten, Alben, Titel, Playlists, Radio, Podcasts und
+  Hörbücher mit Anzahl, seitenweise nachgeladen und je Liste durchsuchbar;
+  Album- und Interpretenseiten mit Cover, Playlists mit ihren Titeln,
+  Podcasts mit ihren Folgen; dazu "Zuletzt gehört" und "Weiterhören"
+  (angefangene Hörbücher und Podcast-Folgen)
+- **Hörbuchseite**: Autoren, Sprecher, Fortschritt, Weiterhören oder von vorn,
+  als beendet bzw. nicht begonnen markieren, und die Kapitel -- läuft das
+  Buch, ist das aktuelle markiert und ein Tippen springt dorthin
 - **Suche** über alle Medientypen auf einer Seite, nach Typ gruppiert
 - **Abspielen aus jeder Liste** per Kontextmenü (jetzt spielen, als Nächstes,
   anhängen); auf welchem Player das landet, wählt man einmal aus
@@ -45,8 +53,10 @@ gegen einen echten Server.
   als Stern in der Liste sichtbar, und jede Liste lässt sich auf "Nur
   Favoriten" umstellen
 - **Lautsprecher gruppieren**: mehrere Lautsprecher synchron zusammenschalten,
-  mit gemeinsamer Lautstärke -- angeboten werden nur die, die der Server
-  tatsächlich synchronisieren kann
+  mit gemeinsamer Lautstärke und einem Regler je Lautsprecher -- angeboten
+  werden nur die, die der Server tatsächlich synchronisieren kann
+- **Lautstärke folgt dem Finger**: sie ändert sich schon beim Ziehen, und der
+  Regler springt danach nicht zurück
 - **Optionale Benachrichtigung** bei Titelwechsel (standardmässig aus)
 
 Die App verlangt dafür die **Audio**-Berechtigung, obwohl sie kein Audio
@@ -56,7 +66,8 @@ Berechtigungsdialog nennt sie dem Nutzer gegenüber allerdings "Audio
 aufzeichnen und abspielen" -- einen feineren Weg gibt es nicht.
 - **Live-Aktualisierung** per Server-Events (`player_updated`, `queue_updated`,
   `queue_time_updated`) statt durch Nachfragen; zwischen zwei Meldungen zählt
-  die Spielzeit lokal weiter
+  die Spielzeit lokal weiter. Nach der Rückkehr aus dem Hintergrund prüft die
+  App die Verbindung und lädt nach, was verpasst sein kann
 - Serveradresse und Zugriffstoken verschlüsselt über Sailfish Secrets
   (`src/credentials.{h,cpp}`), Erreichbarkeitstest gegen `GET /info`
 - WebSocket-Verbindung mit `ServerInfo`/`auth`-Handshake, automatischer

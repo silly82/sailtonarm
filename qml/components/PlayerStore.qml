@@ -134,7 +134,7 @@ Item {
         }
         mass.sendCommand("player_queues/play_media", args, function (err) {
             if (err) {
-                store.lastError = err.hint
+                store._noteError(err)
             }
             if (callback) {
                 callback(err)
@@ -180,10 +180,12 @@ Item {
     }
 
     // Lautstärke der ganzen Gruppe; die Einzellautstärken zieht der Server
-    // im Verhältnis mit.
+    // mit, ausgehend von einer Momentaufnahme ihrer Werte (MA 2.10.4,
+    // `set_group_volume`): nach unten im Verhältnis, nach oben jede um
+    // denselben Anteil Richtung 100 -- 30/10 bei Gruppe 15 ergibt 15/5.
     function setGroupVolume(playerId, level) {
-        _send("players/cmd/group_volume", { player_id: playerId,
-                                            volume_level: Math.round(level) })
+        _sendVolume("group:" + playerId, "players/cmd/group_volume",
+                    { player_id: playerId, volume_level: Math.round(level) })
     }
 
     function _sendWithResult(command, args, callback) {
@@ -192,7 +194,7 @@ Item {
         }
         mass.sendCommand(command, args, function (err) {
             if (err) {
-                store.lastError = err.hint
+                store._noteError(err)
                 console.warn("PlayerStore:", command, "fehlgeschlagen:", err.hint)
             }
             if (callback) {
@@ -236,7 +238,7 @@ Item {
                          { queue_id: playerId, name: name },
                          function (err) {
                              if (err) {
-                                 store.lastError = err.hint
+                                 store._noteError(err)
                              }
                              if (callback) {
                                  callback(err)
@@ -256,7 +258,7 @@ Item {
                            auto_play: autoPlay === true },
                          function (err) {
                              if (err) {
-                                 store.lastError = err.hint
+                                 store._noteError(err)
                              }
                              if (callback) {
                                  callback(err)
@@ -291,14 +293,121 @@ Item {
         _send("player_queues/previous", { queue_id: playerId })
     }
 
+    // Weiter/Zurück, wie sie Knöpfe, Cover und Sperrbildschirm meinen: in
+    // einem Hörbuch mit Kapiteln springen sie zwischen den Kapiteln (per
+    // Seek), sonst zum nächsten/vorigen Eintrag der Warteschlange.
+    function nextOrChapter(playerId) {
+        var target = _chapterTarget(playerId, true)
+        if (target >= 0) {
+            seek(playerId, target)
+        } else {
+            next(playerId)
+        }
+    }
+
+    function previousOrChapter(playerId) {
+        var target = _chapterTarget(playerId, false)
+        if (target >= 0) {
+            seek(playerId, target)
+        } else {
+            previous(playerId)
+        }
+    }
+
+    function _chapterTarget(playerId, forward) {
+        var player = playerById(playerId)
+        var queue = queueOf(playerId)
+        var track = Models.nowPlaying(player, queue)
+        if (!track || !track.isSpoken) {
+            return -1
+        }
+        return Models.chapterSeek(track.chapters, forward,
+                                  Models.elapsedSeconds(queue, player, Date.now()))
+    }
+
+    // Relativer Sprung (Hörbuch: -15 s / +30 s), innerhalb des Eintrags
+    // gehalten.
+    function skip(playerId, seconds) {
+        var player = playerById(playerId)
+        var queue = queueOf(playerId)
+        var track = Models.nowPlaying(player, queue)
+        var target = Math.max(0, Models.elapsedSeconds(queue, player, Date.now()) + seconds)
+        if (track && track.duration > 0) {
+            target = Math.min(target, track.duration - 1)
+        }
+        seek(playerId, target)
+    }
+
+    // Tempo 0.5..3.0; der Server bietet es nur an, wo die Queue
+    // `playback_speed` meldet.
+    function setPlaybackSpeed(playerId, speed) {
+        _send("player_queues/set_playback_speed", { queue_id: playerId, speed: speed })
+    }
+
+    // --- Hörbücher -------------------------------------------------------
+
+    // Beendet bzw. nicht begonnen markieren. `media_item` will das Objekt
+    // genau so zurück, wie der Server es geschickt hat.
+    function setPlayed(mediaItem, played, callback) {
+        _sendWithResult(played ? "music/mark_played" : "music/mark_unplayed",
+                        { media_item: mediaItem }, callback)
+    }
+
+    // Von vorn: der Server setzt ein begonnenes Buch beim Abspielen fort,
+    // also erst den Fortschritt verwerfen, dann spielen -- in Reihenfolge,
+    // das Abspielen wartet auf die Bestätigung.
+    function playFromStart(playerId, mediaItem, callback) {
+        setPlayed(mediaItem, false, function (err) {
+            if (err) {
+                if (callback) {
+                    callback(err)
+                }
+                return
+            }
+            store.playMedia(playerId, mediaItem.uri, "replace", callback)
+        })
+    }
+
     function seek(playerId, positionSeconds) {
         _send("player_queues/seek", { queue_id: playerId,
                                       position: Math.round(positionSeconds) })
     }
 
     function setVolume(playerId, level) {
-        _send("players/cmd/volume_set", { player_id: playerId,
-                                          volume_level: Math.round(level) })
+        _sendVolume("player:" + playerId, "players/cmd/volume_set",
+                    { player_id: playerId, volume_level: Math.round(level) })
+    }
+
+    // Lautstärkebefehle je Player in Reihenfolge, nie parallel: parallel
+    // abgeschickt kann ein älterer Wert nach einem neueren ankommen, und der
+    // Lautsprecher bliebe auf dem falschen stehen. Läuft schon einer, wird
+    // nur der neueste Wert gemerkt und nach dessen Antwort geschickt --
+    // Zwischenstufen eines Ziehens braucht niemand.
+    property var _volumeBusy: ({})
+    property var _volumeNext: ({})
+
+    function _sendVolume(key, command, args) {
+        if (_volumeBusy[key]) {
+            _volumeNext[key] = { command: command, args: args }
+            return
+        }
+        _volumeBusy[key] = true
+        if (!mass) {
+            _volumeBusy[key] = false
+            return
+        }
+        mass.sendCommand(command, args, function (err) {
+            if (err) {
+                store._noteError(err)
+                console.warn("PlayerStore:", command, "fehlgeschlagen:", err.hint)
+            }
+            store._volumeBusy[key] = false
+            var next = store._volumeNext[key]
+            if (next) {
+                delete store._volumeNext[key]
+                store._sendVolume(key, next.command, next.args)
+            }
+        })
     }
 
     function setMuted(playerId, muted) {
@@ -316,7 +425,7 @@ Item {
         }
         mass.sendCommand(command, args, function (err) {
             if (err) {
-                store.lastError = err.hint
+                store._noteError(err)
                 // Auch ins Journal: `lastError` zeigt nur die Seite an, die
                 // gerade offen ist -- ein Kommando vom Sperrbildschirm oder
                 // vom Cover scheiterte sonst vollkommen lautlos.
@@ -327,6 +436,15 @@ Item {
     }
 
     // --- Intern ----------------------------------------------------------
+
+    // "Keine Verbindung" nicht als Fehler unter die Bedienelemente schreiben:
+    // die Statuszeile sagt das schon, und nach dem Neuverbinden stünde die
+    // Meldung sonst veraltet da.
+    function _noteError(err) {
+        if (err && !err.offline) {
+            store.lastError = err.hint
+        }
+    }
 
     function _setPlayers(list) {
         players = Models.visiblePlayers(list, preferredPlayerId)
@@ -400,6 +518,7 @@ Item {
     Connections {
         target: mass
         onAuthenticated: store.refresh()
+        onResynced: store.refresh()
         onServerEvent: {
             switch (eventType) {
             case "player_added":

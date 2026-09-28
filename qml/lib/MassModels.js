@@ -1,4 +1,5 @@
 .pragma library
+.import "MassApi.js" as MassApi
 
 // Reine Rechen- und Lesehilfen auf den Server-Objekten (Player, PlayerQueue).
 // Keine Anzeigetexte: alles Sichtbare wird in QML mit qsTr() gebaut, damit die
@@ -89,7 +90,10 @@ function visiblePlayers(players, preferredId) {
 // (fertig aufbereitet, inklusive einer vollqualifizierten Bild-URL) und
 // `queue.current_item` (mit Dauer und Queue-Position). Diese Funktion nimmt von
 // beiden das Beste und liefert null, wenn nichts läuft.
-function nowPlaying(player, queue) {
+//
+// baseUrl ist die Adresse, über die die App verbunden ist; die Bildadresse
+// wird darauf umgeschrieben (MassApi.rebaseImageUrl).
+function nowPlaying(player, queue, baseUrl) {
     var media = player ? player.current_media : null
     var item = queue ? queue.current_item : null
     if (!media && !item) {
@@ -113,17 +117,107 @@ function nowPlaying(player, queue) {
         }
     }
 
+    var itemMedia = (item && item.media_item) ? item.media_item : null
+    var mediaType = (media && media.media_type) ? media.media_type
+                                                : (itemMedia ? itemMedia.media_type || "" : "")
+    var live = isLiveType(mediaType) || (itemMedia !== null && isLiveType(itemMedia.media_type))
+
+    // Bei einem Sender schickt MA 2.10.4 den Stream-Titel (ICY, oft
+    // "Interpret - Titel") als title, den Sender als artist und dessen
+    // Eintrag ("Radio SRF 3 (AAC 192)") als album. Diese Albumzeile
+    // wiederholt nur den Sender -- weglassen.
+    if (live && artist.length > 0
+            && album.toLowerCase().indexOf(artist.toLowerCase()) === 0) {
+        album = ""
+    }
+
     return {
         title: title,
         artist: artist,
         album: album,
         // image_url kommt bereits als vollständige /imageproxy-Adresse mit
-        // ?size=-Parameter vom Server -- nichts selbst zusammenbauen.
-        imageUrl: (media && media.image_url) ? media.image_url : "",
-        duration: durationOf(media, item),
-        mediaType: media ? media.media_type : (item && item.media_item
-                                               ? item.media_item.media_type : "")
+        // ?size=-Parameter vom Server -- gebaut wird nichts, nur der
+        // Adressteil vor /imageproxy ersetzt.
+        imageUrl: (media && media.image_url)
+                  ? MassApi.rebaseImageUrl(media.image_url, baseUrl) : "",
+        duration: live ? 0 : durationOf(media, item),
+        mediaType: mediaType,
+        isLive: live,
+        isSpoken: isSpokenType(mediaType)
+                  || (itemMedia !== null && isSpokenType(itemMedia.media_type)),
+        chapters: chaptersOf(itemMedia)
     }
+}
+
+// Radio ist ein Live-Strom: keine Länge, kein Springen, kein Zufall.
+function isLiveType(mediaType) {
+    return mediaType === "radio"
+}
+
+// Gesprochenes: statt Zufall/Wiederholen Sprünge um Sekunden, Kapitel und
+// Tempo.
+function isSpokenType(mediaType) {
+    return mediaType === "audiobook" || mediaType === "podcast_episode"
+}
+
+// Kapitel eines Hörbuchs aus `metadata.chapters` (position, name, start, end;
+// Sekunden ab Buchbeginn), nach Beginn sortiert. Der Queue-Eintrag trägt sie
+// im vollen media_item mit.
+function chaptersOf(mediaItem) {
+    var raw = (mediaItem && mediaItem.metadata && mediaItem.metadata.chapters)
+            ? mediaItem.metadata.chapters : []
+    var out = []
+    for (var i = 0; i < raw.length; i++) {
+        if (raw[i] && typeof raw[i].start === "number") {
+            out.push(raw[i])
+        }
+    }
+    out.sort(function (a, b) { return a.start - b.start })
+    return out
+}
+
+// Das Kapitel, in dem `elapsed` liegt, oder null.
+function currentChapter(chapters, elapsed) {
+    var found = null
+    for (var i = 0; i < (chapters || []).length; i++) {
+        if (chapters[i].start <= elapsed) {
+            found = chapters[i]
+        }
+    }
+    return found
+}
+
+// Innerhalb so vieler Sekunden nach einem Kapitelbeginn geht "Zurück" ins
+// vorige Kapitel statt an den Anfang des laufenden -- wie beim CD-Spieler.
+var PREVIOUS_CHAPTER_GRACE = 5
+
+// Wohin "Weiter" (forward) bzw. "Zurück" in einem Buch mit Kapiteln springt,
+// in Sekunden. -1 heisst: keine Kapitel oder keins mehr danach -- dann gilt
+// das gewöhnliche next/previous der Warteschlange.
+function chapterSeek(chapters, forward, elapsed) {
+    if (!chapters || chapters.length === 0) {
+        return -1
+    }
+    var i
+    if (forward) {
+        for (i = 0; i < chapters.length; i++) {
+            if (chapters[i].start > elapsed + 0.5) {
+                return Math.ceil(chapters[i].start)
+            }
+        }
+        return -1
+    }
+    var currentIndex = -1
+    for (i = 0; i < chapters.length; i++) {
+        if (chapters[i].start <= elapsed) {
+            currentIndex = i
+        }
+    }
+    var currentStart = currentIndex >= 0 ? chapters[currentIndex].start : 0
+    if (elapsed - currentStart > PREVIOUS_CHAPTER_GRACE) {
+        return Math.ceil(currentStart)
+    }
+    return currentIndex > 0 ? Math.ceil(chapters[currentIndex - 1].start) : 0
 }
 
 function durationOf(media, item) {
@@ -267,6 +361,22 @@ function groupLeaderOf(player) {
     return player.synced_to || player.active_group || ""
 }
 
+// Die Lautsprecher einer Gruppe, der Anführer zuerst. Ein fester
+// Gruppen-Player (`type === "group"`) spielt nicht selbst, dann nur seine
+// Mitglieder -- in der Reihenfolge, in der der Server sie führt.
+function groupMembers(leader, players) {
+    if (!leader) {
+        return []
+    }
+    var out = leader.type === "group" ? [] : [leader]
+    for (var i = 0; i < players.length; i++) {
+        if (isGroupMember(leader, players[i])) {
+            out.push(players[i])
+        }
+    }
+    return out
+}
+
 function hasGroupMembers(leader, players) {
     for (var i = 0; i < players.length; i++) {
         if (isGroupMember(leader, players[i])) {
@@ -318,4 +428,37 @@ function primaryAuthor(item) {
         return ""
     }
     return String(authors[0]).split(",")[0].trim()
+}
+
+// Alle Namen einer Autoren- oder Sprecherliste als eine Zeile. Die Einträge
+// sind je nach Serverstand Zeichenketten oder Objekte mit `name`; beides geht.
+function personNames(list) {
+    var names = []
+    for (var i = 0; i < (list || []).length; i++) {
+        var entry = list[i]
+        var name = (entry && typeof entry === "object") ? entry.name : entry
+        if (name) {
+            names.push(String(name))
+        }
+    }
+    return names.join(", ")
+}
+
+// `fully_played` ist bei Hörbüchern ein Bool, bei Podcast-Folgen 0/1.
+function isFullyPlayed(item) {
+    return !!item && (item.fully_played === true || item.fully_played === 1)
+}
+
+// Wo das Abspielen fortsetzt, in Sekunden; 0 wenn nie begonnen.
+function resumeSeconds(item) {
+    return (item && item.resume_position_ms > 0) ? item.resume_position_ms / 1000 : 0
+}
+
+// Anteil schon gehört (0..1), -1 wenn nie begonnen oder bereits beendet.
+function listenProgress(item) {
+    if (!item || isFullyPlayed(item) || !(item.duration > 0)) {
+        return -1
+    }
+    var resume = resumeSeconds(item)
+    return resume > 0 ? Math.min(resume / item.duration, 1) : -1
 }

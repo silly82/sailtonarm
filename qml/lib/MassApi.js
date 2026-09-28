@@ -115,6 +115,23 @@ function imageUrl(base, imageId, sizePx) {
     return url
 }
 
+// Setzt eine fertige Bildadresse vom Server auf die Adresse um, über die die
+// App tatsächlich verbunden ist. `current_media.image_url` baut der Server aus
+// seiner *eigenen* `base_url` -- das ist die LAN-Adresse. Über VPN, Tailscale
+// oder einen Reverse-Proxy zeigte das Cover dann auf eine Adresse, die das
+// Telefon nicht erreicht. Behalten wird alles ab `/imageproxy`, davor kommt
+// die konfigurierte Stammadresse samt Basispfad. Andere Adressen (ein Anbieter,
+// der eine eigene Bild-URL liefert) bleiben unverändert.
+function rebaseImageUrl(url, base) {
+    var raw = String(url || "")
+    var root = normalizeBaseUrl(base)
+    var at = raw.indexOf("/imageproxy")
+    if (at < 0 || root.length === 0) {
+        return raw
+    }
+    return root + raw.substring(at)
+}
+
 // GET /info -- die einzige Route, die ohne Token antwortet. Damit lässt sich in
 // den Einstellungen "erreichbar?" von "Token falsch?" trennen, bevor überhaupt
 // ein Socket aufgemacht wird.

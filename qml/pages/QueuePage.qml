@@ -19,6 +19,11 @@ Page {
 
     readonly property var player: store ? store.playerById(playerId) : null
     readonly property var queue: store ? store.queueOf(playerId) : null
+    // Bei einem Sender gibt es nichts zu mischen oder zu wiederholen.
+    readonly property bool live: {
+        var track = Models.nowPlaying(player, queue)
+        return track !== null && track.isLive
+    }
 
     allowedOrientations: defaultAllowedOrientations
 
@@ -82,6 +87,9 @@ Page {
     // Verschieben oder Löschen also nicht selbst raten, sondern neu holen.
     Connections {
         target: mass
+        // Nach der Rückkehr aus dem Hintergrund können Änderungen verpasst
+        // sein.
+        onResynced: page.reload()
         onServerEvent: {
             if (message.object_id !== page.playerId) {
                 return
@@ -115,6 +123,7 @@ Page {
             }
 
             TextSwitch {
+                visible: !page.live
                 text: qsTr("Zufällige Reihenfolge")
                 checked: page.queue ? page.queue.shuffle_enabled === true : false
                 enabled: page.queue !== null && mass && mass.ready
@@ -133,6 +142,7 @@ Page {
 
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
+                visible: !page.live
                 text: page.repeatLabel()
                 enabled: page.queue !== null && mass && mass.ready
                 onClicked: store.setRepeat(page.playerId, page.nextRepeatMode())
