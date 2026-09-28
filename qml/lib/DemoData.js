@@ -9,6 +9,18 @@
 // Einschalten des Demomodus wieder beim Ausgangszustand beginnt.
 
 var LIBRARY = "library"
+
+// [[Sekunden, Zeile], ...] -> LRC-Text, wie der Server ihn liefert.
+function lrc(rows) {
+    var out = []
+    for (var i = 0; i < rows.length; i++) {
+        var t = rows[i][0]
+        var m = Math.floor(t / 60)
+        var s = t % 60
+        out.push("[" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s + ".00] " + rows[i][1])
+    }
+    return out.join("\n")
+}
 var STREAM = "klangwelle--demo"
 
 function build(artBase) {
@@ -240,6 +252,42 @@ function build(artBase) {
         ],
         // Esszimmer hängt an Wohnzimmer.
         groups: [["demo-wohnzimmer", ["demo-esszimmer"]]],
+        // Songtexte (LRC, frei erfunden) für zwei Titel; alle anderen haben
+        // keinen, wie Instrumentals auf dem echten Server ([null, null]).
+        lyrics: {
+            "Weite Felder": lrc([
+                [4, "Der Wind geht durch das hohe Gras"],
+                [11, "und niemand fragt, wohin"],
+                [18, "Ich zähl die Wolken, eins und zwei"],
+                [25, "und weiß nicht mehr, wo ich bin"],
+                [33, ""],
+                [38, "Weite Felder, weiter Himmel"],
+                [45, "und ein Weg, der nirgends endet"],
+                [52, "Weite Felder, weiter Himmel"],
+                [59, "bis der Abend sich wendet"],
+                [67, ""],
+                [72, "Die Grillen singen ohne Takt"],
+                [79, "der Staub liegt golden auf dem Land"],
+                [86, "Ich hab die Karte längst verloren"],
+                [93, "und halt die Zeit in meiner Hand"],
+                [101, ""],
+                [106, "Weite Felder, weiter Himmel"],
+                [113, "und ein Weg, der nirgends endet"],
+                [120, "Weite Felder, weiter Himmel"],
+                [127, "bis der Abend sich wendet"],
+                [140, "…bis der Abend sich wendet"]
+            ]),
+            "Sommerregen": lrc([
+                [6, "Warme Tropfen auf dem Dach"],
+                [12, "die Straße riecht nach Staub und Glück"],
+                [19, "Wir bleiben unter der Markise"],
+                [25, "und keiner will zurück"],
+                [33, "Sommerregen, lass uns bleiben"],
+                [40, "bis das Licht die Pfützen färbt"],
+                [47, "Sommerregen, lass uns bleiben"],
+                [54, "bis der Himmel wieder lacht"]
+            ])
+        },
         // Der Sender schickt den laufenden Titel als title (ICY), wie echte
         // Sender in MA 2.10.4.
         radioTitles: {

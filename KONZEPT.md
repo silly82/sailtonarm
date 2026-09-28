@@ -1496,3 +1496,60 @@ wieder angehalten. Home Assistant meldete dabei die ganze Zeit "idle", weil
 dessen MA-Anbindung für diesen Player keine Updates mehr bekam; den
 tatsächlichen Zustand zeigte nur die App. Für künftige Geräteprüfungen gilt
 deshalb: ein Tipper, 4–5 s warten, Kontrollbild, erst dann der nächste.
+
+## 30. Update 2026-09-28: Songtexte und Einschlaftimer (v0.26)
+
+Zwei Ideen aus der Befehlsliste des Servers, die er fertig anbietet.
+
+### Songtexte
+
+**Vorher auf dem echten Server geprüft**, mit einem temporären Testbuild
+(ohne Token, danach zurückgenommen), an den vier Titeln, die gerade in den
+Warteschlangen standen:
+
+- `metadata/get_track_lyrics({track})` nimmt das **volle media_item** des
+  Queue-Eintrags und antwortet mit einem Paar `[einfach, lrc]`.
+- Auf dieser Anlage kam **nur die LRC-Fassung** (`[00:33.49] Zeile`, rund
+  1,8 KB), bei Apple-Music-Titeln wie bei Bibliothekstiteln; `einfach` war
+  immer `null`. Zwei der vier Titel lieferten `[null, null]`.
+- **Die erste Abfrage kann über 30 s dauern** (sie lief zunächst in die
+  Zeitüberschreitung, die Wiederholung kam durch). Die Seite wartet deshalb
+  bis 120 s und sagt beim Laden, warum es dauert.
+- `metadata.lyrics` / `lrc_lyrics` im Queue-Eintrag sind leer; abfragen ist
+  also nötig.
+- Ein eigener Songtext-Anbieter (etwa LRCLIB) ist auf dieser Anlage nicht
+  eingerichtet; die Texte kommen vom Streamingdienst bzw. aus den Dateien.
+
+Umsetzung: `LyricsPage.qml`, im Pulley-Menü von "Läuft gerade", nur bei
+Musiktiteln. `Models.parseLrc()` zerlegt den Text (mehrere Zeitmarken je
+Zeile, `[offset:]`, Kopfzeilen fallen weg). Die aktuelle Zeile ist gross und
+hervorgehoben und bleibt über den Highlight-Bereich der ListView in der
+Mitte; Vergangenes ist gedämpft. Ein Tipper auf eine Zeile springt dorthin.
+Nach eigenem Scrollen folgt die Liste 6 s lang nicht. Die Seite folgt dem
+Player: wechselt der Titel, kommt der neue Text. Ohne Zeitmarken zeigt sie
+den Text statisch.
+
+### Einschlaftimer
+
+`players/sleep_timer/set(player_id, seconds)` / `clear`; das Ablaufdatum
+führt der Server am Player als `sleep_timer_expires_at` (Unix-Zeit, im
+Schema von 2.10.4). Der Timer läuft also auf dem Server und greift auch,
+wenn das Telefon schläft.
+
+`SleepTimerPage.qml`: 15, 30, 45, 60, 90 Minuten oder bis zum Ende des
+Titels, bei Hörbüchern mit Kapiteln bis zum Kapitelende. "Läuft gerade"
+zeigt die Restzeit unter den Bedienelementen und im Pulley-Menü.
+
+### Demo und Geräteprüfung
+
+Der Demo-Server kennt beides: erfundene Songtexte für "Weite Felder" und
+"Sommerregen" (alle anderen Titel liefern wie Instrumentals nichts) und
+einen Einschlaftimer, der beim Ablauf anhält. Auf dem Telefon im Demomodus
+geprüft: mitlaufender Songtext, Sprung per Tipper, Timer "bis Titelende"
+stellen, Anzeige der Restzeit, Anhalten beim Ablauf. Gegen den echten Server
+ist die Songtext-Abfrage selbst geprüft (siehe oben), der Timer nicht. Beim
+Echtbetrieb hätte der Test Musik in einem Raum laufen lassen müssen.
+
+Nebenbei: "Läuft gerade" zog die Spielzeit nach der Rückkehr von einer
+Unterseite erst mit dem nächsten Takt nach und zeigte unter Last einige
+Sekunden die alte Position. Jetzt beim Aktivwerden sofort.

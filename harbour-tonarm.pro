@@ -58,6 +58,8 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/pages/PlaylistPage.qml \
     qml/pages/PodcastPage.qml \
     qml/pages/AudiobookPage.qml \
+    qml/pages/LyricsPage.qml \
+    qml/pages/SleepTimerPage.qml \
     qml/pages/RecentlyPlayedPage.qml \
     qml/pages/SearchPage.qml \
     qml/pages/QueuePage.qml \

@@ -25,6 +25,17 @@ Page {
     // dazwischen rechnet MassModels.elapsedSeconds() hoch.
     property real elapsed: 0
 
+    // Einschlaftimer: Restzeit, sekündlich nachgezogen solange einer läuft.
+    property real sleepNow: Date.now()
+    readonly property real sleepRemaining: Models.sleepRemaining(player, sleepNow)
+
+    Timer {
+        interval: 1000
+        repeat: true
+        running: page.status === PageStatus.Active && page.sleepRemaining > 0
+        onTriggered: page.sleepNow = Date.now()
+    }
+
     // Hörbuch mit Kapiteln: das Kapitel, in dem die Position liegt.
     readonly property var chapter: (track && track.isSpoken)
                                    ? Models.currentChapter(track.chapters, elapsed) : null
@@ -68,6 +79,10 @@ Page {
         syncSpeed()
     }
     onHasSpeedChanged: syncSpeed()
+    // Zurück von einer Unterseite (Songtext, Warteschlange): der Takt lief
+    // dort nicht, also sofort nachziehen statt eine Sekunde lang die alte
+    // Position zu zeigen.
+    onStatusChanged: if (status === PageStatus.Activating) refreshElapsed()
     Component.onCompleted: {
         refreshElapsed()
         syncSpeed()
@@ -89,6 +104,25 @@ Page {
                 text: qsTr("Aktualisieren")
                 enabled: mass && mass.ready
                 onClicked: store.refresh()
+            }
+            MenuItem {
+                text: page.sleepRemaining > 0
+                      ? qsTr("Einschlaftimer: noch %1 Min.").arg(Math.ceil(page.sleepRemaining / 60))
+                      : qsTr("Einschlaftimer")
+                enabled: mass && mass.ready && page.player !== null
+                onClicked: pageStack.push(Qt.resolvedUrl("SleepTimerPage.qml"),
+                                          { mass: page.mass, store: page.store,
+                                            playerId: page.playerId })
+            }
+            MenuItem {
+                text: qsTr("Songtext")
+                // Nur Musiktitel haben Songtexte; Radio, Hörbücher und
+                // Podcasts nicht.
+                visible: page.track !== null && page.track.mediaType === "track"
+                enabled: mass && mass.ready
+                onClicked: pageStack.push(Qt.resolvedUrl("LyricsPage.qml"),
+                                          { mass: page.mass, store: page.store,
+                                            playerId: page.playerId })
             }
             MenuItem {
                 text: qsTr("Warteschlange")
@@ -355,6 +389,25 @@ Page {
                                                            : qsTr("Einschalten")
                 onClicked: store.setPower(page.playerId,
                                           !(page.player && page.player.powered))
+            }
+
+            // Ein laufender Timer soll sichtbar sein, ohne das Pulley-Menü
+            // aufzuziehen -- sonst wundert man sich, warum die Musik stoppt.
+            BackgroundItem {
+                width: parent.width
+                height: Theme.itemSizeExtraSmall
+                visible: page.sleepRemaining > 0
+                onClicked: pageStack.push(Qt.resolvedUrl("SleepTimerPage.qml"),
+                                          { mass: page.mass, store: page.store,
+                                            playerId: page.playerId })
+                Label {
+                    anchors.centerIn: parent
+                    font.pixelSize: Theme.fontSizeSmall
+                    color: parent.highlighted ? Theme.highlightColor : Theme.secondaryHighlightColor
+                    text: page.sleepRemaining >= 60
+                          ? qsTr("Einschlaftimer: stoppt in %1 Min.").arg(Math.ceil(page.sleepRemaining / 60))
+                          : qsTr("Einschlaftimer: stoppt in %1 s").arg(Math.ceil(page.sleepRemaining))
+                }
             }
 
             Label {

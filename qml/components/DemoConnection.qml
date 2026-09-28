@@ -495,6 +495,19 @@ Item {
         onTriggered: {
             ticks += 1
             var changed = false
+            // Einschlaftimer: abgelaufen -> anhalten, wie der Server.
+            var ps = demo._data.players
+            for (var pi = 0; pi < ps.length; pi++) {
+                var sp = ps[pi]
+                if (sp.sleep_timer_expires_at > 0 && sp.sleep_timer_expires_at <= demo._now()) {
+                    sp.sleep_timer_expires_at = null
+                    var sq = demo._queueId(sp.player_id)
+                    if (demo._queues[sq].state === "playing") {
+                        demo._setState(sq, "paused")
+                    }
+                    changed = true
+                }
+            }
             for (var qid in demo._queues) {
                 var q = demo._queues[qid]
                 if (q.state !== "playing" || !q.current_item) {
@@ -817,6 +830,20 @@ Item {
             }
             _changed()
             return null
+        case "players/sleep_timer/set":
+            p = _player(args.player_id)
+            p.sleep_timer_expires_at = _now() + args.seconds
+            _changed()
+            return p.sleep_timer_expires_at
+        case "players/sleep_timer/clear":
+            _player(args.player_id).sleep_timer_expires_at = null
+            _changed()
+            return null
+        case "players/sleep_timer/get":
+            return _player(args.player_id).sleep_timer_expires_at || null
+        case "metadata/get_track_lyrics":
+            var text = args.track ? _data.lyrics[args.track.name] : null
+            return [null, text || null]
         case "players/cmd/power":
             _player(args.player_id).powered = args.powered === true
             _changed()
