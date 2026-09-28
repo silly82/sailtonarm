@@ -1172,6 +1172,26 @@
         <source>Ein erfundener Server mit fünf Räumen, Musik, Radio, einem Hörbuch und einem Podcast — zum Ausprobieren ohne eigenen Server. Die echte Verbindung ruht solange; die Zugangsdaten bleiben erhalten.</source>
         <translation>A made-up server with five rooms, music, radio, an audiobook and a podcast — to try the app without a server of your own. The real connection rests meanwhile; your credentials are kept.</translation>
     </message>
+    <message>
+        <source>Cover-Zwischenspeicher</source>
+        <translation>Artwork cache</translation>
+    </message>
+    <message>
+        <source>%1 KB</source>
+        <translation>%1 KB</translation>
+    </message>
+    <message>
+        <source>%1 MB</source>
+        <translation>%1 MB</translation>
+    </message>
+    <message>
+        <source>Cover-Zwischenspeicher leeren</source>
+        <translation>Clear artwork cache</translation>
+    </message>
+    <message>
+        <source>Einmal geladene Cover bleiben auf dem Gerät (höchstens 100 MB) und kommen nach einem Neustart nicht wieder über das Netz — das spart unterwegs Mobilfunkdaten.</source>
+        <translation>Artwork stays on the device once loaded (up to 100 MB) and does not come over the network again after a restart — this saves mobile data when you are out.</translation>
+    </message>
 </context>
 <context>
     <name>TrackNotifier</name>

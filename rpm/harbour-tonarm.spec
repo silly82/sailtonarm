@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.24
+Version:    0.25
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -23,6 +23,7 @@ Requires:   nemo-qml-plugin-notifications-qt5
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
+BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(sailfishsecrets)
 BuildRequires:  desktop-file-utils
@@ -67,6 +68,12 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.25-1
+- Cover bleiben auf dem Gerät (höchstens 100 MB) und kommen nach einem
+  Neustart nicht wieder über das Netz -- das spart unterwegs
+  Mobilfunkdaten. Die Einstellungen zeigen die Grösse und können den
+  Zwischenspeicher leeren.
+
 * Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.24-1
 - Demomodus (Einstellungen): ein erfundener Server mit fünf Räumen,
   Musik, Radio, einem Hörbuch und einem Podcast, ganz ohne Netz. Zum

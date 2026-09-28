@@ -76,6 +76,8 @@ aufzeichnen und abspielen" -- einen feineren Weg gibt es nicht.
 - **Zweite Adresse für unterwegs** (VPN, Tailscale, Reverse-Proxy): die App
   versucht zuerst die Heimadresse, eine halbe Sekunde später die andere, und
   nimmt, was zuerst antwortet
+- **Cover bleiben auf dem Gerät** (höchstens 100 MB) und kommen nach einem
+  Neustart nicht wieder über das Netz
 - Serveradresse und Zugriffstoken verschlüsselt über Sailfish Secrets
   (`src/credentials.{h,cpp}`), Erreichbarkeitstest gegen `GET /info`
 - WebSocket-Verbindung mit `ServerInfo`/`auth`-Handshake, automatischer
@@ -117,37 +119,65 @@ python3 icons/source/generate-icon.py   # braucht python3-cairo
 ## Aufbau
 
 ```
-src/credentials.{h,cpp}            Sailfish Secrets (aus harbour-hacontrol übernommen)
-src/harbour-tonarm.cpp             nur QML laden + Credentials als Kontext-Property
-qml/harbour-tonarm.qml             Wurzelfenster, hält Verbindung und Zustand
-qml/components/MassConnection.qml  WebSocket, Handshake, Kommandos, Events, Reconnect
-qml/components/PlayerStore.qml     Player und Warteschlangen, per Events aktuell
-qml/lib/MassApi.js                 URL-Ableitung, Nachrichtenbau, /info-Probe
-qml/lib/MassModels.js              Fähigkeiten, Spielzeit, Now-Playing-Aufbereitung
+src/credentials.{h,cpp}            Sailfish Secrets: Adresse, Token, Adresse unterwegs
+src/covercache.{h,cpp}             Cover-Zwischenspeicher auf der Platte (QNetworkDiskCache)
+src/harbour-tonarm.cpp             QML laden, Cache-Fabrik, Kontext-Properties
+qml/harbour-tonarm.qml             Wurzelfenster: Verbindung (echt oder Demo) und Zustand
+qml/components/MassConnection.qml  WebSocket(s), Handshake, Kommandos, Events, Reconnect,
+                                   Heim-/Unterwegs-Adresse im Wettlauf
+qml/components/DemoConnection.qml  Demomodus: Music-Assistant-Server im Speicher
+qml/components/PlayerStore.qml     Player und Warteschlangen, per Events aktuell; Kommandos
+qml/components/VolumeSlider.qml    Lautstärke live beim Ziehen, ohne Zurückspringen
 qml/components/MediaListItem.qml   Bibliothekszeile samt Abspiel-Kontextmenü
 qml/components/StatusToast.qml     kurze Rückmeldung am unteren Rand
 qml/components/MprisBridge.qml     MPRIS-Dienst für Sperrbildschirm/Medientasten
 qml/components/TrackNotifier.qml   optionale Meldung bei Titelwechsel
+qml/lib/MassApi.js                 URL-Ableitung, Nachrichtenbau, /info-Probe
+qml/lib/MassModels.js              Fähigkeiten, Spielzeit, Now Playing, Kapitel, Gruppen
+qml/lib/Navigate.js                wohin ein angetipptes Medienobjekt führt
+qml/lib/DemoData.js                erfundener Bestand des Demomodus
+qml/demo/art/                      Cover des Demomodus (store/generate-demo-art.py)
 qml/pages/PlayersPage.qml          Startseite: die Player der Anlage
-qml/pages/NowPlayingPage.qml       Cover, Titel, Transport, Lautstärke
+qml/pages/NowPlayingPage.qml       Cover, Titel, Transport, Lautstärke; Radio, Kapitel, Tempo
 qml/pages/LibraryPage.qml          Einstieg: Medientypen mit Anzahl
 qml/pages/MediaListPage.qml        seitenweise Liste je Medientyp, durchsuchbar
+qml/pages/RecentlyPlayedPage.qml   Zuletzt gehört / Weiterhören
 qml/pages/AlbumPage.qml            Album mit Titelliste
 qml/pages/ArtistPage.qml           Interpret mit Alben
 qml/pages/PlaylistPage.qml         Playlist mit Titeln
-qml/pages/SearchPage.qml           Suche über alle Medientypen
+qml/pages/PodcastPage.qml          Podcast mit Folgen
+qml/pages/AudiobookPage.qml        Hörbuch: Fortschritt, Weiterhören, Kapitel
+qml/pages/SearchPage.qml           Suche über alle Medientypen, überall oder nur Bibliothek
 qml/pages/QueuePage.qml            Warteschlange ansehen und bearbeiten
-qml/pages/GroupPage.qml            Lautsprecher zusammenschalten
+qml/pages/GroupPage.qml            Lautsprecher zusammenschalten, Einzellautstärken
 qml/pages/SavePlaylistDialog.qml   Name für die gespeicherte Warteschlange
 qml/pages/PlayerPickerPage.qml     Player auswählen (Ziel oder Übergabe)
-qml/pages/SettingsPage.qml         Adresse, Token, Erreichbarkeitstest, Serverangaben
-qml/cover/CoverPage.qml            Verbindungszustand (ab Stufe 4: laufendes Stück)
+qml/pages/SettingsPage.qml         Adressen, Token, Tests, Demo, Anzeige, Cache, Serverangaben
+qml/cover/CoverPage.qml            laufendes Stück mit Play/Pause und Weiter
+scripts/ma-probe.mjs               den Server befragen, bevor QML entsteht
 ```
+
+## Den Server befragen
+
+`scripts/ma-probe.mjs` (Node 22+) zeigt, welche Kommandos der Server kennt und
+wie seine Antworten tatsächlich aussehen -- Feldnamen vom echten Server, nicht
+aus der Dokumentation. Zugangsdaten stehen in `.env` im Projektverzeichnis
+(`MA_URL=…`, `MA_TOKEN=…`; steht in `.gitignore`).
+
+```sh
+node scripts/ma-probe.mjs                          # Übersicht: Server, Player, Bibliothek
+node scripts/ma-probe.mjs --find playback_speed    # Kommandos suchen (ohne Token)
+node scripts/ma-probe.mjs music/audiobooks/library_items '{"limit":1}'
+node scripts/ma-probe.mjs --events 20              # 20 s Ereignisse mitschneiden
+```
+
+Lange Listen werden gekürzt (`--full` zeigt alles). Achtung: Das Skript führt
+jedes Kommando aus, auch schreibende wie `player_queues/play_media`.
 
 ## Sprache
 
 Deutsch und Englisch. Die Quelltext-Strings sind deutsch, Englisch liegt als
-vollständige Übersetzung in `translations/harbour-tonarm-en.ts` (188 von 188
+vollständige Übersetzung in `translations/harbour-tonarm-en.ts` (284 von 284
 Einträgen) und wird beim Bauen zu `harbour-tonarm-en.qm` übersetzt.
 
 ## Store-Material

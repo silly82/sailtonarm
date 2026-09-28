@@ -1,6 +1,6 @@
 # TODO: lessons from the iOS app
 
-Findings from [Tonarm for iOS](https://github.com/silly82/Tonarm) (SwiftUI, same Music Assistant API, same server MA 2.10.4, schema 65) that apply to this Sailfish client. Checked against the code of v0.18 on 2026-09-27; each item says what is here today. Ordered by value for effort. Sections 1 and 4 are done in v0.20 (KONZEPT section 24), section 2 in v0.21 (section 25), section 3 in v0.22 (section 26), section 5 in v0.23 (section 27), demo mode in v0.24 (section 28).
+Findings from [Tonarm for iOS](https://github.com/silly82/Tonarm) (SwiftUI, same Music Assistant API, same server MA 2.10.4, schema 65) that apply to this Sailfish client. Checked against the code of v0.18 on 2026-09-27; each item says what is here today. Ordered by value for effort. Sections 1 and 4 are done in v0.20 (KONZEPT section 24), section 2 in v0.21 (section 25), section 3 in v0.22 (section 26), section 5 in v0.23 (section 27), demo mode in v0.24 (section 28), artwork cache and probe script in v0.25 (section 29).
 
 ## 1. Bugs and gaps that are cheap to close
 
@@ -39,8 +39,8 @@ Today an audiobook plays from the context menu only. The API facts from Tonarm (
 ## 6. Store, tests, tooling
 
 - [x] **Demo mode.** Tonarm has an in-memory MA server (four made-up rooms, library, groups, an audiobook, radio) behind the same transport interface. Here it would be a `DemoConnection.qml` with the same API as `MassConnection` (`sendCommand`, `serverEvent`, `ready`). It solves what `store/README.md` leaves open: screenshots of the player list, Now Playing and the queue without showing the rooms of the flat. Also a first look for people without a server.
-- [ ] **Artwork disk cache.** The image proxy answers with `Cache-Control: max-age` of a year. QML's `Image` caches in memory only; a `QQmlNetworkAccessManagerFactory` with a `QNetworkDiskCache` (in the app's cache directory, e.g. 100 MB) in `harbour-tonarm.cpp` keeps covers across starts and saves mobile data. Check Harbour: `QNetworkDiskCache` is part of Qt5Network, so it should pass.
-- [ ] **Server probe script.** Take over `scripts/ma-probe.mjs` from Tonarm (connect, hello, auth, `players/all`; token from `.env`, gitignored) for checking API shapes before writing QML, the discipline from KONZEPT sections 12 and 15.
+- [x] **Artwork disk cache.** The image proxy answers with `Cache-Control: max-age` of a year. QML's `Image` caches in memory only; a `QQmlNetworkAccessManagerFactory` with a `QNetworkDiskCache` (in the app's cache directory, e.g. 100 MB) in `harbour-tonarm.cpp` keeps covers across starts and saves mobile data. Check Harbour: `QNetworkDiskCache` is part of Qt5Network, so it should pass.
+- [x] **Server probe script.** Take over `scripts/ma-probe.mjs` from Tonarm (connect, hello, auth, `players/all`; token from `.env`, gitignored) for checking API shapes before writing QML, the discipline from KONZEPT sections 12 and 15.
 - [ ] **Previous restarts the track** a few seconds in (server behaviour, checked live): no code change, but MPRIS and the button should not try to be smarter.
 
 Not applicable: Siri/App Intents, keyboard shortcuts and menu bar, iPhone Duo fold layout, iPad grids, Dynamic Type (Silica scales with the theme), TestFlight.
@@ -49,7 +49,7 @@ Not applicable: Siri/App Intents, keyboard shortcuts and menu bar, iPhone Duo fo
 
 # TODO: Erkenntnisse aus der iOS-App (Deutsch)
 
-Befunde aus [Tonarm für iOS](https://github.com/silly82/Tonarm) (SwiftUI, dieselbe Music-Assistant-API, derselbe Server MA 2.10.4, Schema 65), die auf diesen Sailfish-Client passen. Am 27.9.2026 gegen den Code von v0.18 geprüft; jeder Punkt sagt, was hier heute steht. Sortiert nach Nutzen pro Aufwand. Abschnitte 1 und 4 sind in v0.20 erledigt (KONZEPT Abschnitt 24), Abschnitt 2 in v0.21 (Abschnitt 25), Abschnitt 3 in v0.22 (Abschnitt 26), Abschnitt 5 in v0.23 (Abschnitt 27), Demomodus in v0.24 (Abschnitt 28).
+Befunde aus [Tonarm für iOS](https://github.com/silly82/Tonarm) (SwiftUI, dieselbe Music-Assistant-API, derselbe Server MA 2.10.4, Schema 65), die auf diesen Sailfish-Client passen. Am 27.9.2026 gegen den Code von v0.18 geprüft; jeder Punkt sagt, was hier heute steht. Sortiert nach Nutzen pro Aufwand. Abschnitte 1 und 4 sind in v0.20 erledigt (KONZEPT Abschnitt 24), Abschnitt 2 in v0.21 (Abschnitt 25), Abschnitt 3 in v0.22 (Abschnitt 26), Abschnitt 5 in v0.23 (Abschnitt 27), Demomodus in v0.24 (Abschnitt 28), Cover-Cache und Probe-Skript in v0.25 (Abschnitt 29).
 
 ## 1. Fehler und Lücken, die sich billig schliessen lassen
 
@@ -88,8 +88,8 @@ Heute spielt ein Hörbuch nur über das Kontextmenü. Die API-Fakten aus Tonarm 
 ## 6. Store, Tests, Werkzeuge
 
 - [x] **Demomodus.** Tonarm hat einen MA-Server im Speicher (vier erfundene Räume, Bibliothek, Gruppen, ein Hörbuch, Radio) hinter derselben Transport-Schnittstelle. Hier wäre das ein `DemoConnection.qml` mit derselben API wie `MassConnection` (`sendCommand`, `serverEvent`, `ready`). Das löst, was `store/README.md` offen lässt: Bildschirmfotos von Player-Liste, Now Playing und Warteschlange, ohne die Räume der Wohnung zu zeigen. Dazu ein erster Blick für Leute ohne Server.
-- [ ] **Cover-Cache auf der Platte.** Der Bildproxy antwortet mit `Cache-Control: max-age` von einem Jahr. QMLs `Image` cacht nur im Speicher; eine `QQmlNetworkAccessManagerFactory` mit `QNetworkDiskCache` (im Cache-Verzeichnis der App, z. B. 100 MB) in `harbour-tonarm.cpp` behält Cover über Neustarts und spart Mobilfunkdaten. Harbour prüfen: `QNetworkDiskCache` gehört zu Qt5Network, sollte also durchgehen.
-- [ ] **Server-Probe-Skript.** `scripts/ma-probe.mjs` aus Tonarm übernehmen (verbinden, hello, auth, `players/all`; Token aus `.env`, gitignored), um API-Formen zu prüfen, bevor QML entsteht -- die Disziplin aus KONZEPT Abschnitt 12 und 15.
+- [x] **Cover-Cache auf der Platte.** Der Bildproxy antwortet mit `Cache-Control: max-age` von einem Jahr. QMLs `Image` cacht nur im Speicher; eine `QQmlNetworkAccessManagerFactory` mit `QNetworkDiskCache` (im Cache-Verzeichnis der App, z. B. 100 MB) in `harbour-tonarm.cpp` behält Cover über Neustarts und spart Mobilfunkdaten. Harbour prüfen: `QNetworkDiskCache` gehört zu Qt5Network, sollte also durchgehen.
+- [x] **Server-Probe-Skript.** `scripts/ma-probe.mjs` aus Tonarm übernehmen (verbinden, hello, auth, `players/all`; Token aus `.env`, gitignored), um API-Formen zu prüfen, bevor QML entsteht -- die Disziplin aus KONZEPT Abschnitt 12 und 15.
 - [ ] **Zurück startet den Titel neu**, wenn er schon einige Sekunden läuft (Serververhalten, live geprüft): keine Codeänderung, aber MPRIS und der Knopf sollten nicht klüger sein wollen.
 
 Nicht übertragbar: Siri/App Intents, Tastenkürzel und Menüleiste, Falz-Layout des iPhone Duo, iPad-Raster, Dynamic Type (Silica skaliert mit dem Theme), TestFlight.

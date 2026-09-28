@@ -112,6 +112,9 @@ Page {
     }
 
     onStatusChanged: {
+        if (status === PageStatus.Activating) {
+            CoverCache.refresh()
+        }
         if (status === PageStatus.Deactivating) {
             saveIfComplete()
             saveAwayIfChanged()
@@ -306,6 +309,31 @@ Page {
                 id: portraitSetting
                 key: "/apps/harbour-tonarm/lockPortrait"
                 defaultValue: false
+            }
+
+            // Cover liegen auf der Platte (src/covercache.h) und kommen nach
+            // einem Neustart nicht erneut über das Netz.
+            DetailItem {
+                label: qsTr("Cover-Zwischenspeicher")
+                value: CoverCache.sizeBytes < 1024 * 1024
+                       ? qsTr("%1 KB").arg(Math.round(CoverCache.sizeBytes / 1024))
+                       : qsTr("%1 MB").arg((CoverCache.sizeBytes / (1024 * 1024)).toFixed(1))
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Cover-Zwischenspeicher leeren")
+                enabled: CoverCache.sizeBytes > 0
+                onClicked: CoverCache.clear()
+            }
+
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * Theme.horizontalPageMargin
+                wrapMode: Text.Wrap
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryHighlightColor
+                text: qsTr("Einmal geladene Cover bleiben auf dem Gerät (höchstens 100 MB) und kommen nach einem Neustart nicht wieder über das Netz — das spart unterwegs Mobilfunkdaten.")
             }
 
             SectionHeader { text: qsTr("Benachrichtigungen") }

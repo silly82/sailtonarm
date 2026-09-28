@@ -15,3 +15,6 @@ translations/*.qm
 # gepflegt wird nur harbour-tonarm-en.ts.
 translations/harbour-tonarm.ts
 documentation.list
+
+# Zugangsdaten für scripts/ma-probe.mjs -- nie einchecken.
+.env
