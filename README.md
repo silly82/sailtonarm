@@ -43,6 +43,10 @@ gegen einen echten Server.
   ihn ("Apple Music · Interpret")
 - **Abspielen aus jeder Liste** per Kontextmenü (jetzt spielen, als Nächstes,
   anhängen); auf welchem Player das landet, wählt man einmal aus
+- **Ähnliches abspielen** zu einem Titel, einem Interpreten oder dem, was
+  gerade läuft: der Server legt eine endlose Folge passender Titel an
+- **Interpretenseite** mit Titeln (bei einem Streamingdienst die beliebtesten
+  zuerst), Alben und ähnlichen Interpreten
 - **Warteschlange**: sehen, was noch kommt, per Tippen dorthin springen,
   Einträge verschieben oder entfernen; zufällige Reihenfolge, Überblenden und
   Wiederholen; an einen anderen Player übergeben, als Playlist speichern oder
@@ -145,7 +149,7 @@ qml/pages/LibraryPage.qml          Einstieg: Medientypen mit Anzahl
 qml/pages/MediaListPage.qml        seitenweise Liste je Medientyp, durchsuchbar
 qml/pages/RecentlyPlayedPage.qml   Zuletzt gehört / Weiterhören
 qml/pages/AlbumPage.qml            Album mit Titelliste
-qml/pages/ArtistPage.qml           Interpret mit Alben
+qml/pages/ArtistPage.qml           Interpret: Titel, Alben, ähnliche Interpreten
 qml/pages/PlaylistPage.qml         Playlist mit Titeln
 qml/pages/PodcastPage.qml          Podcast mit Folgen
 qml/pages/AudiobookPage.qml        Hörbuch: Fortschritt, Weiterhören, Kapitel

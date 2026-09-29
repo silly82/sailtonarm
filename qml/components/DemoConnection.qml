@@ -662,6 +662,15 @@ Item {
             qid = _queueId(args.queue_id)
             q = _queues[qid]
             var medias = _resolve(args.media)
+            // Radio-Modus: eine lange, gemischte Folge "Ähnlicher" -- hier
+            // einfach die übrige Bibliothek; der Server schaltet dabei die
+            // Zufallswiedergabe ein, wie das echte Endless-Mix-Plugin.
+            if (args.radio_mode === true) {
+                var seeds = medias
+                medias = _data.tracks.filter(function (t) { return seeds.indexOf(t) < 0 })
+                medias.sort(function () { return Math.random() - 0.5 })
+                medias = medias.slice(0, 25)
+            }
             if (args.shuffle === true) {
                 medias.sort(function () { return Math.random() - 0.5 })
             }
@@ -688,6 +697,9 @@ Item {
             }
             q.items = _items[qid].length
             q.active = true
+            if (args.radio_mode === true) {
+                q.shuffle_enabled = true
+            }
             _changed(qid)
             return null
         case "player_queues/move_item":
@@ -855,6 +867,22 @@ Item {
                 return _data.stream.tracks
             }
             return _data.tracksByAlbum[args.item_id] || []
+        case "music/artists/artist_tracks":
+            var own = []
+            for (i = 0; i < _data.albums.length; i++) {
+                if (_data.albums[i].artists[0].item_id === args.item_id) {
+                    own = own.concat(_data.tracksByAlbum[_data.albums[i].item_id])
+                }
+            }
+            return own
+        case "music/artists/similar_artists":
+            // Alle anderen, dazu der eine aus dem "Streaming-Katalog" --
+            // wie auf dem echten Server gemischt.
+            return _data.artists.filter(function (a) { return a.item_id !== args.item_id })
+                    .concat(_data.stream.artists).slice(0, args.limit || 20)
+        case "music/tracks/similar_tracks":
+            item = _findByUri("library://track/" + args.item_id)
+            return item ? [item, _data.tracks[(_data.tracks.indexOf(item) + 7) % _data.tracks.length]] : []
         case "music/artists/artist_albums":
             return _data.albums.filter(function (a) { return a.artists[0].item_id === args.item_id })
         case "music/playlists/playlist_tracks":

@@ -1564,3 +1564,60 @@ Lautsprecher (gestartet über Home Assistant, nicht per Touch):
 Nebenbei: "Läuft gerade" zog die Spielzeit nach der Rückkehr von einer
 Unterseite erst mit dem nächsten Takt nach und zeigte unter Last einige
 Sekunden die alte Position. Jetzt beim Aktivwerden sofort.
+
+## 31. Update 2026-09-29: Ähnliches abspielen, Interpretenseite (v0.27)
+
+Drei Punkte aus der Liste der "low hanging fruit", die der Server fertig
+anbietet. Vorher mit einem temporären Testbuild am echten Server vermessen
+(danach zurückgenommen) -- und dabei hat sich der geplante Weg für
+"Ähnliches abspielen" als unbrauchbar herausgestellt.
+
+### Was der Server liefert (MA 2.10.4, Last.fm aktiv)
+
+- **`music/tracks/similar_tracks` taugt nicht für eine Warteschlange.** Für
+  jeden der vier geprüften Titel kamen genau zwei Einträge: der Titel selbst
+  und ein einziger ähnlicher, mit und ohne `allow_lookup`. Das wäre eine
+  Warteschlange aus zwei Titeln gewesen.
+- **`player_queues/play_media` mit `radio_mode: true`** baut dagegen eine
+  echte, lange Folge (das Plugin "Endless Mix Playlists"). Auf dem Gerät
+  geprüft: aus "Rein Me In" wurden Bebe Rexha, Hozier, OneRepublic, Calvin
+  Harris & Dua Lipa, Sam Smith, Olivia Rodrigo, Ariana Grande, Ed Sheeran
+  und weitere. Der Server schaltet dabei die Zufallswiedergabe der Queue
+  ein. `radio_mode` führt die Befehlsliste als veraltet ("übersetzt in eine
+  radio_playlist://-Adresse"); deren Form ist nicht dokumentiert, der
+  Schalter funktioniert.
+- **`music/artists/artist_tracks`**: bei einem Streaming-Interpreten dessen
+  Reihenfolge, die bekanntesten Titel zuerst (Sam Smith: 353, Apple Music),
+  bei einem Bibliotheks-Interpreten alle eigenen Titel alphabetisch. Das
+  Nachschlagen über die Apple-Music-Zuordnung eines Bibliotheks-Interpreten
+  brachte nichts (0 Titel). Für Streaming-Interpreten dauert die erste
+  Abfrage deutlich länger als Alben und ähnliche Interpreten.
+- **`music/artists/similar_artists`**: 10 bis 20 Interpreten mit Bild,
+  gemischt aus Bibliothek und Dienst.
+
+### Umsetzung
+
+- `PlayerStore.playSimilar()`: `play_media` mit `radio_mode`, ersetzt die
+  Warteschlange. Im Kontextmenü von Titeln und Interpreten
+  (`MediaListItem`), in "Läuft gerade" für den laufenden Musiktitel und auf
+  der Interpretenseite.
+- `ArtistPage.qml` ist jetzt eine Liste mit Abschnitten, gebaut wie die
+  Suchseite: "Beliebte Titel" (beim Dienst) bzw. "Titel" (Bibliothek), erst
+  zehn, dann "Alle n Titel zeigen"; "Alben"; "Ähnliche Interpreten" (mit dem
+  Dienst in der Unterzeile, wenn nicht in der Bibliothek; ein Tipper öffnet
+  deren Seite). Die drei Abfragen laufen unabhängig; was zuerst da ist, steht
+  zuerst da, und solange noch etwas lädt, sagt das ein Hinweis am
+  Listenende. Oben "Abspielen" und "Ähnliches".
+- Der Demo-Server kennt die drei Kommandos und `radio_mode`.
+
+### Auf dem Gerät geprüft
+
+Gegen den echten Server: Interpretenseite eines Bibliotheks-Interpreten
+(Adele: 2 Titel, 2 Alben, 20 ähnliche) und eines Streaming-Interpreten (Sam
+Smith: 353 beliebte Titel, 136 Alben, 10 ähnliche), der Wechsel von einem
+zum anderen über "Ähnliche Interpreten", das Kontextmenü mit "Ähnliches
+abspielen" und die endlose Folge per `radio_mode` (leise auf einem
+Lautsprecher, gestartet über Home Assistant, danach angehalten). Das
+Abspielen über die neuen Menüeinträge selbst ist nicht angetippt worden --
+das hätte die Warteschlange eines Raums ersetzt; es ruft denselben Befehl
+auf, der geprüft ist.
