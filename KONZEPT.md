@@ -1653,3 +1653,59 @@ Die zweite Cover-Aktion ist dort +30 s statt "nächster Titel" (Symbol
 Cover nicht), und das Cover zeigt das aktuelle Kapitel, nachgezogen alle
 5 s, solange es sichtbar ist. Im Demomodus auf dem Gerät gemessen: Position
 1:52:14, Tipper auf dem Cover, 31 s später 1:53:15.
+
+## 33. Update 2026-09-29: Podcast-Folgen wie im Podcatcher (v0.29)
+
+In Music Assistant ist jetzt ein Podcast-Anbieter eingerichtet, der mit dem
+Podcatcher Overcast abgleicht (Anbieter `overcast`, Fähigkeiten nur
+`browse` und `library_podcasts`). Vorher mit einem temporären Testbuild
+vermessen (danach zurückgenommen):
+
+- 72 Podcasts in der Bibliothek. `podcast_episodes` liefert je Podcast nur
+  die **letzten rund zehn Folgen** (so viel gibt Overcast weiter), nach
+  Folgennummer absteigend, also neueste zuerst.
+- Jede Folge trägt `metadata.release_date` (ISO 8601), `metadata.description`
+  (aus dem Feed, oft mit HTML), `duration`, `position` und den Stand aus
+  Overcast: `fully_played` true bei gehörten, `null` bei neuen,
+  `resume_position_ms` bei begonnenen. Bei "Bits und so" waren 9 von 10 als
+  gehört markiert, nur die gestrige Folge nicht -- genau wie in Overcast.
+- `music/in_progress_items` liefert jetzt 50 Einträge, fast alles ältere
+  Folgen eines einzigen Podcasts, und zwar als schlanke Verweise ohne
+  Fortschritt. "Weiterhören" ist dadurch voller, aber nicht sortierbar.
+
+### Umsetzung
+
+- Folgenzeile: Datum statt "Folge n" ("heute", "gestern", "vor 3 Tagen",
+  sonst das Datum), Dauer und Stand ("neu", "43 % gehört", "gehört");
+  gehörte Folgen gedämpft. Ein Tipper spielt die Folge auf dem Ziel-Player
+  (vorher nur über das Kontextmenü).
+- `MediaListItem` kann jetzt bei Folgen und Hörbüchern "Als gehört / nicht
+  gehört markieren" (`music/mark_played` / `mark_unplayed`, Stand lokal
+  gemerkt wie beim Favoriten) und optional "Beschreibung".
+- `EpisodePage.qml`: Titel, Datum, Dauer, Stand, Abspielen/Weiterhören und
+  die Beschreibung, mit `Models.plainText()` von HTML befreit.
+- Demo-Folgen haben Datum und Beschreibung.
+
+### Auf dem Gerät
+
+Gegen den echten Server, ohne Touch-Eingaben: Ein temporärer Testcode
+öffnete "Bits und so" und die Beschreibung der neuesten Folge selbst (danach
+zurückgenommen, der Build ohne ihn neu installiert). Liste und Beschreibung
+sahen aus wie geplant. Grund für den Umweg: Das Telefon lief wieder unter
+hoher Last, und verspätete Touch-Eingaben öffneten "Läuft gerade" eines
+Raums und verschoben dessen Lautstärke (sofort zurückgestellt).
+
+**"Als gehört markieren" wirkt bei Overcast-Folgen gar nicht**, mit
+Zustimmung an einer Folge geprüft (per temporärem Testcode, ohne Touch):
+`mark_unplayed` und danach `mark_played` antworten beide "ok", aber die
+Folge meldet dazwischen weiterhin `fully_played: true` -- über die
+Bibliothek wie direkt beim Anbieter (`podcast_episode` mit der
+Overcast-Instanz). Den Hörstand führt allein Overcast, und die Markierung
+geht weder dorthin noch überdeckt sie ihn in Music Assistant. Der Stand in
+Overcast war vorher und nachher "gehört".
+
+Folge für die App: `MediaListItem` liest bei Podcast-Folgen nach dem
+Markieren die Folge beim Server nach und übernimmt den neuen Stand nur, wenn
+der Server ihn auch meldet; sonst sagt eine Meldung, dass der Anbieter den
+Hörstand selbst führt. Ohne diese Prüfung hätte die Zeile "als nicht
+gehört markiert" gezeigt und beim nächsten Laden wieder "gehört".

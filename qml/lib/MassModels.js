@@ -533,3 +533,36 @@ function sleepRemaining(player, nowMs) {
     }
     return Math.max(0, player.sleep_timer_expires_at - nowMs / 1000)
 }
+
+// --- Podcast-Folgen --------------------------------------------------------
+
+// Erscheinungsdatum einer Folge als Date oder null. Steht in
+// `metadata.release_date` (ISO 8601); beim Overcast-Abgleich immer gesetzt.
+function releaseDate(item) {
+    var raw = item && item.metadata ? item.metadata.release_date : null
+    if (!raw) {
+        return null
+    }
+    var d = new Date(raw)
+    return isNaN(d.getTime()) ? null : d
+}
+
+// Ganze Tage zwischen zwei Kalendertagen (lokale Zeit), >= 0 für Vergangenes.
+function daysAgo(date, now) {
+    var a = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    var b = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    return Math.round((b - a) / 86400000)
+}
+
+// Beschreibungen kommen aus dem Feed und enthalten oft HTML. Für ein Label
+// genügt Text: Zeilenumbrüche aus <br>/<p> behalten, alle anderen Tags weg,
+// die häufigen Entitäten auflösen.
+function plainText(html) {
+    var s = String(html || "")
+    s = s.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/p\s*>/gi, "\n\n")
+    s = s.replace(/<[^>]+>/g, "")
+    s = s.replace(/&nbsp;/g, " ").replace(/&ndash;/g, "–").replace(/&mdash;/g, "—").replace(/&amp;/g, "&").replace(/&lt;/g, "<")
+         .replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&#39;|&apos;/g, "'")
+         .replace(/&#(\d+);/g, function (m, n) { return String.fromCharCode(parseInt(n, 10)) })
+    return s.replace(/\n{3,}/g, "\n\n").trim()
+}

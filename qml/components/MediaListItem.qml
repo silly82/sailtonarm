@@ -20,6 +20,9 @@ ListItem {
     property var toast
 
     signal activated()
+    // "Beschreibung" im Kontextmenü; nur wenn die Seite darauf reagiert.
+    signal infoRequested()
+    property bool hasInfo: false
 
     readonly property bool inListView: !!row.ListView.view
                                        || (!!row.parent && !!row.parent.ListView.view)
@@ -151,6 +154,56 @@ ListItem {
         }
     }
 
+    // Gehört/nicht gehört für Folgen und Hörbücher. Der Server schickt dafür
+    // kein Ereignis, also merkt sich die Zeile ihren Stand selbst, wie beim
+    // Favoriten.
+    readonly property bool canMarkPlayed: mediaItem
+                                          && (mediaItem.media_type === "podcast_episode"
+                                              || mediaItem.media_type === "audiobook")
+    property var playedOverride: null
+    readonly property bool isPlayed: playedOverride !== null
+                                     ? playedOverride : Models.isFullyPlayed(mediaItem)
+    // Nach einer Markierung gilt der Fortschritt nicht mehr (der Server setzt
+    // ihn zurück).
+    readonly property real progress: playedOverride !== null ? -1 : Models.listenProgress(mediaItem)
+
+    function setPlayed(played) {
+        if (!store || !mediaItem) {
+            return
+        }
+        var item = mediaItem
+        store.setPlayed(item, played, function (err) {
+            if (err) {
+                if (toast) toast.show(err.hint, true)
+                return
+            }
+            // Bei Podcast-Folgen nachlesen, ob der Server den Stand
+            // übernommen hat. Stammt die Folge von einem Anbieter, der den
+            // Hörstand selbst führt (Overcast), nimmt der Server die
+            // Markierung an und meldet danach trotzdem den Stand des
+            // Anbieters -- auf dem Gerät geprüft (KONZEPT.md Abschnitt 33).
+            // Dann nicht so tun, als hätte es geklappt.
+            if (item.media_type !== "podcast_episode" || !mass) {
+                row.playedOverride = played
+                if (toast) toast.show(played ? qsTr("Als gehört markiert")
+                                             : qsTr("Als nicht gehört markiert"))
+                return
+            }
+            mass.sendCommand("music/podcasts/podcast_episode",
+                             { item_id: item.item_id, provider_instance_id_or_domain: item.provider },
+                             function (err2, fresh) {
+                var took = !err2 && fresh && Models.isFullyPlayed(fresh) === played
+                if (took) {
+                    row.playedOverride = played
+                    if (toast) toast.show(played ? qsTr("Als gehört markiert")
+                                                 : qsTr("Als nicht gehört markiert"))
+                } else if (toast) {
+                    toast.show(qsTr("Der Podcast-Anbieter führt den Hörstand selbst – bitte dort ändern"), true)
+                }
+            }, 30000)
+        })
+    }
+
     // Ähnliches gibt es für Titel und Interpreten -- dafür hat der Server
     // Daten (Last.fm, Streamingdienst). Ersetzt die Warteschlange.
     readonly property bool canPlaySimilar: mediaItem
@@ -195,6 +248,16 @@ ListItem {
         MenuItem {
             text: qsTr("Anhängen")
             onClicked: row.enqueue("add", qsTr("Angehängt auf %1"))
+        }
+        MenuItem {
+            text: row.isPlayed ? qsTr("Als nicht gehört markieren") : qsTr("Als gehört markieren")
+            visible: row.canMarkPlayed
+            onClicked: row.setPlayed(!row.isPlayed)
+        }
+        MenuItem {
+            text: qsTr("Beschreibung")
+            visible: row.hasInfo
+            onClicked: row.infoRequested()
         }
         MenuItem {
             text: row.isFavorite ? qsTr("Aus Favoriten") : qsTr("Zu Favoriten")

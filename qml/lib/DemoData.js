@@ -173,7 +173,16 @@ function build(artBase) {
             uri: "library://podcast_episode/e" + (i + 1), name: episodeNames[i],
             position: episodeNames.length - i, duration: 1500 + i * 311,
             resume_position_ms: i === 1 ? 600000 : 0, fully_played: i > 2 ? 1 : 0,
-            metadata: images("hoersaal"), is_playable: true
+            metadata: {
+                images: images("hoersaal").images,
+                // Wöchentlich, die neueste von vorgestern -- relativ zu heute,
+                // damit die Liste "vor 2 Tagen" usw. zeigt.
+                release_date: new Date(Date.now() - (2 + i * 7) * 86400000).toISOString(),
+                description: "<p>In dieser Folge von <b>Hörsaal Klang</b>: " + episodeNames[i]
+                             + ".</p><p>Eine erfundene Folge des Demomodus &ndash; mit Studiogast, "
+                             + "Hörbeispielen und einer Frage aus dem Publikum.</p>"
+            },
+            is_playable: true
         })
     }
 
