@@ -52,7 +52,9 @@ gegen einen echten Server.
   Wiederholen; an einen anderen Player übergeben, als Playlist speichern oder
   leeren
 - **Cover-Page** mit laufendem Titel, Albumbild und Play/Pause -- bedienbar,
-  ohne die App zu öffnen
+  ohne die App zu öffnen; bei Hörbüchern mit Kapitel und +30 s
+- **Durchsage** auf einem Lautsprecher (Kontextmenü der Player-Liste): der
+  Server spricht den Text und setzt danach fort, was lief
 - **Sperrbildschirm und Medientasten** über MPRIS: Titel, Interpret, Album,
   Cover und Spielzeit werden dorthin gespiegelt, und von dort lassen sich
   Play/Pause, Weiter, Zurück, Springen und Lautstärke bedienen -- gesteuert
@@ -155,6 +157,7 @@ qml/pages/PodcastPage.qml          Podcast mit Folgen
 qml/pages/AudiobookPage.qml        Hörbuch: Fortschritt, Weiterhören, Kapitel
 qml/pages/LyricsPage.qml           Songtext, mitlaufend
 qml/pages/SleepTimerPage.qml       Einschlaftimer
+qml/pages/AnnouncementDialog.qml   Durchsage: Text, Gong, Lautstärke
 qml/pages/SearchPage.qml           Suche über alle Medientypen, überall oder nur Bibliothek
 qml/pages/QueuePage.qml            Warteschlange ansehen und bearbeiten
 qml/pages/GroupPage.qml            Lautsprecher zusammenschalten, Einzellautstärken

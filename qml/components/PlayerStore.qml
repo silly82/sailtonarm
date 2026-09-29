@@ -466,6 +466,28 @@ Item {
                                       position: Math.round(positionSeconds) })
     }
 
+    // Durchsage: der Server spricht `message` per TTS auf dem Player (über
+    // die Sprachausgabe, die in Music Assistant eingerichtet ist -- hier die
+    // von Home Assistant) und setzt danach fort, was lief. volumeLevel < 0
+    // heisst: Lautstärke nicht ändern.
+    function announce(playerId, message, volumeLevel, preAnnounce, callback) {
+        var args = { player_id: playerId, message: message, pre_announce: preAnnounce === true }
+        if (volumeLevel >= 0) {
+            args.volume_level = Math.round(volumeLevel)
+        }
+        if (!mass) {
+            return
+        }
+        // Die Antwort kommt erst, wenn die Durchsage gesprochen ist -- das
+        // kann mit Gong und TTS-Erzeugung gut 20 s dauern.
+        mass.sendCommand("players/cmd/play_announcement", args, function (err) {
+            store._noteError(err)
+            if (callback) {
+                callback(err)
+            }
+        }, 90000)
+    }
+
     // Einschlaftimer: nach `seconds` hält der Server die Wiedergabe an.
     function setSleepTimer(playerId, seconds, callback) {
         _sendWithResult("players/sleep_timer/set",
