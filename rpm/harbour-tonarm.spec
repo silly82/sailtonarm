@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.27
+Version:    0.28
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -68,6 +68,13 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Tue Sep 29 2026 silly82 <siliwalker@gmail.com> - 0.28-1
+- Durchsage auf einem Lautsprecher (Kontextmenü der Player-Liste): Text
+  eingeben, der Server spricht ihn und setzt danach fort, was lief. Gong
+  und eigene Lautstärke wählbar.
+- App-Cover bei Hörbüchern und Podcast-Folgen: +30 s statt "nächster
+  Titel", und das aktuelle Kapitel steht mit auf dem Cover.
+
 * Tue Sep 29 2026 silly82 <siliwalker@gmail.com> - 0.27-1
 - "Ähnliches abspielen" im Kontextmenü von Titeln und Interpreten und in
   "Läuft gerade": der Server legt eine endlose Folge passender Titel in

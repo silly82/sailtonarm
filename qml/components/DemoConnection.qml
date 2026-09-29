@@ -842,6 +842,14 @@ Item {
             }
             _changed()
             return null
+        case "players/cmd/play_announcement":
+            // Kein Ton im Demomodus; angenommen wird die Durchsage trotzdem,
+            // mit derselben Prüfung wie beim Server.
+            if (!args.message && !args.url) {
+                throw "Entweder message oder url angeben"
+            }
+            _player(args.player_id)
+            return null
         case "players/sleep_timer/set":
             p = _player(args.player_id)
             p.sleep_timer_expires_at = _now() + args.seconds

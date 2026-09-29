@@ -1621,3 +1621,35 @@ Lautsprecher, gestartet über Home Assistant, danach angehalten). Das
 Abspielen über die neuen Menüeinträge selbst ist nicht angetippt worden --
 das hätte die Warteschlange eines Raums ersetzt; es ruft denselben Befehl
 auf, der geprüft ist.
+
+## 32. Update 2026-09-29: Durchsage, Cover bei Hörbüchern (v0.28)
+
+### Durchsage
+
+`players/cmd/play_announcement(player_id, message, pre_announce,
+volume_level)`: der Server erzeugt per TTS die Ansage (auf dieser Anlage über
+das Home-Assistant-Plugin von Music Assistant) und spielt sie ab. Eintrag
+"Durchsage …" im Kontextmenü der Player-Liste, `AnnouncementDialog.qml` mit
+Text, Gong vorab und eigener Lautstärke (alle drei in dconf gemerkt).
+
+**Auf dem Gerät gegen den echten Server geprüft**, hörbar auf einem
+Lautsprecher, 15 %, mit Gong. Der Verlauf in Home Assistant zeigt den Ablauf
+genau: Lautstärke auf 15 %, sechs Sekunden später spielt der Lautsprecher
+(Gong und Text), sieben Sekunden danach wieder "idle" und die alte
+Lautstärke von 20 %. Der Server stellt also selbst wieder her, was vorher
+war.
+
+**Dabei gefunden:** Die Antwort kommt erst, wenn die Durchsage gesprochen
+ist (hier nach etwa 12 s). Bis dahin ist das Kontextmenü, aus dem sie
+ausgelöst wurde, samt seinem QML-Kontext zerstört, und der Rückruf fand
+`pageToast` nicht mehr ("TypeError: Cannot call method 'show' of
+undefined"). Toast, Store und Meldungstext werden deshalb vorher in lokale
+Variablen gelegt. Frist für die Antwort: 90 s.
+
+### Cover bei Hörbüchern und Podcast-Folgen
+
+Die zweite Cover-Aktion ist dort +30 s statt "nächster Titel" (Symbol
+`icon-cover-next`, der einfache Pfeil; ein eigenes Sprungsymbol gibt es für
+Cover nicht), und das Cover zeigt das aktuelle Kapitel, nachgezogen alle
+5 s, solange es sichtbar ist. Im Demomodus auf dem Gerät gemessen: Position
+1:52:14, Tipper auf dem Cover, 31 s später 1:53:15.

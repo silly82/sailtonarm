@@ -49,6 +49,45 @@
     </message>
 </context>
 <context>
+    <name>AnnouncementDialog</name>
+    <message>
+        <source>Durchsagen</source>
+        <translation>Announce</translation>
+    </message>
+    <message>
+        <source>Text der Durchsage</source>
+        <translation>Announcement text</translation>
+    </message>
+    <message>
+        <source>z. B. Essen ist fertig!</source>
+        <translation>e.g. Dinner is ready!</translation>
+    </message>
+    <message>
+        <source>Gong vorab</source>
+        <translation>Chime first</translation>
+    </message>
+    <message>
+        <source>Ein kurzer Ton vor dem Text, damit man hinhört</source>
+        <translation>A short tone before the text, so people listen</translation>
+    </message>
+    <message>
+        <source>Eigene Lautstärke</source>
+        <translation>Own volume</translation>
+    </message>
+    <message>
+        <source>Sonst spricht der Lautsprecher in seiner aktuellen Lautstärke</source>
+        <translation>Otherwise the speaker talks at its current volume</translation>
+    </message>
+    <message>
+        <source>Lautstärke der Durchsage</source>
+        <translation>Announcement volume</translation>
+    </message>
+    <message>
+        <source>Gesprochen wird mit der Sprachausgabe, die in Music Assistant eingerichtet ist. Was gerade läuft, wird danach fortgesetzt.</source>
+        <translation>Spoken with the text-to-speech set up in Music Assistant. Whatever is playing resumes afterwards.</translation>
+    </message>
+</context>
+<context>
     <name>ArtistPage</name>
     <message>
         <source>keiner</source>
@@ -729,6 +768,18 @@
     <message>
         <source>Adresse und Token in den Einstellungen eintragen — oder dort den Demomodus einschalten, um die App ohne Server auszuprobieren</source>
         <translation>Enter address and token in Settings — or switch on demo mode there to try the app without a server</translation>
+    </message>
+    <message>
+        <source>Durchsage …</source>
+        <translation>Announcement …</translation>
+    </message>
+    <message>
+        <source>Durchsage auf %1 …</source>
+        <translation>Announcing on %1 …</translation>
+    </message>
+    <message>
+        <source>Durchsage auf %1 gesprochen</source>
+        <translation>Announced on %1</translation>
     </message>
 </context>
 <context>

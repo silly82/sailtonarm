@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
+import "../components"
 import "../lib/MassModels.js" as Models
 
 // Einstiegsseite ab Ausbaustufe 1: die Player der Anlage, jeweils mit dem was
@@ -292,6 +293,35 @@ Page {
                                                 playerId: modelData.player_id })
                 }
                 MenuItem {
+                    text: qsTr("Durchsage …")
+                    enabled: mass && mass.ready && Models.isAvailable(modelData)
+                    onClicked: {
+                        // Alles, was der Rückruf braucht, jetzt festhalten:
+                        // die Antwort kommt erst nach der gesprochenen
+                        // Durchsage, und bis dahin ist das Kontextmenü samt
+                        // seinem QML-Kontext längst weg -- `pageToast` wäre
+                        // dann nicht mehr auflösbar (auf dem Gerät passiert).
+                        var target = modelData
+                        var toast = pageToast
+                        var playerStore = store
+                        var announced = qsTr("Durchsage auf %1 gesprochen")
+                        var dialog = pageStack.push(Qt.resolvedUrl("AnnouncementDialog.qml"),
+                                                    { player: target })
+                        dialog.accepted.connect(function () {
+                            var name = Models.playerName(target)
+                            toast.show(qsTr("Durchsage auf %1 …").arg(name))
+                            playerStore.announce(target.player_id, dialog.message, dialog.volumeLevel,
+                                                 dialog.preAnnounce, function (err) {
+                                if (err) {
+                                    toast.show(err.hint, true)
+                                } else {
+                                    toast.show(announced.arg(name))
+                                }
+                            })
+                        })
+                    }
+                }
+                MenuItem {
                     text: qsTr("Als Ziel für die Bibliothek")
                     onClicked: store.explicitTargetPlayerId = modelData.player_id
                 }
@@ -314,4 +344,6 @@ Page {
 
         VerticalScrollDecorator {}
     }
+
+    StatusToast { id: pageToast }
 }
