@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.28
+Version:    0.29
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -68,6 +68,15 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Tue Sep 29 2026 silly82 <siliwalker@gmail.com> - 0.29-1
+- Podcast-Folgen wie im Podcatcher: Erscheinungsdatum ("gestern", "vor 3
+  Tagen"), Dauer und Stand ("neu", "43 % gehört", "gehört"); Gehörtes tritt
+  zurück. Ein Tippen spielt die Folge ab.
+- Folgen und Hörbücher lassen sich im Kontextmenü als gehört bzw. nicht
+  gehört markieren.
+- Beschreibung einer Folge (Kontextmenü "Beschreibung") mit Datum, Dauer
+  und Weiterhören.
+
 * Tue Sep 29 2026 silly82 <siliwalker@gmail.com> - 0.28-1
 - Durchsage auf einem Lautsprecher (Kontextmenü der Player-Liste): Text
   eingeben, der Server spricht ihn und setzt danach fort, was lief. Gong

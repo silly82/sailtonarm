@@ -291,6 +291,45 @@
     </message>
 </context>
 <context>
+    <name>EpisodePage</name>
+    <message>
+        <source>keiner</source>
+        <translation>none</translation>
+    </message>
+    <message>
+        <source>Kein Player ausgewählt</source>
+        <translation>No player selected</translation>
+    </message>
+    <message>
+        <source>Läuft auf %1</source>
+        <translation>Playing on %1</translation>
+    </message>
+    <message>
+        <source>Ziel-Player: %1</source>
+        <translation>Target player: %1</translation>
+    </message>
+    <message>
+        <source>gehört</source>
+        <translation>played</translation>
+    </message>
+    <message>
+        <source>%1 % gehört</source>
+        <translation>%1 % listened</translation>
+    </message>
+    <message>
+        <source>Weiterhören</source>
+        <translation>Resume</translation>
+    </message>
+    <message>
+        <source>Abspielen</source>
+        <translation>Play</translation>
+    </message>
+    <message>
+        <source>Der Feed enthält keine Beschreibung für diese Folge.</source>
+        <translation>The feed has no description for this episode.</translation>
+    </message>
+</context>
+<context>
     <name>GroupPage</name>
     <message>
         <source>%1 dazugeschaltet</source>
@@ -496,6 +535,30 @@
     <message>
         <source>Ähnliches abspielen</source>
         <translation>Play similar</translation>
+    </message>
+    <message>
+        <source>Als gehört markiert</source>
+        <translation>Marked as played</translation>
+    </message>
+    <message>
+        <source>Als nicht gehört markiert</source>
+        <translation>Marked as unplayed</translation>
+    </message>
+    <message>
+        <source>Als nicht gehört markieren</source>
+        <translation>Mark as unplayed</translation>
+    </message>
+    <message>
+        <source>Als gehört markieren</source>
+        <translation>Mark as played</translation>
+    </message>
+    <message>
+        <source>Beschreibung</source>
+        <translation>Description</translation>
+    </message>
+    <message>
+        <source>Der Podcast-Anbieter führt den Hörstand selbst – bitte dort ändern</source>
+        <translation>The podcast provider keeps the played state itself – please change it there</translation>
     </message>
 </context>
 <context>
@@ -874,6 +937,30 @@
     <message>
         <source>Keine Folgen</source>
         <translation>No episodes</translation>
+    </message>
+    <message>
+        <source>heute</source>
+        <translation>today</translation>
+    </message>
+    <message>
+        <source>gestern</source>
+        <translation>yesterday</translation>
+    </message>
+    <message>
+        <source>vor %1 Tagen</source>
+        <translation>%1 days ago</translation>
+    </message>
+    <message>
+        <source>gehört</source>
+        <translation>played</translation>
+    </message>
+    <message>
+        <source>%1 % gehört</source>
+        <translation>%1 % listened</translation>
+    </message>
+    <message>
+        <source>neu</source>
+        <translation>new</translation>
     </message>
 </context>
 <context>

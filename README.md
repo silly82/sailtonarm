@@ -33,7 +33,10 @@ gegen einen echten Server.
 - **Bibliothek**: Interpreten, Alben, Titel, Playlists, Radio, Podcasts und
   Hörbücher mit Anzahl, seitenweise nachgeladen und je Liste durchsuchbar;
   Album- und Interpretenseiten mit Cover, Playlists mit ihren Titeln,
-  Podcasts mit ihren Folgen; dazu "Zuletzt gehört" und "Weiterhören"
+  Podcasts mit ihren Folgen -- wie im Podcatcher mit Datum und Stand
+  ("neu", "43 % gehört", "gehört"), Tippen spielt ab, Beschreibung und
+  "als gehört markieren" im Kontextmenü; dazu "Zuletzt gehört" und
+  "Weiterhören"
   (angefangene Hörbücher und Podcast-Folgen)
 - **Hörbuchseite**: Autoren, Sprecher, Fortschritt, Weiterhören oder von vorn,
   als beendet bzw. nicht begonnen markieren, und die Kapitel -- läuft das
@@ -153,7 +156,8 @@ qml/pages/RecentlyPlayedPage.qml   Zuletzt gehört / Weiterhören
 qml/pages/AlbumPage.qml            Album mit Titelliste
 qml/pages/ArtistPage.qml           Interpret: Titel, Alben, ähnliche Interpreten
 qml/pages/PlaylistPage.qml         Playlist mit Titeln
-qml/pages/PodcastPage.qml          Podcast mit Folgen
+qml/pages/PodcastPage.qml          Podcast mit Folgen (Datum, Stand)
+qml/pages/EpisodePage.qml          Folge: Beschreibung, Datum, Weiterhören
 qml/pages/AudiobookPage.qml        Hörbuch: Fortschritt, Weiterhören, Kapitel
 qml/pages/LyricsPage.qml           Songtext, mitlaufend
 qml/pages/SleepTimerPage.qml       Einschlaftimer

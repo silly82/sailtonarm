@@ -67,16 +67,44 @@ Page {
         return p ? Models.playerName(p) : qsTr("keiner")
     }
 
-    // Eine Folge trägt oft ein Erscheinungsdatum; ohne das bleibt die Dauer.
-    function episodeSubtitle(ep) {
+    // Wie im Podcatcher: wann erschienen, wie lang, wie weit gehört. Die
+    // Folgennummer ("Folge 10") sagt bei Feeds, die nur die letzten Folgen
+    // liefern (Overcast), nichts -- das Datum schon. Ohne Datum bleibt sie.
+    function episodeSubtitle(ep, played, progress) {
         var parts = []
-        if (ep.position > 0) {
+        var date = Models.releaseDate(ep)
+        if (date) {
+            var ago = Models.daysAgo(date, new Date())
+            parts.push(ago === 0 ? qsTr("heute")
+                       : ago === 1 ? qsTr("gestern")
+                       : ago < 7 ? qsTr("vor %1 Tagen").arg(ago)
+                       : Qt.formatDate(date, Qt.DefaultLocaleShortDate))
+        } else if (ep.position > 0) {
             parts.push(qsTr("Folge %1").arg(ep.position))
         }
         if (ep.duration > 0) {
             parts.push(Models.formatTime(ep.duration))
         }
+        if (played) {
+            parts.push(qsTr("gehört"))
+        } else if (progress >= 0) {
+            parts.push(qsTr("%1 % gehört").arg(Math.round(progress * 100)))
+        } else {
+            parts.push(qsTr("neu"))
+        }
         return parts.join(" · ")
+    }
+
+    function playEpisode(ep) {
+        if (!store || store.targetPlayerId.length === 0) {
+            pageToast.show(qsTr("Kein Player ausgewählt"), true)
+            return
+        }
+        var target = store.playerById(store.targetPlayerId)
+        var where = target ? Models.playerName(target) : ""
+        store.playMedia(store.targetPlayerId, ep.uri, "play", function (err) {
+            pageToast.show(err ? err.hint : qsTr("Läuft auf %1").arg(where), !!err)
+        })
     }
 
     Component.onCompleted: load()
@@ -152,13 +180,24 @@ Page {
         }
 
         delegate: MediaListItem {
+            id: episodeRow
             mass: page.mass
             store: page.store
             toast: pageToast
             mediaItem: modelData
             // Jede Folge trüge dasselbe Podcast-Bild.
             showImage: false
-            subtitle: page.episodeSubtitle(modelData)
+            subtitle: page.episodeSubtitle(modelData, isPlayed, progress)
+            // Gehörtes tritt zurück, Neues bleibt voll -- so springt ins Auge,
+            // was noch aussteht.
+            opacity: isPlayed ? 0.55 : 1.0
+            hasInfo: true
+            // Ein Tipper spielt die Folge (fortsetzend, wo sie stand); die
+            // Beschreibung steht im Kontextmenü.
+            onActivated: page.playEpisode(modelData)
+            onInfoRequested: pageStack.push(Qt.resolvedUrl("EpisodePage.qml"),
+                                            { mass: page.mass, store: page.store,
+                                              episode: modelData, podcast: page.podcast })
         }
 
         VerticalScrollDecorator {}
