@@ -67,12 +67,56 @@
         <translation>Error</translation>
     </message>
     <message>
-        <source>Keine Alben</source>
-        <translation>No albums</translation>
+        <source>Titel</source>
+        <translation>Tracks</translation>
     </message>
     <message>
-        <source>Dieser Anbieter listet für den Interpreten keine Alben</source>
-        <translation>This provider lists no albums for the artist</translation>
+        <source>Beliebte Titel</source>
+        <translation>Popular tracks</translation>
+    </message>
+    <message>
+        <source>Alle %1 Titel zeigen</source>
+        <translation>Show all %1 tracks</translation>
+    </message>
+    <message>
+        <source>Alben</source>
+        <translation>Albums</translation>
+    </message>
+    <message>
+        <source>Ähnliche Interpreten</source>
+        <translation>Similar artists</translation>
+    </message>
+    <message>
+        <source>Kein Player ausgewählt</source>
+        <translation>No player selected</translation>
+    </message>
+    <message>
+        <source>Ähnliches läuft auf %1</source>
+        <translation>Similar music playing on %1</translation>
+    </message>
+    <message>
+        <source>Abspielen</source>
+        <translation>Play</translation>
+    </message>
+    <message>
+        <source>Läuft auf %1</source>
+        <translation>Playing on %1</translation>
+    </message>
+    <message>
+        <source>Ähnliches</source>
+        <translation>Similar</translation>
+    </message>
+    <message>
+        <source>Nichts gefunden</source>
+        <translation>Nothing found</translation>
+    </message>
+    <message>
+        <source>Dieser Anbieter listet für den Interpreten weder Titel noch Alben</source>
+        <translation>This provider lists neither tracks nor albums for the artist</translation>
+    </message>
+    <message>
+        <source>Lade weitere …</source>
+        <translation>Loading more …</translation>
     </message>
 </context>
 <context>
@@ -406,6 +450,14 @@
         <source>Zu Favoriten</source>
         <translation>Add to favourites</translation>
     </message>
+    <message>
+        <source>Ähnliches läuft auf %1</source>
+        <translation>Similar music playing on %1</translation>
+    </message>
+    <message>
+        <source>Ähnliches abspielen</source>
+        <translation>Play similar</translation>
+    </message>
 </context>
 <context>
     <name>MediaListPage</name>
@@ -539,6 +591,14 @@
     <message>
         <source>Einschlaftimer: stoppt in %1 s</source>
         <translation>Sleep timer: stops in %1 s</translation>
+    </message>
+    <message>
+        <source>Ähnliches abspielen</source>
+        <translation>Play similar</translation>
+    </message>
+    <message>
+        <source>Ähnliches läuft</source>
+        <translation>Similar music playing</translation>
     </message>
 </context>
 <context>

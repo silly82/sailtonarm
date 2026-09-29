@@ -151,10 +151,42 @@ ListItem {
         }
     }
 
+    // Ähnliches gibt es für Titel und Interpreten -- dafür hat der Server
+    // Daten (Last.fm, Streamingdienst). Ersetzt die Warteschlange.
+    readonly property bool canPlaySimilar: mediaItem
+                                           && (mediaItem.media_type === "track"
+                                               || mediaItem.media_type === "artist")
+
+    function playSimilar() {
+        if (!store || store.targetPlayerId.length === 0) {
+            if (toast) {
+                toast.show(qsTr("Kein Player ausgewählt"), true)
+            }
+            return
+        }
+        var target = store.playerById(store.targetPlayerId)
+        var where = target ? Models.playerName(target) : ""
+        store.playSimilar(store.targetPlayerId, mediaItem.uri, function (err) {
+            if (!toast) {
+                return
+            }
+            if (err) {
+                toast.show(err.hint, true)
+            } else {
+                toast.show(qsTr("Ähnliches läuft auf %1").arg(where))
+            }
+        })
+    }
+
     menu: ContextMenu {
         MenuItem {
             text: qsTr("Jetzt spielen")
             onClicked: row.enqueue("play", qsTr("Läuft auf %1"))
+        }
+        MenuItem {
+            text: qsTr("Ähnliches abspielen")
+            visible: row.canPlaySimilar
+            onClicked: row.playSimilar()
         }
         MenuItem {
             text: qsTr("Als Nächstes")

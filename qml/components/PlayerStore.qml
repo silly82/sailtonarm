@@ -211,6 +211,30 @@ Item {
         })
     }
 
+    // Ähnliches abspielen: der Server baut aus dem Objekt eine endlose
+    // Warteschlange passender Titel ("Endless Mix", Plugin radio_playlist,
+    // gespeist aus Last.fm bzw. dem Streamingdienst). `radio_mode` führt MA
+    // 2.10.4 als veraltet und übersetzt es selbst in eine
+    // radio_playlist://-Adresse; deren Form ist nicht dokumentiert, daher
+    // bleibt es beim Schalter. Auf dem Gerät geprüft (KONZEPT.md Abschnitt 31).
+    //
+    // music/tracks/similar_tracks wäre der direkte Weg, liefert auf diesem
+    // Server aber nur zwei Titel: den Ausgangstitel und einen einzigen
+    // ähnlichen.
+    function playSimilar(playerId, uri, callback) {
+        if (!mass) {
+            return
+        }
+        mass.sendCommand("player_queues/play_media",
+                         { queue_id: playerId, media: uri, option: "replace", radio_mode: true },
+                         function (err) {
+                             store._noteError(err)
+                             if (callback) {
+                                 callback(err)
+                             }
+                         })
+    }
+
     // --- Favoriten -------------------------------------------------------
 
     // Hinzufügen nimmt die URI und geht für jedes Objekt, auch für eines, das

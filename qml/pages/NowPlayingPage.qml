@@ -25,6 +25,14 @@ Page {
     // dazwischen rechnet MassModels.elapsedSeconds() hoch.
     property real elapsed: 0
 
+    // Adresse des laufenden Musiktitels, für "Ähnliches abspielen"; leer bei
+    // Radio, Hörbüchern und Podcasts.
+    readonly property string currentUri: {
+        var item = queue ? queue.current_item : null
+        var media = item ? item.media_item : null
+        return (media && media.media_type === "track" && media.uri) ? media.uri : ""
+    }
+
     // Einschlaftimer: Restzeit, sekündlich nachgezogen solange einer läuft.
     property real sleepNow: Date.now()
     readonly property real sleepRemaining: Models.sleepRemaining(player, sleepNow)
@@ -113,6 +121,20 @@ Page {
                 onClicked: pageStack.push(Qt.resolvedUrl("SleepTimerPage.qml"),
                                           { mass: page.mass, store: page.store,
                                             playerId: page.playerId })
+            }
+            // Aus dem, was gerade läuft, eine endlose Folge Ähnlicher machen --
+            // auf diesem Player, die Warteschlange wird ersetzt.
+            MenuItem {
+                text: qsTr("Ähnliches abspielen")
+                visible: page.currentUri.length > 0
+                enabled: mass && mass.ready
+                onClicked: store.playSimilar(page.playerId, page.currentUri, function (err) {
+                    if (err) {
+                        pageToast.show(err.hint, true)
+                    } else {
+                        pageToast.show(qsTr("Ähnliches läuft"))
+                    }
+                })
             }
             MenuItem {
                 text: qsTr("Songtext")
@@ -438,4 +460,6 @@ Page {
     // Stummschaltung, Netzschalter.
     readonly property bool transportEnabled:
         controlsEnabled && queue !== null && queue.active === true
+
+    StatusToast { id: pageToast }
 }

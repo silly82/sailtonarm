@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.26
+Version:    0.27
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -68,6 +68,14 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Tue Sep 29 2026 silly82 <siliwalker@gmail.com> - 0.27-1
+- "Ähnliches abspielen" im Kontextmenü von Titeln und Interpreten und in
+  "Läuft gerade": der Server legt eine endlose Folge passender Titel in
+  die Warteschlange.
+- Die Interpretenseite zeigt jetzt auch Titel (bei einem Streamingdienst
+  die beliebtesten zuerst) und ähnliche Interpreten, dazu Knöpfe
+  "Abspielen" und "Ähnliches".
+
 * Mon Sep 28 2026 silly82 <siliwalker@gmail.com> - 0.26-1
 - Songtexte: im Pulley-Menü von "Läuft gerade". Mit Zeitmarken läuft der
   Text mit -- die aktuelle Zeile ist hervorgehoben und bleibt in der
