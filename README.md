@@ -20,7 +20,7 @@ Prüfung, sind aber nie auf echter Hardware gelaufen.
 |---|---|
 | Nutzer, Deutsch | [`docs/BENUTZERHANDBUCH.md`](docs/BENUTZERHANDBUCH.md) |
 | Users, English | [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md) |
-| Entwickler: Aufbau, Server-API, Tests, Release | [`docs/ENTWICKLUNG.md`](docs/ENTWICKLUNG.md) |
+| Developers (English): structure, server API, testing, release | [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
 | Das ausführliche Entwicklungstagebuch (34 Abschnitte) | [`KONZEPT.md`](KONZEPT.md) |
 | Was noch ansteht | [`TODO.md`](TODO.md) |
 | Material für die Store-Einreichung | [`store/README.md`](store/README.md) |
@@ -100,7 +100,7 @@ sfdk config target=SailfishOS-5.1.0.11-aarch64 \
 Das Paket landet in `RPMS/`. **Vor jedem Wechsel der Architektur aufräumen**
 (`rm -f harbour-tonarm *.o moc_*.cpp moc_*.h Makefile .qmake.stash`), sonst
 landet still das Binary der vorigen Architektur im Paket. Der ganze Ablauf mit
-Prüfung und Veröffentlichung steht in [`docs/ENTWICKLUNG.md`](docs/ENTWICKLUNG.md).
+Prüfung und Veröffentlichung steht (englisch) in [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 Icons werden nicht automatisch erzeugt; nach Änderungen am Motiv:
 
