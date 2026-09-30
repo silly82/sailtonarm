@@ -28,7 +28,9 @@ ListItem {
                                        || (!!row.parent && !!row.parent.ListView.view)
 
     // Mit zweizeiligem Titel wächst die Zeile über die Normalhöhe hinaus.
-    contentHeight: Math.max(showImage ? Theme.itemSizeLarge : Theme.itemSizeMedium,
+    // Entfernte Zeilen fallen auf Höhe 0 (ListItem rechnet die Höhe selbst
+    // aus contentHeight und einem offenen Menü).
+    contentHeight: removed ? 0 : Math.max(showImage ? Theme.itemSizeLarge : Theme.itemSizeMedium,
                             textColumn.height + 2 * Theme.paddingMedium)
     // Nicht spielbares bleibt sichtbar, aber gedämpft: ein Titel aus einem
     // abgemeldeten Dienst verschwindet sonst scheinbar grundlos.
@@ -231,6 +233,84 @@ ListItem {
         })
     }
 
+    // --- Playlists und Bibliothek ----------------------------------------
+
+    // Nur Titel gehen in Playlists (der Server nimmt Titel-URIs).
+    readonly property bool canAddToPlaylist: mediaItem && mediaItem.media_type === "track"
+
+    // Auf einer bearbeitbaren Playlist-Seite: die Position des Titels (ab 1),
+    // sonst -1. Die Seite reagiert auf removeFromPlaylistRequested.
+    property int playlistPosition: -1
+    signal removeFromPlaylistRequested()
+
+    // In die Bibliothek aufnehmen, was von einem Anbieter kommt; entfernen,
+    // was drinliegt. Entfernen nur bei Titeln, Alben und Sendern -- bei einem
+    // Interpreten nähme der Server alle Alben mit, bei einer Playlist eines
+    // Dienstes ist unklar, was mit dem Original geschieht.
+    property bool libraryOverride: false
+    readonly property bool inLibrary: libraryOverride
+                                      || (!!mediaItem && mediaItem.provider === "library")
+    readonly property bool canAddToLibrary: !!mediaItem && !inLibrary
+            && ["track", "album", "artist", "playlist", "radio", "podcast", "audiobook"]
+               .indexOf(mediaItem.media_type) !== -1
+    readonly property bool canRemoveFromLibrary: !!mediaItem && mediaItem.provider === "library"
+            && ["track", "album", "radio"].indexOf(mediaItem.media_type) !== -1
+    // Nach dem Entfernen verschwindet die Zeile, ohne dass die Liste neu
+    // geladen werden muss.
+    property bool removed: false
+    visible: !removed
+
+    function pickPlaylist() {
+        if (!store) {
+            return
+        }
+        // Alles festhalten, was die späte Antwort braucht (siehe
+        // PlayersPage, Durchsage).
+        var item = mediaItem
+        var t = toast
+        var playerStore = store
+        pageStack.push(Qt.resolvedUrl("../pages/PlaylistPickerPage.qml"), {
+            mass: mass, store: store, itemName: item.name,
+            pickHandler: function (playlist) {
+                if (playlist.error) {
+                    if (t) t.show(playlist.error.hint, true)
+                    return
+                }
+                playerStore.addToPlaylist(playlist, [item.uri], function (err) {
+                    if (t) t.show(err ? err.hint : qsTr("Zu „%1“ hinzugefügt").arg(playlist.name), !!err)
+                })
+            }
+        })
+    }
+
+    function addToLibrary() {
+        var t = toast
+        store.addToLibrary(mediaItem.uri, function (err) {
+            if (err) {
+                if (t) t.show(err.hint, true)
+                return
+            }
+            row.libraryOverride = true
+            if (t) t.show(qsTr("In die Bibliothek aufgenommen"))
+        })
+    }
+
+    function removeFromLibrary() {
+        var item = mediaItem
+        var t = toast
+        var playerStore = store
+        remorseAction(qsTr("Wird aus der Bibliothek entfernt"), function () {
+            playerStore.removeFromLibrary(item.media_type, item.item_id, function (err) {
+                if (err) {
+                    if (t) t.show(err.hint, true)
+                    return
+                }
+                row.removed = true
+                if (t) t.show(qsTr("Aus der Bibliothek entfernt"))
+            })
+        })
+    }
+
     menu: ContextMenu {
         MenuItem {
             text: qsTr("Jetzt spielen")
@@ -250,6 +330,16 @@ ListItem {
             onClicked: row.enqueue("add", qsTr("Angehängt auf %1"))
         }
         MenuItem {
+            text: qsTr("Zur Playlist hinzufügen …")
+            visible: row.canAddToPlaylist
+            onClicked: row.pickPlaylist()
+        }
+        MenuItem {
+            text: qsTr("Aus dieser Playlist entfernen")
+            visible: row.playlistPosition > 0
+            onClicked: row.removeFromPlaylistRequested()
+        }
+        MenuItem {
             text: row.isPlayed ? qsTr("Als nicht gehört markieren") : qsTr("Als gehört markieren")
             visible: row.canMarkPlayed
             onClicked: row.setPlayed(!row.isPlayed)
@@ -266,6 +356,16 @@ ListItem {
             // Eintrag zeigen als einen, der scheitert.
             visible: !row.isFavorite || row.canUnfavorite
             onClicked: row.toggleFavorite()
+        }
+        MenuItem {
+            text: qsTr("In die Bibliothek aufnehmen")
+            visible: row.canAddToLibrary
+            onClicked: row.addToLibrary()
+        }
+        MenuItem {
+            text: qsTr("Aus der Bibliothek entfernen")
+            visible: row.canRemoveFromLibrary && !row.removed
+            onClicked: row.removeFromLibrary()
         }
     }
 

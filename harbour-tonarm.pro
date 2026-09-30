@@ -62,6 +62,9 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/pages/SleepTimerPage.qml \
     qml/pages/AnnouncementDialog.qml \
     qml/pages/EpisodePage.qml \
+    qml/pages/PlaylistPickerPage.qml \
+    qml/pages/RadioSearchPage.qml \
+    qml/pages/AddRadioDialog.qml \
     qml/pages/RecentlyPlayedPage.qml \
     qml/pages/SearchPage.qml \
     qml/pages/QueuePage.qml \

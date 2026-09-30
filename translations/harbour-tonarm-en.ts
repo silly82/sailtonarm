@@ -2,6 +2,25 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_GB">
 <context>
+    <name>AddRadioDialog</name>
+    <message>
+        <source>Aufnehmen</source>
+        <translation>Add</translation>
+    </message>
+    <message>
+        <source>Name des Senders</source>
+        <translation>Station name</translation>
+    </message>
+    <message>
+        <source>Stream-Adresse (http:// oder https://)</source>
+        <translation>Stream address (http:// or https://)</translation>
+    </message>
+    <message>
+        <source>Die Adresse des Audiostroms selbst, nicht die Webseite des Senders. Sie steht meist in einer .m3u- oder .pls-Datei auf der Seite des Senders.</source>
+        <translation>The address of the audio stream itself, not the station&apos;s website. It is usually in an .m3u or .pls file on the station&apos;s site.</translation>
+    </message>
+</context>
+<context>
     <name>AlbumPage</name>
     <message>
         <source>Kein Player ausgewählt</source>
@@ -560,6 +579,38 @@
         <source>Der Podcast-Anbieter führt den Hörstand selbst – bitte dort ändern</source>
         <translation>The podcast provider keeps the played state itself – please change it there</translation>
     </message>
+    <message>
+        <source>Zu „%1“ hinzugefügt</source>
+        <translation>Added to “%1”</translation>
+    </message>
+    <message>
+        <source>In die Bibliothek aufgenommen</source>
+        <translation>Added to the library</translation>
+    </message>
+    <message>
+        <source>Wird aus der Bibliothek entfernt</source>
+        <translation>Removing from the library</translation>
+    </message>
+    <message>
+        <source>Aus der Bibliothek entfernt</source>
+        <translation>Removed from the library</translation>
+    </message>
+    <message>
+        <source>Zur Playlist hinzufügen …</source>
+        <translation>Add to playlist …</translation>
+    </message>
+    <message>
+        <source>Aus dieser Playlist entfernen</source>
+        <translation>Remove from this playlist</translation>
+    </message>
+    <message>
+        <source>In die Bibliothek aufnehmen</source>
+        <translation>Add to library</translation>
+    </message>
+    <message>
+        <source>Aus der Bibliothek entfernen</source>
+        <translation>Remove from library</translation>
+    </message>
 </context>
 <context>
     <name>MediaListPage</name>
@@ -631,6 +682,10 @@
         <source>1 Eintrag</source>
         <translation>1 entry</translation>
     </message>
+    <message>
+        <source>Sender hinzufügen …</source>
+        <translation>Add station …</translation>
+    </message>
 </context>
 <context>
     <name>NowPlayingPage</name>
@@ -701,6 +756,14 @@
     <message>
         <source>Ähnliches läuft</source>
         <translation>Similar music playing</translation>
+    </message>
+    <message>
+        <source>Zur Playlist hinzufügen …</source>
+        <translation>Add to playlist …</translation>
+    </message>
+    <message>
+        <source>Zu „%1“ hinzugefügt</source>
+        <translation>Added to “%1”</translation>
     </message>
 </context>
 <context>
@@ -891,6 +954,45 @@
         <source>Zufällig auf %1</source>
         <translation>Shuffling on %1</translation>
     </message>
+    <message>
+        <source>„%1“ entfernt</source>
+        <translation>Removed “%1”</translation>
+    </message>
+    <message>
+        <source>Neu laden</source>
+        <translation>Reload</translation>
+    </message>
+    <message>
+        <source>Wird aus der Playlist entfernt</source>
+        <translation>Removing from the playlist</translation>
+    </message>
+</context>
+<context>
+    <name>PlaylistPickerPage</name>
+    <message>
+        <source>Zur Playlist hinzufügen</source>
+        <translation>Add to playlist</translation>
+    </message>
+    <message>
+        <source>Neue Playlist …</source>
+        <translation>New playlist …</translation>
+    </message>
+    <message>
+        <source>Eigene Playlists</source>
+        <translation>Your playlists</translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation>Error</translation>
+    </message>
+    <message>
+        <source>Keine bearbeitbaren Playlists</source>
+        <translation>No editable playlists</translation>
+    </message>
+    <message>
+        <source>Mit „Neue Playlist …“ oben lässt sich eine anlegen</source>
+        <translation>Create one with “New playlist …” above</translation>
+    </message>
 </context>
 <context>
     <name>PodcastPage</name>
@@ -1056,6 +1158,49 @@
     <message>
         <source>Entfernen</source>
         <translation>Remove</translation>
+    </message>
+</context>
+<context>
+    <name>RadioSearchPage</name>
+    <message>
+        <source>Schon in der Bibliothek</source>
+        <translation>Already in the library</translation>
+    </message>
+    <message>
+        <source>„%1“ aufgenommen</source>
+        <translation>Added “%1”</translation>
+    </message>
+    <message>
+        <source>Sender hinzufügen</source>
+        <translation>Add station</translation>
+    </message>
+    <message>
+        <source>Sendername, z. B. SRF 1</source>
+        <translation>Station name, e.g. BBC Radio 4</translation>
+    </message>
+    <message>
+        <source>Eigene Stream-Adresse …</source>
+        <translation>Own stream address …</translation>
+    </message>
+    <message>
+        <source>Fehler</source>
+        <translation>Error</translation>
+    </message>
+    <message>
+        <source>Nichts gefunden</source>
+        <translation>Nothing found</translation>
+    </message>
+    <message>
+        <source>Sender suchen</source>
+        <translation>Search stations</translation>
+    </message>
+    <message>
+        <source>Ein Tippen nimmt den Sender in die Bibliothek auf</source>
+        <translation>A tap adds the station to the library</translation>
+    </message>
+    <message>
+        <source>in der Bibliothek</source>
+        <translation>in the library</translation>
     </message>
 </context>
 <context>
@@ -1444,6 +1589,14 @@
     <message>
         <source>Einmal geladene Cover bleiben auf dem Gerät (höchstens 100 MB) und kommen nach einem Neustart nicht wieder über das Netz — das spart unterwegs Mobilfunkdaten.</source>
         <translation>Artwork stays on the device once loaded (up to 100 MB) and does not come over the network again after a restart — this saves mobile data when you are out.</translation>
+    </message>
+    <message>
+        <source>Farben aus dem Cover</source>
+        <translation>Colours from the artwork</translation>
+    </message>
+    <message>
+        <source>„Läuft gerade“ färbt den Hintergrund passend zum Cover ein.</source>
+        <translation>“Now playing” tints the background to match the artwork.</translation>
     </message>
 </context>
 <context>

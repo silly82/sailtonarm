@@ -46,6 +46,12 @@ gegen einen echten Server.
   ihn ("Apple Music · Interpret")
 - **Abspielen aus jeder Liste** per Kontextmenü (jetzt spielen, als Nächstes,
   anhängen); auf welchem Player das landet, wählt man einmal aus
+- **Playlists bearbeiten**: Titel zu einer eigenen Playlist hinzufügen (auch
+  aus "Läuft gerade", mit "Neue Playlist …") und aus ihr entfernen
+- **Bibliothek pflegen**: Treffer eines Dienstes aufnehmen, Titel, Alben und
+  Sender entfernen; **Sender hinzufügen** aus dem Senderverzeichnis oder per
+  Stream-Adresse
+- **Farben aus dem Cover** in "Läuft gerade" (abschaltbar)
 - **Ähnliches abspielen** zu einem Titel, einem Interpreten oder dem, was
   gerade läuft: der Server legt eine endlose Folge passender Titel an
 - **Interpretenseite** mit Titeln (bei einem Streamingdienst die beliebtesten
@@ -158,6 +164,9 @@ qml/pages/ArtistPage.qml           Interpret: Titel, Alben, ähnliche Interprete
 qml/pages/PlaylistPage.qml         Playlist mit Titeln
 qml/pages/PodcastPage.qml          Podcast mit Folgen (Datum, Stand)
 qml/pages/EpisodePage.qml          Folge: Beschreibung, Datum, Weiterhören
+qml/pages/PlaylistPickerPage.qml   Playlist wählen (oder neu anlegen) zum Hinzufügen
+qml/pages/RadioSearchPage.qml      Sender im Verzeichnis suchen und aufnehmen
+qml/pages/AddRadioDialog.qml       Sender per Stream-Adresse
 qml/pages/AudiobookPage.qml        Hörbuch: Fortschritt, Weiterhören, Kapitel
 qml/pages/LyricsPage.qml           Songtext, mitlaufend
 qml/pages/SleepTimerPage.qml       Einschlaftimer
