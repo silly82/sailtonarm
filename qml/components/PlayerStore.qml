@@ -235,6 +235,110 @@ Item {
                          })
     }
 
+    // --- Playlists und Bibliothek ------------------------------------------
+    // Gegen den echten Server geprüft (KONZEPT.md Abschnitt 34). Hinzufügen
+    // und Entfernen in Playlists laufen als Hintergrundaufgabe des Servers:
+    // die Antwort kommt sofort, der neue Stand ein paar Sekunden später.
+
+    // Bearbeitbar sind Playlists mit `is_editable`; auf dieser Anlage die
+    // eigenen bei Apple Music und die des Music-Assistant-Anbieters.
+    function editablePlaylists(callback) {
+        if (!mass) {
+            return
+        }
+        mass.sendCommand("music/playlists/library_items", { limit: 500 }, function (err, result) {
+            var list = (result || []).filter(function (p) { return p.is_editable === true })
+            list.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)) })
+            callback(err, list)
+        }, 60000)
+    }
+
+    function addToPlaylist(playlist, uris, callback) {
+        _sendWithResult("music/playlists/add_playlist_tracks",
+                        { db_playlist_id: playlist.item_id, uris: uris }, callback)
+    }
+
+    // positions sind die `position`-Werte der Titel in der Playlist (ab 1).
+    function removeFromPlaylist(playlist, positions, callback) {
+        _sendWithResult("music/playlists/remove_playlist_tracks",
+                        { db_playlist_id: playlist.item_id, positions_to_remove: positions }, callback)
+    }
+
+    // Neue Playlists legt der Music-Assistant-eigene Anbieter an: Apple Music
+    // kann bestehende bearbeiten, aber keine neuen anlegen (Fehler 3,
+    // "Daten ungültig"). Liefert die neue Playlist.
+    function createPlaylist(name, callback) {
+        if (!mass) {
+            return
+        }
+        mass.sendCommand("music/playlists/create_playlist",
+                         { name: name, provider_instance_or_domain: "builtin" },
+                         function (err, result) {
+                             store._noteError(err)
+                             callback(err, result)
+                         }, 60000)
+    }
+
+    // Ein Objekt eines Anbieters (Streamingdienst, RadioBrowser) in die
+    // eigene Bibliothek aufnehmen. Liefert den neuen Bibliothekseintrag.
+    function addToLibrary(uri, callback) {
+        if (!mass) {
+            return
+        }
+        mass.sendCommand("music/library/add_item", { item: uri }, function (err, result) {
+            store._noteError(err)
+            callback(err, result)
+        }, 60000)
+    }
+
+    // Aus der Bibliothek entfernen. Der Server nennt das selbst "destruktiv":
+    // bei einem Album gehen dessen Titel mit. Die Oberfläche fragt deshalb
+    // mit Rückgängig-Frist, bevor sie das schickt.
+    function removeFromLibrary(mediaType, libraryItemId, callback) {
+        _sendWithResult("music/library/remove_item",
+                        { media_type: mediaType, library_item_id: libraryItemId }, callback)
+    }
+
+    // Einen Sender über seine Stream-Adresse anlegen (eigener Sender, der in
+    // keinem Verzeichnis steht).
+    function addRadioByUrl(name, url, callback) {
+        if (!mass) {
+            return
+        }
+        mass.sendCommand("builtin/add_radio", { name: name, url: url }, function (err, result) {
+            store._noteError(err)
+            callback(err, result)
+        }, 60000)
+    }
+
+    // --- Farben aus dem Cover ----------------------------------------------
+
+    // proxy_id -> Palette (primary, accent, on_dark, on_light,
+    // background_dark, background_light; je [r, g, b] oder null). Der Server
+    // rechnet sie einmal aus und hält sie selbst im Cache; hier nur, damit ein
+    // Titelwechsel hin und zurück keine neue Anfrage braucht.
+    property var _palettes: ({})
+
+    function palette(proxyId, callback) {
+        if (!proxyId) {
+            callback(null)
+            return
+        }
+        if (_palettes[proxyId] !== undefined) {
+            callback(_palettes[proxyId])
+            return
+        }
+        if (!mass || !mass.ready) {
+            callback(null)
+            return
+        }
+        mass.sendCommand("metadata/get_image_palette", { image_id: proxyId }, function (err, result) {
+            var value = err ? null : result
+            store._palettes[proxyId] = value
+            callback(value)
+        }, 30000)
+    }
+
     // --- Favoriten -------------------------------------------------------
 
     // Hinzufügen nimmt die URI und geht für jedes Objekt, auch für eines, das

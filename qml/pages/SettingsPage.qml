@@ -305,6 +305,21 @@ Page {
                 onClicked: portraitSetting.value = !checked
             }
 
+            TextSwitch {
+                width: parent.width
+                text: qsTr("Farben aus dem Cover")
+                description: qsTr("„Läuft gerade“ färbt den Hintergrund passend zum Cover ein.")
+                checked: coverColorsSetting.value === true
+                automaticCheck: false
+                onClicked: coverColorsSetting.value = !checked
+            }
+
+            ConfigurationValue {
+                id: coverColorsSetting
+                key: "/apps/harbour-tonarm/coverColors"
+                defaultValue: true
+            }
+
             ConfigurationValue {
                 id: portraitSetting
                 key: "/apps/harbour-tonarm/lockPortrait"

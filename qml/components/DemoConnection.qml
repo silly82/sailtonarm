@@ -199,7 +199,7 @@ Item {
         var d = _data
         return [].concat(d.artists, d.albums, d.tracks, d.playlists, d.radios,
                          d.audiobooks, d.podcasts, d.episodes,
-                         d.stream.artists, d.stream.albums, d.stream.tracks)
+                         d.stream.artists, d.stream.albums, d.stream.tracks, d.stream.radios)
     }
 
     function _findByUri(uri) {
@@ -842,6 +842,70 @@ Item {
             }
             _changed()
             return null
+        // --- Playlists und Bibliothek
+        case "music/playlists/create_playlist":
+            var npid = "pl" + (_data.playlists.length + 1) + "-" + Date.now()
+            var created = { item_id: npid, provider: DemoData.LIBRARY, media_type: "playlist",
+                            uri: "library://playlist/" + npid, name: args.name, owner: "Demo",
+                            is_editable: true, metadata: {}, favorite: false, is_playable: true }
+            _data.playlists.push(created)
+            _data.tracksByPlaylist[npid] = []
+            return created
+        case "music/playlists/add_playlist_tracks":
+            list = _data.tracksByPlaylist[args.db_playlist_id]
+            if (!list) {
+                throw "Playlist nicht gefunden"
+            }
+            for (i = 0; i < args.uris.length; i++) {
+                item = _findByUri(args.uris[i])
+                if (item) {
+                    list.push(item)
+                }
+            }
+            return { name: "demo", status: "running" }
+        case "music/playlists/remove_playlist_tracks":
+            list = _data.tracksByPlaylist[args.db_playlist_id] || []
+            var drop = args.positions_to_remove.map(function (n) { return n - 1 })
+            _data.tracksByPlaylist[args.db_playlist_id] = list.filter(function (x, n) { return drop.indexOf(n) < 0 })
+            return { name: "demo", status: "running" }
+        case "music/library/add_item":
+            item = _findByUri(args.item)
+            if (!item) {
+                throw "Nicht gefunden"
+            }
+            var copy = _clone(item)
+            copy.provider = DemoData.LIBRARY
+            copy.item_id = "lib-" + item.item_id
+            copy.uri = "library://" + item.media_type + "/" + copy.item_id
+            _collection(item.media_type).push(copy)
+            return copy
+        case "music/library/remove_item":
+            list = _collection(args.media_type)
+            for (i = list.length - 1; i >= 0; i--) {
+                if (String(list[i].item_id) === String(args.library_item_id)) {
+                    list.splice(i, 1)
+                }
+            }
+            return null
+        case "builtin/add_radio":
+            var rid = "r" + (_data.radios.length + 1) + "-" + Date.now()
+            var radio = { item_id: rid, provider: DemoData.LIBRARY, media_type: "radio",
+                          uri: "library://radio/" + rid, name: args.name, metadata: {},
+                          favorite: false, is_playable: true }
+            _data.radios.push(radio)
+            return radio
+        case "metadata/get_image_palette":
+            // Die Demo-Cover sind Verläufe; eine ruhige Farbe je Bild genügt,
+            // abgeleitet aus dem Dateinamen.
+            var hues = [[40, 30, 70], [20, 50, 60], [60, 30, 30], [25, 45, 35], [55, 40, 20]]
+            var h = 0
+            for (i = 0; i < String(args.image_id).length; i++) {
+                h = (h * 31 + String(args.image_id).charCodeAt(i)) % 997
+            }
+            var c = hues[h % hues.length]
+            return { background_dark: c, background_light: [200, 200, 210], primary: c,
+                     accent: [220, 180, 90], on_dark: [230, 230, 230], on_light: [30, 30, 30] }
+
         case "players/cmd/play_announcement":
             // Kein Ton im Demomodus; angenommen wird die Durchsage trotzdem,
             // mit derselben Prüfung wie beim Server.
@@ -894,7 +958,13 @@ Item {
         case "music/artists/artist_albums":
             return _data.albums.filter(function (a) { return a.artists[0].item_id === args.item_id })
         case "music/playlists/playlist_tracks":
-            return _data.tracksByPlaylist[args.item_id] || []
+            // Mit Position ab 1, wie der Server sie liefert -- danach richtet
+            // sich "Aus dieser Playlist entfernen".
+            return (_data.tracksByPlaylist[args.item_id] || []).map(function (t, n) {
+                var copy = demo._clone(t)
+                copy.position = n + 1
+                return copy
+            })
         case "music/podcasts/podcast_episodes":
             return _data.episodes
         case "music/audiobooks/get":
@@ -919,7 +989,7 @@ Item {
                 albums: find(_data.albums.concat(libraryOnly ? [] : stream.albums)),
                 tracks: find(_data.tracks.concat(libraryOnly ? [] : stream.tracks)),
                 playlists: find(_data.playlists),
-                radio: find(_data.radios),
+                radio: find(_data.radios.concat(libraryOnly ? [] : stream.radios)),
                 podcasts: find(_data.podcasts),
                 audiobooks: find(_data.audiobooks)
             }

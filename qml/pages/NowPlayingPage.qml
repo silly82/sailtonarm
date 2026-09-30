@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
+import Nemo.Configuration 1.0
 import "../components"
 import "../lib/MassModels.js" as Models
 
@@ -91,7 +92,9 @@ Page {
     // dort nicht, also sofort nachziehen statt eine Sekunde lang die alte
     // Position zu zeigen.
     onStatusChanged: if (status === PageStatus.Activating) refreshElapsed()
+
     Component.onCompleted: {
+        refreshPalette()
         refreshElapsed()
         syncSpeed()
     }
@@ -102,6 +105,69 @@ Page {
         running: page.status === PageStatus.Active && page.playing
         onTriggered: page.refreshElapsed()
     }
+
+    // --- Farben aus dem Cover ---------------------------------------------
+    // Der Server rechnet aus dem Cover eine Palette aus
+    // (metadata/get_image_palette, KONZEPT.md Abschnitt 34). Hinter dem Cover
+    // läuft ein Verlauf in dessen Hintergrundfarbe aus -- zurückhaltend, damit
+    // Silica-Schrift und -Bedienelemente überall lesbar bleiben. Abschaltbar
+    // in den Einstellungen.
+    ConfigurationValue {
+        id: coverColorsSetting
+        key: "/apps/harbour-tonarm/coverColors"
+        defaultValue: true
+    }
+
+    // Die Kennung steckt in der Bildadresse: .../imageproxy/<proxy_id>?size=...
+    readonly property string imageProxyId: {
+        var url = track ? String(track.imageUrl) : ""
+        var m = /\/imageproxy\/([^?\/]+)/.exec(url)
+        if (m) {
+            return decodeURIComponent(m[1])
+        }
+        // Demomodus: die Cover sind Dateien, die Kennung ist die Adresse.
+        return /^file:/.test(url) ? url : ""
+    }
+    property color tint: "transparent"
+
+    function applyPalette(pal) {
+        var rgb = null
+        if (pal) {
+            // Auf dunklem Silica-Thema die dunkle Hintergrundfarbe, auf hellem
+            // die helle -- sonst sähe der Verlauf wie ein Fleck aus.
+            rgb = Theme.colorScheme === Theme.LightOnDark ? pal.background_dark : pal.background_light
+            if (!rgb) {
+                rgb = pal.primary
+            }
+        }
+        tint = rgb ? Qt.rgba(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, 0.85) : "transparent"
+    }
+
+    onImageProxyIdChanged: refreshPalette()
+
+    function refreshPalette() {
+        if (coverColorsSetting.value !== true || imageProxyId.length === 0 || !store) {
+            tint = "transparent"
+            return
+        }
+        var id = imageProxyId
+        store.palette(id, function (pal) {
+            if (id === page.imageProxyId) {
+                page.applyPalette(pal)
+            }
+        })
+    }
+
+    Rectangle {
+        anchors { left: parent.left; right: parent.right; top: parent.top }
+        height: parent.height * 0.75
+        visible: page.tint.a > 0
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: page.tint }
+            GradientStop { position: 1.0; color: "transparent" }
+        }
+    }
+    Behavior on tint { ColorAnimation { duration: 400 } }
 
     SilicaFlickable {
         anchors.fill: parent
@@ -135,6 +201,29 @@ Page {
                         pageToast.show(qsTr("Ähnliches läuft"))
                     }
                 })
+            }
+            MenuItem {
+                text: qsTr("Zur Playlist hinzufügen …")
+                visible: page.currentUri.length > 0
+                enabled: mass && mass.ready
+                onClicked: {
+                    var uri = page.currentUri
+                    var name = page.track ? page.track.title : ""
+                    var t = pageToast
+                    var playerStore = page.store
+                    pageStack.push(Qt.resolvedUrl("PlaylistPickerPage.qml"), {
+                        mass: page.mass, store: page.store, itemName: name,
+                        pickHandler: function (playlist) {
+                            if (playlist.error) {
+                                t.show(playlist.error.hint, true)
+                                return
+                            }
+                            playerStore.addToPlaylist(playlist, [uri], function (err) {
+                                t.show(err ? err.hint : qsTr("Zu „%1“ hinzugefügt").arg(playlist.name), !!err)
+                            })
+                        }
+                    })
+                }
             }
             MenuItem {
                 text: qsTr("Songtext")

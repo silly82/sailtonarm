@@ -1709,3 +1709,78 @@ Markieren die Folge beim Server nach und übernimmt den neuen Stand nur, wenn
 der Server ihn auch meldet; sonst sagt eine Meldung, dass der Anbieter den
 Hörstand selbst führt. Ohne diese Prüfung hätte die Zeile "als nicht
 gehört markiert" gezeigt und beim nächsten Laden wieder "gehört".
+
+## 34. Update 2026-09-29: Playlists, Bibliothek, Sender, Cover-Farben (v0.30)
+
+Vier Punkte aus der Befehlsliste des Servers. Vorher mit temporärem Testcode
+gegen den echten Server vermessen, mit Zustimmung auch die schreibenden
+Befehle (danach alles wieder im Ausgangszustand, geprüft über die Zähler).
+
+### Was der Server kann (MA 2.10.4, Apple Music, RadioBrowser)
+
+- **Playlists:** 33 der 52 sind `is_editable` -- die eigenen bei Apple Music
+  (Anbieter `playlist_tracks_edit`). `add_playlist_tracks(db_playlist_id,
+  uris)` und `remove_playlist_tracks(db_playlist_id, positions_to_remove)`
+  laufen als Hintergrundaufgabe: die Antwort ist ein BackgroundTask, der
+  neue Stand steht nach wenigen Sekunden da. `playlist_tracks` liefert je
+  Titel `position` ab 1.
+- **Neue Playlists kann Apple Music nicht anlegen**: `create_playlist` mit
+  der Apple-Music-Instanz endet mit Fehler 3 ("Daten ungültig"), der Anbieter
+  meldet kein `playlist_create`. Das kann nur der Music-Assistant-eigene
+  Anbieter (`builtin`); dort liegen neue Playlists.
+- **Bibliothek:** `music/library/add_item(item: uri)` nimmt ein Objekt eines
+  Anbieters auf und liefert den Bibliothekseintrag (Album +1, Sender +1),
+  `music/library/remove_item(media_type, library_item_id)` entfernt ihn
+  wieder. Laut Server "destruktiv": bei einem Album gehen die Titel mit.
+- **Sender:** Die Suche mit `media_types: ["radio"]` findet über
+  RadioBrowser weltweit Sender, oft mit Logo; aufgenommen wird wie oben.
+  Eigene Stream-Adressen über `builtin/add_radio(url, name)`.
+- **Cover-Farben:** `metadata/get_image_palette(image_id)` rechnet aus einem
+  Cover sechs Farben (primary, accent, on_dark, on_light, background_dark,
+  background_light; je `[r, g, b]`) und cached sie selbst. Für ein
+  Playlist-Bild kamen nur `null`-Werte, für Album-Cover verlässlich Farben.
+
+### Umsetzung
+
+- `PlaylistPickerPage`: bearbeitbare Playlists alphabetisch mit Dienst in der
+  Unterzeile, oben "Neue Playlist …" (legt beim Music-Assistant-Anbieter an
+  und fügt dann hinzu). Die Wahl geht an einen Handler der aufrufenden Seite,
+  der auch nach dem Schliessen der Auswahl noch lebt. Der Namensdialog
+  springt über `acceptDestination` direkt zur aufrufenden Seite zurück; ein
+  eigenes `pop()` während der Dialog-Animation verweigert Silica.
+- Kontextmenü (`MediaListItem`): "Zur Playlist hinzufügen …" bei Titeln,
+  "Aus dieser Playlist entfernen" auf einer bearbeitbaren Playlist (mit
+  Rückgängig-Frist; danach lädt die Seite neu, weil sich die Positionen
+  verschieben), "In die Bibliothek aufnehmen" bei allem, was von einem
+  Anbieter kommt, "Aus der Bibliothek entfernen" nur bei Titeln, Alben und
+  Sendern (mit Rückgängig-Frist; die Zeile klappt danach zu). Bei
+  Interpreten würde der Server alle Alben mitnehmen, bei Playlists eines
+  Dienstes ist unklar, was mit dem Original passiert -- deshalb dort nicht.
+- "Läuft gerade": "Zur Playlist hinzufügen …" für den laufenden Titel und
+  ein Verlauf in der Hintergrundfarbe des Covers (dunkles Silica-Thema:
+  `background_dark`, helles: `background_light`), abschaltbar in den
+  Einstellungen. Die Kennung kommt aus der Bildadresse.
+- Senderliste: "Sender hinzufügen …" führt zu `RadioSearchPage` (Tippen nimmt
+  auf) mit "Eigene Stream-Adresse …" im Pulley-Menü.
+- Der Demo-Server kennt alle neuen Befehle, dazu zwei Verzeichnis-Sender.
+
+### Auf dem Gerät
+
+Gegen den echten Server ohne Touch (Testcode, der Seiten öffnet und dieselben
+Funktionen wie die Knöpfe aufruft): Playlist-Auswahl mit deinen
+Apple-Music-Playlists; Test-Playlist anlegen, Titel hinzufügen, auf der
+Playlist-Seite sehen, über die Seite entfernen, Playlist löschen; Sender
+suchen, aufnehmen, wieder entfernen; Palette für das laufende Cover. Danach
+wieder 52 Playlists und 3 Sender. Im Demomodus per Touch: Farbverlauf
+sichtbar, "Neue Playlist …" mit Namensdialog bis zurück zu "Läuft gerade",
+"Aus dieser Playlist entfernen" mit Rückgängig-Frist. Dabei fiel auf, dass
+der Demo-Server keine `position` lieferte; korrigiert.
+
+**Nicht geprüft:** Hinzufügen und Entfernen an einer bestehenden
+Apple-Music-Playlist (hätte eine deiner Playlists verändert). Der Befehl ist
+derselbe wie bei der Test-Playlist; ob Apple Music die Änderung übernimmt,
+zeigt erst der Gebrauch.
+
+Nebenbei gelernt: `qmllint` meldet Syntaxfehler, endet aber mit Status 0.
+Die Build-Skripte prüfen deshalb seine Ausgabe, nicht den Status -- ein
+fehlerhafter Testbuild war sonst schon einmal auf dem Telefon gelandet.

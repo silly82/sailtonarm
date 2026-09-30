@@ -155,6 +155,18 @@ Page {
 
     Component.onCompleted: reload()
 
+    // Zurück von "Sender hinzufügen": die Liste kann gewachsen sein.
+    property bool wasShown: false
+    onStatusChanged: {
+        if (status !== PageStatus.Active) {
+            return
+        }
+        if (wasShown && mediaType === "radios") {
+            reload()
+        }
+        wasShown = true
+    }
+
     Connections {
         target: mass
         onAuthenticated: page.reload()
@@ -198,6 +210,14 @@ Page {
         }
 
         PullDownMenu {
+            // Nur in der Senderliste: neue Sender finden oder eintragen.
+            MenuItem {
+                text: qsTr("Sender hinzufügen …")
+                visible: page.mediaType === "radios"
+                enabled: mass && mass.ready
+                onClicked: pageStack.push(Qt.resolvedUrl("RadioSearchPage.qml"),
+                                          { mass: page.mass, store: page.store })
+            }
             MenuItem {
                 text: qsTr("Ziel-Player: %1").arg(targetName())
                 onClicked: pageStack.push(Qt.resolvedUrl("PlayerPickerPage.qml"),

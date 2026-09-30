@@ -127,6 +127,7 @@ function build(artBase) {
         var pd = playlistDefs[i]
         playlists.push({ item_id: pd[0], provider: LIBRARY, media_type: "playlist",
                          uri: "library://playlist/" + pd[0], name: pd[1], owner: "Demo",
+                         is_editable: true,
                          metadata: images(pd[2]), favorite: i === 0, is_playable: true })
         tracksByPlaylist[pd[0]] = pick(pd[3])
     }
@@ -193,6 +194,14 @@ function build(artBase) {
                          uri: "klangwelle://artist/1", name: "Mira & die Solisten",
                          metadata: images("klangwelle-1"), is_playable: true }
     var stream = {
+        radios: [
+            { item_id: "s-r1", provider: "radiobrowser", media_type: "radio",
+              uri: "radiobrowser://radio/demo-1", name: "Klangwelle Lounge",
+              metadata: images("klangwelle-2"), is_playable: true },
+            { item_id: "s-r2", provider: "radiobrowser", media_type: "radio",
+              uri: "radiobrowser://radio/demo-2", name: "Radio Alpenwelle Klassik",
+              metadata: images("alpenwelle"), is_playable: true }
+        ],
         artists: [streamArtist],
         albums: [
             { item_id: "s-al1", provider: STREAM, media_type: "album", uri: "klangwelle://album/1",

@@ -72,6 +72,44 @@ Page {
         return p ? Models.playerName(p) : qsTr("keiner")
     }
 
+    // Bearbeitbar ist, was der Server so kennzeichnet (eigene Playlists bei
+    // Apple Music und beim Music-Assistant-Anbieter).
+    readonly property bool editable: playlist && playlist.is_editable === true
+
+    function reload() {
+        tracks = []
+        exhausted = false
+        errorText = ""
+        loadMore()
+    }
+
+    // Das Entfernen läuft beim Server als Hintergrundaufgabe; der neue Stand
+    // ist erst nach ein paar Sekunden da. Die Positionen der übrigen Titel
+    // verschieben sich dabei -- deshalb neu laden statt lokal zu streichen.
+    function removeTrack(track) {
+        var t = pageToast
+        var playerStore = store
+        var pl = playlist
+        store.removeFromPlaylist(pl, [track.position], function (err) {
+            if (err) {
+                t.show(err.hint, true)
+                return
+            }
+            t.show(qsTr("„%1“ entfernt").arg(track.name))
+            reloadTimer.restart()
+        })
+    }
+
+    Timer {
+        id: reloadTimer
+        interval: 4000
+        onTriggered: page.reload()
+    }
+
+    // Zurück von der Playlist-Auswahl, nachdem etwas hinzugefügt wurde: der
+    // Stand kann sich geändert haben.
+    onStatusChanged: if (status === PageStatus.Activating && tracks.length > 0 && editable) reloadTimer.restart()
+
     Component.onCompleted: loadMore()
 
     SilicaListView {
@@ -130,6 +168,11 @@ Page {
 
         PullDownMenu {
             MenuItem {
+                text: qsTr("Neu laden")
+                enabled: mass && mass.ready
+                onClicked: page.reload()
+            }
+            MenuItem {
                 text: qsTr("Ziel-Player: %1").arg(page.targetName())
                 onClicked: pageStack.push(Qt.resolvedUrl("PlayerPickerPage.qml"),
                                           { mass: page.mass, store: page.store })
@@ -143,12 +186,19 @@ Page {
         }
 
         delegate: MediaListItem {
+            id: trackRow
             mass: page.mass
             store: page.store
             toast: pageToast
             mediaItem: modelData
             subtitle: Models.artistNames(modelData)
             showImage: false
+            playlistPosition: page.editable && modelData.position > 0 ? modelData.position : -1
+            onRemoveFromPlaylistRequested: {
+                var track = modelData
+                trackRow.remorseAction(qsTr("Wird aus der Playlist entfernt"),
+                                       function () { page.removeTrack(track) })
+            }
 
             Component.onCompleted: {
                 if (index >= page.tracks.length - 10) {

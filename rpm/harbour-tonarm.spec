@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.29
+Version:    0.30
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -68,6 +68,18 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Tue Sep 29 2026 silly82 <siliwalker@gmail.com> - 0.30-1
+- Playlists bearbeiten: "Zur Playlist hinzufügen …" im Kontextmenü von
+  Titeln und in "Läuft gerade", mit "Neue Playlist …"; auf einer eigenen
+  Playlist "Aus dieser Playlist entfernen".
+- Bibliothek pflegen: Treffer eines Streamingdienstes oder Senderver-
+  zeichnisses "In die Bibliothek aufnehmen"; Titel, Alben und Sender
+  "Aus der Bibliothek entfernen" (mit Rückgängig-Frist).
+- Sender hinzufügen: in der Senderliste "Sender hinzufügen …" -- im
+  Senderverzeichnis suchen oder eine eigene Stream-Adresse eintragen.
+- Farben aus dem Cover: "Läuft gerade" färbt den Hintergrund passend zum
+  Cover ein (abschaltbar in den Einstellungen).
+
 * Tue Sep 29 2026 silly82 <siliwalker@gmail.com> - 0.29-1
 - Podcast-Folgen wie im Podcatcher: Erscheinungsdatum ("gestern", "vor 3
   Tagen"), Dauer und Stand ("neu", "43 % gehört", "gehört"); Gehörtes tritt
