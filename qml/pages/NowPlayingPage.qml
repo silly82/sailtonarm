@@ -118,6 +118,35 @@ Page {
         defaultValue: true
     }
 
+    // Easter Egg (KONZEPT.md Abschnitt 35): siebenmal aufs Cover tippen, und
+    // es wird zur Schallplatte mit Tonarm. Siebenmal mehr, und es ist wieder
+    // das Cover. Die Wahl bleibt gespeichert.
+    ConfigurationValue {
+        id: vinylSetting
+        key: "/apps/harbour-tonarm/vinylMode"
+        defaultValue: false
+    }
+
+    property int coverTaps: 0
+
+    function coverTapped() {
+        coverTaps++
+        tapReset.restart()
+        if (coverTaps < 7) {
+            return
+        }
+        coverTaps = 0
+        vinylSetting.value = !vinylSetting.value
+        pageToast.show(vinylSetting.value ? qsTr("Aufgelegt. 33⅓ Umdrehungen pro Minute.")
+                                          : qsTr("Zurück in die Hülle."), false)
+    }
+
+    Timer {
+        id: tapReset
+        interval: 1500
+        onTriggered: page.coverTaps = 0
+    }
+
     // Die Kennung steckt in der Bildadresse: .../imageproxy/<proxy_id>?size=...
     readonly property string imageProxyId: {
         var url = track ? String(track.imageUrl) : ""
@@ -272,7 +301,17 @@ Page {
                     // eine vollständige /imageproxy-Adresse samt Grössenangabe
                     // -- die wird unverändert übernommen, nichts gebaut.
                     source: page.track ? page.track.imageUrl : ""
-                    visible: status === Image.Ready
+                    visible: status === Image.Ready && !vinylSetting.value
+                }
+
+                Loader {
+                    anchors.fill: parent
+                    active: vinylSetting.value
+                    sourceComponent: VinylRecord {
+                        source: page.track ? page.track.imageUrl : ""
+                        // Nicht im Hintergrund weiterdrehen.
+                        spinning: page.playing && Qt.application.active
+                    }
                 }
 
                 // Platzhalter, solange (oder falls) kein Bild da ist -- ein
@@ -281,7 +320,7 @@ Page {
                     anchors.centerIn: parent
                     height: parent.height
                     width: height
-                    visible: !cover.visible
+                    visible: !cover.visible && !vinylSetting.value
                     color: Theme.rgba(Theme.highlightBackgroundColor, 0.15)
                     radius: Theme.paddingSmall
 
@@ -290,6 +329,11 @@ Page {
                         source: "image://theme/icon-l-music"
                         opacity: 0.4
                     }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: page.coverTapped()
                 }
             }
 

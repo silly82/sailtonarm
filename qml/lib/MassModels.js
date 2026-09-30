@@ -566,3 +566,26 @@ function plainText(html) {
          .replace(/&#(\d+);/g, function (m, n) { return String.fromCharCode(parseInt(n, 10)) })
     return s.replace(/\n{3,}/g, "\n\n").trim()
 }
+
+// --- Interpret ---------------------------------------------------------------
+
+// `music/artists/top_tracks` mischt Bibliothek und Streamingdienst und bringt
+// denselben Titel oft doppelt: einmal aus der Bibliothek, einmal vom Dienst,
+// oder in zwei Fassungen vom Dienst ("Yellow" zweimal bei Coldplay). Je Name
+// bleibt ein Eintrag an der Stelle seines ersten Auftretens; steht der Titel
+// auch in der Bibliothek, gilt der Bibliothekseintrag.
+function uniqueTracksByName(tracks) {
+    var out = []
+    var at = {}
+    for (var i = 0; i < (tracks || []).length; i++) {
+        var t = tracks[i]
+        var key = String(t.name || "").toLowerCase().trim()
+        if (at[key] === undefined) {
+            at[key] = out.length
+            out.push(t)
+        } else if (t.provider === "library" && out[at[key]].provider !== "library") {
+            out[at[key]] = t
+        }
+    }
+    return out
+}

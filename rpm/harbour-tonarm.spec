@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.30
+Version:    0.31
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -44,7 +44,9 @@ Bibliothek, Suche und Warteschlange folgen in den nächsten Ausbaustufen
 
 %build
 
-%qmake5
+# Die Version aus diesem Paket landet als Qt.application.version in der App
+# (Einstellungen, Liner Notes).
+%qmake5 VERSION=%{version}
 
 %make_build
 
@@ -68,6 +70,19 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Wed Sep 30 2026 silly82 <siliwalker@gmail.com> - 0.31-1
+- Interpreten zeigen ihre beliebtesten Titel jetzt auch, wenn sie aus der
+  eigenen Bibliothek stammen (gemischt mit dem Streamingdienst, Dubletten
+  zusammengefasst); die eigenen Titel stehen darunter unter "In der
+  Bibliothek". Bei Streaming-Interpreten kommen die beliebten Titel
+  schneller.
+- Verbindungs- und Serverfehler ("Server nicht erreichbar", "Token ungültig
+  oder abgelaufen" …) erscheinen auf einem englischen Telefon jetzt auf
+  Englisch.
+- Die Einstellungen nennen unten die Version der App.
+- Zwei kleine Überraschungen für Neugierige. Ein Tipp: Musik hat viel mit
+  Wiederholung zu tun.
+
 * Tue Sep 29 2026 silly82 <siliwalker@gmail.com> - 0.30-1
 - Playlists bearbeiten: "Zur Playlist hinzufügen …" im Kontextmenü von
   Titeln und in "Läuft gerade", mit "Neue Playlist …"; auf einer eigenen

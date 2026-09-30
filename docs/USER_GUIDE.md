@@ -6,7 +6,7 @@ app plays no music itself: it controls the speakers connected to your server
 (Sonos, AirPlay, Chromecast, DLNA and whatever else Music Assistant supports)
 and shows what they are playing.
 
-Version 0.30. *Deutsche Fassung: [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md).*
+Version 0.31. *Deutsche Fassung: [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md).*
 
 ---
 
@@ -118,8 +118,11 @@ their counts: Artists, Albums, Tracks, Playlists, Radio, Podcasts, Audiobooks.
 
 - Every list loads more as you scroll and has a search field at the top.
 - In a list's pulley menu: *Favourites only*, *Target player*, *Reload*.
-- **Artists** show their tracks (for a streaming service the popular ones
-  first), albums and **similar artists**; at the top *Play* and *Similar*.
+- **Artists** show their **popular tracks** (also for artists from your own
+  library, mixed with the streaming service), below them *In your library*
+  with your own tracks, then albums and **similar artists**; at the top
+  *Play* and *Similar*. The popular tracks can take ten seconds the first
+  time.
 - Albums show their tracks with *Play* and *Append*; playlists also
   *Shuffle*.
 
@@ -264,6 +267,7 @@ network each time -- that saves mobile data.
 | Notifications | *Notify on every track change* |
 | Connection | server name, version, *Connected through*, *Signed in as* |
 | Credentials | *Delete credentials*, *Reconnect now* |
+| (bottom) | the app's version -- and perhaps more, for the curious |
 
 An empty token field keeps the stored token; use *Delete credentials* to
 remove it.
@@ -285,13 +289,10 @@ remove it.
 
 ## 13. When something does not work
 
-Some connection messages are shown in German even when the phone is set to
-English; the table gives them as they appear.
-
 | Problem | What may help |
 |---|---|
-| "Server nicht erreichbar" (server not reachable) | Check the address (Home Assistant: the HA machine's address, port 8095). Is the phone on the same Wi-Fi, or in the VPN? |
-| "Token ungültig oder abgelaufen" (token invalid or expired) | Create a new token in Music Assistant and enter it. |
+| "Server not reachable" | Check the address (Home Assistant: the HA machine's address, port 8095). Is the phone on the same Wi-Fi, or in the VPN? |
+| "Token invalid or expired" | Create a new token in Music Assistant and enter it. |
 | No players shown | *Refresh* in the pulley menu; check in Music Assistant that players are set up and enabled. |
 | A tap seems to do nothing | The app is waiting for the server; with slow providers (lyrics, a streaming artist's tracks) that can take a while. Do not tap repeatedly. |
 | Artwork missing away from home | Enter an *Away address*; artwork loads through the address currently connected. |

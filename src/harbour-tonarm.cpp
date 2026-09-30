@@ -14,6 +14,7 @@
 int main(int argc, char *argv[])
 {
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
+    app->setApplicationVersion(QStringLiteral(APP_VERSION));
     QScopedPointer<QQuickView> view(SailfishApp::createView());
 
     // Cover auf der Platte zwischenspeichern (siehe src/covercache.h). Muss

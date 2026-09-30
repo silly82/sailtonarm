@@ -6,14 +6,19 @@ import "../lib/MassApi.js" as MassApi
 
 // Ein Interpret: seine Titel, seine Alben und ähnliche Interpreten.
 //
-// Drei Abfragen, unabhängig voneinander -- was zuerst da ist, steht zuerst
-// da. Gegen den echten Server vermessen (KONZEPT.md Abschnitt 31):
+// Mehrere Abfragen, unabhängig voneinander -- was zuerst da ist, steht
+// zuerst da. Gegen den echten Server vermessen (KONZEPT.md Abschnitte 31, 36):
 //
-// - `music/artists/artist_tracks` liefert bei einem Streamingdienst dessen
-//   Reihenfolge, also die bekanntesten Titel zuerst; bei einem
-//   Bibliothekseintrag dagegen alle eigenen Titel alphabetisch. Deshalb
-//   heisst der Abschnitt nur beim Dienst "Beliebte Titel", und es werden erst
-//   zehn gezeigt.
+// - `music/artists/top_tracks` liefert die bekanntesten Titel, auch für einen
+//   Interpreten aus der Bibliothek (dann gemischt mit dem Streamingdienst).
+//   Die erste Abfrage je Interpret dauert 10-15 s, danach kommt sie aus dem
+//   Zwischenspeicher des Servers. Doppelte fasst uniqueTracksByName zusammen.
+// - `music/artists/artist_tracks` liefert bei einem Bibliothekseintrag alle
+//   eigenen Titel alphabetisch -- der Abschnitt "In der Bibliothek". Bei
+//   einem Streaming-Interpreten nur noch als Ersatz, falls top_tracks nichts
+//   bringt: dort ist es dieselbe Reihenfolge, aber viel langsamer.
+// - `music/artists/top_albums` bleibt aussen vor: auf diesem Server (Apple
+//   Music, MA 2.10.4) kommt immer eine leere Liste.
 // - `music/artists/similar_artists` kommt aus Last.fm bzw. dem Dienst,
 //   gemischt aus Bibliothek und Dienst, mit Bild.
 // - Die Alben wie bisher über `artist_albums`.
@@ -26,9 +31,11 @@ Page {
 
     allowedOrientations: defaultAllowedOrientations
 
+    property var popular: []
     property var tracks: []
     property var albums: []
     property var similar: []
+    property bool showAllPopular: false
     property bool showAllTracks: false
     property int pendingLoads: 0
     property string errorText: ""
@@ -40,14 +47,24 @@ Page {
     // Suchseite, damit alles in einer einzigen ListView scrollt.
     readonly property var rows: {
         var out = []
-        if (tracks.length > 0) {
-            out.push({ section: fromLibrary ? qsTr("Titel") : qsTr("Beliebte Titel") })
-            var shown = showAllTracks ? tracks : tracks.slice(0, trackPreview)
+        if (popular.length > 0) {
+            out.push({ section: qsTr("Beliebte Titel") })
+            var shown = showAllPopular ? popular : popular.slice(0, trackPreview)
             for (var i = 0; i < shown.length; i++) {
                 out.push({ item: shown[i], kind: "track" })
             }
+            if (!showAllPopular && popular.length > trackPreview) {
+                out.push({ more: qsTr("Alle %1 Titel zeigen").arg(popular.length), list: "popular" })
+            }
+        }
+        if (tracks.length > 0) {
+            out.push({ section: qsTr("In der Bibliothek") })
+            shown = showAllTracks ? tracks : tracks.slice(0, trackPreview)
+            for (i = 0; i < shown.length; i++) {
+                out.push({ item: shown[i], kind: "track" })
+            }
             if (!showAllTracks && tracks.length > trackPreview) {
-                out.push({ more: qsTr("Alle %1 Titel zeigen").arg(tracks.length) })
+                out.push({ more: qsTr("Alle %1 Titel zeigen").arg(tracks.length), list: "tracks" })
             }
         }
         if (albums.length > 0) {
@@ -65,11 +82,17 @@ Page {
         return out
     }
 
-    function query(command, args, assign) {
+    // `failed` (optional) läuft statt der Fehlermeldung, wenn eine Abfrage
+    // scheitert -- für den Ersatzweg bei den beliebten Titeln.
+    function query(command, args, assign, failed) {
         pendingLoads += 1
         mass.sendCommand(command, args, function (err, result) {
             page.pendingLoads -= 1
             if (err) {
+                if (failed) {
+                    failed()
+                    return
+                }
                 // Ein fehlender Abschnitt ist kein Grund, die Seite leer zu
                 // lassen; gezeigt wird der Fehler nur, wenn gar nichts kam.
                 page.errorText = err.hint
@@ -86,7 +109,23 @@ Page {
         errorText = ""
         var ref = { item_id: artist.item_id, provider_instance_id_or_domain: artist.provider }
         query("music/artists/artist_albums", ref, function (r) { page.albums = r })
-        query("music/artists/artist_tracks", ref, function (r) { page.tracks = r })
+        if (fromLibrary) {
+            query("music/artists/top_tracks", ref,
+                  function (r) { page.popular = Models.uniqueTracksByName(r) },
+                  function () {})
+            query("music/artists/artist_tracks", ref, function (r) { page.tracks = r })
+        } else {
+            var fallback = function () {
+                query("music/artists/artist_tracks", ref, function (r) { page.popular = r })
+            }
+            query("music/artists/top_tracks", ref, function (r) {
+                if (r.length > 0) {
+                    page.popular = Models.uniqueTracksByName(r)
+                } else {
+                    fallback()
+                }
+            }, fallback)
+        }
         query("music/artists/similar_artists",
               { item_id: artist.item_id, provider_instance_id_or_domain: artist.provider, limit: 20 },
               function (r) { page.similar = r })
@@ -233,7 +272,13 @@ Page {
                 id: moreRow
                 BackgroundItem {
                     height: Theme.itemSizeSmall
-                    onClicked: page.showAllTracks = true
+                    onClicked: {
+                        if (modelData.list === "popular") {
+                            page.showAllPopular = true
+                        } else {
+                            page.showAllTracks = true
+                        }
+                    }
                     Label {
                         x: Theme.horizontalPageMargin
                         anchors.verticalCenter: parent.verticalCenter

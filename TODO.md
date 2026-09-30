@@ -1,4 +1,4 @@
-# Stand und offene Punkte (v0.30, 30.9.2026)
+# Stand und offene Punkte (v0.31, 30.9.2026)
 
 Die Liste unten ("Erkenntnisse aus der iOS-App") ist **vollständig
 abgearbeitet**; zwei Punkte sind bewusst entschieden statt umgesetzt. Danach
@@ -12,6 +12,7 @@ geprüft (Details je Version in `KONZEPT.md`):
 | v0.28 | Durchsage, Cover-Aktionen bei Hörbüchern |
 | v0.29 | Podcast-Folgen wie im Podcatcher (Overcast-Abgleich) |
 | v0.30 | Playlists bearbeiten, Bibliothek pflegen, Sender hinzufügen, Farben aus dem Cover |
+| v0.31 | Beliebte Titel auch für Bibliotheks-Interpreten (`top_tracks`; `top_albums` liefert hier nichts), Fehlermeldungen übersetzt, App-Version in den Einstellungen |
 
 ## Offen
 
@@ -21,20 +22,12 @@ geprüft (Details je Version in `KONZEPT.md`):
   getestet ist bisher nur eine Test-Playlist beim Music-Assistant-Anbieter.
 - [ ] **Anmeldung mit Benutzername und Passwort** (`auth/login`) statt eines
   kopierten Tokens -- die grösste Hürde für neue Nutzer.
-- [ ] **Top-Titel/Top-Alben** eines Interpreten (`music/artists/top_tracks`,
-  `top_albums`), vermutlich schneller als die heutige Titelliste.
 - [ ] **Empfehlungen** (`music/recommendations`), **Durchsuchen**
   (`music/browse`), **Genres** (`music/genres/*`).
 - [ ] **Hörprobe** (`music/tracks/preview`), **Titelversionen**
   (`track_versions`), **Party-Modus** (`party/*`).
 - [ ] **Musik bei einem Anruf pausieren** -- erst klären, ob Sailjail das
   Abhören von Anrufen erlaubt.
-- [ ] **Fehlermeldungen übersetzen**: die Texte in `qml/lib/MassApi.js` und
-  `MassConnection.qml` ("Server nicht erreichbar", "Token ungültig oder
-  abgelaufen", "Keine Verbindung" …) stehen ohne `qsTr()` und erscheinen
-  auch auf einem englischen Telefon deutsch. `.pragma library`-Dateien
-  können `qsTr` nicht; die Texte müssten als Kennung zurückkommen und in QML
-  übersetzt werden.
 - [ ] **Mehrere Server** (Profile).
 - [ ] **Stufe 5: Sendspin** -- das Telefon als Lautsprecher; Konzept auf dem
   Branch `sendspin-player`, bewusst zurückgestellt.

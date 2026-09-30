@@ -1799,3 +1799,97 @@ Mit Zustimmung (niemand im Haus) auf einem Lautsprecher bei 15 %:
   Hörbar war dabei nichts mehr; für Tonarm ohne Folgen, aber gut zu wissen.
 - **Cover-Farben** bei echter Wiedergabe: sichtbar (bei einem
   Schwarz-Weiss-Cover ein grauer statt violetter Verlauf).
+
+## 35. Update 2026-09-30: App-Version und Easter Eggs (v0.31)
+
+**App-Version.** Bisher kannte die App ihre eigene Version nicht. Jetzt
+reicht die Spec sie durch: `%qmake5 VERSION=%{version}` → in der .pro
+`DEFINES += APP_VERSION=...` → `app->setApplicationVersion()` → in QML
+`Qt.application.version`. Ohne `VERSION` (lokaler qmake-Lauf) steht "dev" da.
+Die Einstellungen zeigen sie ganz unten als "Tonarm 0.31".
+
+**Easter Egg 1+2: Schallplatte mit Tonarm.** Siebenmal aufs Cover in "Läuft
+gerade" tippen (höchstens 1,5 s zwischen zwei Tipps), und das Cover wird zur
+Schallplatte (`qml/components/VinylRecord.qml`):
+- Schwarze Scheibe mit feinen Rillen, das Albumbild als rundes Etikett. Rund
+  ausgeschnitten mit einem kleinen `ShaderEffect` als `layer.effect` -- ohne
+  QtGraphicalEffects, nur QtQuick.
+- Dreht sich mit 33⅓ U/min (1,8 s pro Umdrehung), solange der Player spielt
+  und die App im Vordergrund ist. Anlauf und Auslauf dauern 1,2 s bei
+  gleichmässiger Beschleunigung; dabei legt die Platte den halben Weg der
+  vollen Geschwindigkeit zurück (120°), deshalb gibt es an den Übergängen
+  keinen Ruck.
+- Ein Tonarm rechts daneben schwenkt beim Abspielen um 19° auf die Platte
+  (Nadel bei etwa 0,8 des Radius) und beim Anhalten zurück. Die Geometrie ist
+  so gewählt, dass Arm und Lager auch im schmalen Hochformat in die
+  Cover-Fläche passen.
+- Der Glanz liegt über der Platte und dreht nicht mit -- sonst sähe man die
+  Drehung an einem wandernden Lichtfleck statt am Etikett.
+- Die Wahl bleibt in `/apps/harbour-tonarm/vinylMode` gespeichert, siebenmal
+  Tippen schaltet zurück. Eine Meldung bestätigt beides ("Aufgelegt. 33⅓
+  Umdrehungen pro Minute." / "Zurück in die Hülle.").
+
+**Easter Egg 5: Liner Notes.** Siebenmal auf die Versionsnummer in den
+Einstellungen tippen öffnet `LinerNotesPage.qml`: die Rückseite einer
+Doppel-LP. Jede Version aus dem Changelog ist ein Stück (Seite A 0.1–0.8,
+B 0.9–0.16, C 0.17–0.24, D ab 0.25), die Titel spielen auf den jeweiligen
+Changelog-Eintrag an ("Tausendmal zu lang" für den Sperrbildschirm mit der
+tausendfachen Spieldauer in 0.11). 0.13 fehlt, weil es diese Version nie gab.
+Spieldauern sind erfunden, aber aus der Versionsnummer abgeleitet und damit
+fest; die Seitenlängen sind deren Summe. Dazu Mitwirkende und eine
+Katalognummer mit der App-Version.
+
+**Pflege:** Jede neue Version bekommt ein Stück auf Seite D (Checkliste in
+docs/DEVELOPMENT.md). Die Handbücher verraten die Easter Eggs nicht, sie
+deuten sie nur an; auch der Changelog gibt nur einen Tipp.
+
+**Geprüft** auf dem Jolla Phone im Demomodus (kein Ton): sieben Tipps aufs
+Cover → Meldung und Schallplatte, Etikett dreht sich zwischen zwei
+Bildschirmfotos weiter, Tonarm auf der Platte; Pause → Platte steht, Arm in
+Ruhe. Einstellungen zeigen "Tonarm 0.31", sieben Tipps → Liner Notes mit allen
+vier Seiten und den Mitwirkenden. Danach Demomodus aus und `vinylMode`
+zurückgesetzt.
+
+## 36. Update 2026-09-30: Beliebte Titel und übersetzte Fehlermeldungen (v0.31)
+
+**Gemessen** (Probe auf dem Telefon, nur lesend, MA 2.10.4 mit Apple Music):
+
+| Kommando | Interpret aus der Bibliothek | Interpret beim Dienst |
+|---|---|---|
+| `music/artists/top_tracks` | beliebte Titel, gemischt aus Bibliothek und Apple Music (Queen 18, Coldplay 31, Adele 25) | 10 Titel (Adele) |
+| `music/artists/top_albums` | leer | leer |
+| `music/artists/artist_tracks` | eigene Titel, alphabetisch | beliebteste zuerst, langsam (>10 s) |
+
+- Die erste `top_tracks`-Abfrage eines Interpreten dauerte 9,5 bzw. 14 s,
+  jede weitere unter 100 ms: der Server hält das Ergebnis vor.
+- Dubletten: derselbe Titel aus Bibliothek und Dienst ("The Scientist") oder
+  zweimal vom Dienst ("Yellow"). `Models.uniqueTracksByName()` behält je
+  Name (ohne Gross-/Kleinschreibung) die Stelle des ersten Auftretens und
+  nimmt dort den Bibliothekseintrag, wenn es einen gibt. Queen: 18 → 14.
+- `top_albums` liefert auf diesem Server nie etwas und bleibt deshalb weg.
+
+**Interpretenseite:** "Beliebte Titel" kommt jetzt immer aus `top_tracks`
+(erst zehn, dann "Alle %1 Titel zeigen"). Bei einem Bibliotheks-Interpreten
+steht darunter "In der Bibliothek" mit `artist_tracks` (alphabetisch). Bei
+einem Streaming-Interpreten wird `artist_tracks` nur noch als Ersatz
+abgefragt, wenn `top_tracks` leer bleibt oder scheitert. Der Demoserver
+beantwortet `top_tracks` mit den eigenen Titeln rückwärts plus einer
+Dublette.
+
+**Fehlermeldungen übersetzt.** Bisher standen die Texte in `MassApi.js` und
+`MassConnection.qml` ohne Übersetzung da und erschienen auf einem englischen
+Telefon deutsch. `MassConnection` und `DemoConnection` sind QML-Komponenten
+und nehmen einfach `qsTr()`. In `MassApi.js` (`.pragma library`) fehlt der
+QML-Kontext, aus dem `qsTr()` seinen Kontext ableitet; dort steht
+`qsTranslate("MassApi", …)` mit festem Kontext. Das wird erst beim Aufruf
+ausgewertet, der Übersetzer ist dann geladen, und lupdate findet die Texte.
+`%1` wird dort mit `.replace()` eingesetzt. Die frühere Annahme im TODO, dafür
+müssten Kennungen zurückgegeben und in QML übersetzt werden, war unnötig
+umständlich. Texte von Qt selbst (`WebSocket.errorString`, etwa "Connection
+refused") bleiben, wie Qt sie liefert.
+
+**Geprüft** auf dem Jolla Phone mit `LANG=en_GB.utf8` gegen den echten
+Server: `errorText({error_code: 23})` → "Token invalid or expired",
+unbekannter Code → "Error code 99", `fetchServerInfo("")` → "No server
+address given". Interpretenseite Queen: "Popular tracks" (14, ohne
+Dubletten), "Show all 14 tracks", "In your library" mit den eigenen Titeln.

@@ -449,6 +449,39 @@ Page {
                     mass.connectNow()
                 }
             }
+
+            Item { width: 1; height: Theme.paddingLarge }
+
+            // Die eigene Version. Siebenmal tippen öffnet die Liner Notes
+            // (Easter Egg, KONZEPT.md Abschnitt 35).
+            Label {
+                id: versionLabel
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                text: qsTr("Tonarm %1").arg(Qt.application.version)
+
+                property int taps: 0
+
+                Timer {
+                    id: versionTapReset
+                    interval: 1500
+                    onTriggered: versionLabel.taps = 0
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    anchors.margins: -Theme.paddingLarge
+                    onClicked: {
+                        versionTapReset.restart()
+                        if (++versionLabel.taps >= 7) {
+                            versionLabel.taps = 0
+                            pageStack.push(Qt.resolvedUrl("LinerNotesPage.qml"))
+                        }
+                    }
+                }
+            }
         }
 
         VerticalScrollDecorator {}
