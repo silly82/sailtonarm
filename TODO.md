@@ -1,3 +1,56 @@
+# Stand und offene Punkte (v0.30, 30.9.2026)
+
+Die Liste unten ("Erkenntnisse aus der iOS-App") ist **vollständig
+abgearbeitet**; zwei Punkte sind bewusst entschieden statt umgesetzt. Danach
+kamen aus der Befehlsliste des Servers dazu, alle gegen den echten Server
+geprüft (Details je Version in `KONZEPT.md`):
+
+| Version | Neu |
+|---|---|
+| v0.26 | Songtexte (mitlaufend), Einschlaftimer |
+| v0.27 | Ähnliches abspielen, Interpretenseite mit Titeln und ähnlichen Interpreten |
+| v0.28 | Durchsage, Cover-Aktionen bei Hörbüchern |
+| v0.29 | Podcast-Folgen wie im Podcatcher (Overcast-Abgleich) |
+| v0.30 | Playlists bearbeiten, Bibliothek pflegen, Sender hinzufügen, Farben aus dem Cover |
+
+## Offen
+
+- [ ] **Harbour-Einreichung** -- Pakete, Texte und sieben Bildschirmfotos
+  liegen bereit (`store/README.md`). Handarbeit auf harbour.jolla.com.
+- [ ] **Bestehende Apple-Music-Playlist bearbeiten** im Gebrauch prüfen;
+  getestet ist bisher nur eine Test-Playlist beim Music-Assistant-Anbieter.
+- [ ] **Anmeldung mit Benutzername und Passwort** (`auth/login`) statt eines
+  kopierten Tokens -- die grösste Hürde für neue Nutzer.
+- [ ] **Top-Titel/Top-Alben** eines Interpreten (`music/artists/top_tracks`,
+  `top_albums`), vermutlich schneller als die heutige Titelliste.
+- [ ] **Empfehlungen** (`music/recommendations`), **Durchsuchen**
+  (`music/browse`), **Genres** (`music/genres/*`).
+- [ ] **Hörprobe** (`music/tracks/preview`), **Titelversionen**
+  (`track_versions`), **Party-Modus** (`party/*`).
+- [ ] **Musik bei einem Anruf pausieren** -- erst klären, ob Sailjail das
+  Abhören von Anrufen erlaubt.
+- [ ] **Fehlermeldungen übersetzen**: die Texte in `qml/lib/MassApi.js` und
+  `MassConnection.qml` ("Server nicht erreichbar", "Token ungültig oder
+  abgelaufen", "Keine Verbindung" …) stehen ohne `qsTr()` und erscheinen
+  auch auf einem englischen Telefon deutsch. `.pragma library`-Dateien
+  können `qsTr` nicht; die Texte müssten als Kennung zurückkommen und in QML
+  übersetzt werden.
+- [ ] **Mehrere Server** (Profile).
+- [ ] **Stufe 5: Sendspin** -- das Telefon als Lautsprecher; Konzept auf dem
+  Branch `sendspin-player`, bewusst zurückgestellt.
+
+## Bekannte Eigenheiten (kein Fehler der App)
+
+- Overcast führt den Hörstand von Podcast-Folgen selbst; "als gehört
+  markieren" in Tonarm wirkt dort nicht, die App sagt das.
+- Overcast gibt je Podcast nur die letzten rund zehn Folgen weiter.
+- Apple Music kann bestehende Playlists bearbeiten, aber keine neuen anlegen;
+  neue entstehen beim Music-Assistant-Anbieter.
+- Ein Sonos-Lautsprecher meldet nach einer Durchsage seine AirPlay-Sitzung
+  weiter als "spielt", bis man sie an der AirPlay-Entität stoppt.
+
+---
+
 # TODO: lessons from the iOS app
 
 Findings from [Tonarm for iOS](https://github.com/silly82/Tonarm) (SwiftUI, same Music Assistant API, same server MA 2.10.4, schema 65) that apply to this Sailfish client. Checked against the code of v0.18 on 2026-09-27; each item says what is here today. Ordered by value for effort. Sections 1 and 4 are done in v0.20 (KONZEPT section 24), section 2 in v0.21 (section 25), section 3 in v0.22 (section 26), section 5 in v0.23 (section 27), demo mode in v0.24 (section 28), artwork cache and probe script in v0.25 (section 29).
@@ -34,14 +87,14 @@ Today an audiobook plays from the context menu only. The API facts from Tonarm (
 ## 5. Remote access
 
 - [x] **Second ("away") address with fallback.** Tonarm keeps home and away address of the same server (away e.g. `http://<host>.<tailnet>.ts.net:8095`) and tries them staggered: the last one that worked starts at once, the next 0.5 s later, the first `ServerInfo` wins, the other socket is closed. At home the LAN answers in milliseconds, so the away address is never touched. After a network change start over with the home address. On Sailfish: two `WebSocket` objects in `MassConnection`, credentials entry `harbour-tonarm-awayUrl`; network change from `Qt.application.state` plus reconnect is enough to start with. Needs the artwork rebase from section 1.
-- [ ] **MA's own WebRTC remote access stays a non-goal.** Tonarm proved it works (Remote ID, signaling server, `http_proxy` data channel for artwork, DTLS fingerprint check), but it needs libwebrtc, which is neither in Harbour's allowed libraries nor reasonable to ship in an RPM. VPN/Tailscale remains the way (KONZEPT section 2 stands).
+- [–] **MA's own WebRTC remote access stays a non-goal.** *(decided, nothing to do)* Tonarm proved it works (Remote ID, signaling server, `http_proxy` data channel for artwork, DTLS fingerprint check), but it needs libwebrtc, which is neither in Harbour's allowed libraries nor reasonable to ship in an RPM. VPN/Tailscale remains the way (KONZEPT section 2 stands).
 
 ## 6. Store, tests, tooling
 
 - [x] **Demo mode.** Tonarm has an in-memory MA server (four made-up rooms, library, groups, an audiobook, radio) behind the same transport interface. Here it would be a `DemoConnection.qml` with the same API as `MassConnection` (`sendCommand`, `serverEvent`, `ready`). It solves what `store/README.md` leaves open: screenshots of the player list, Now Playing and the queue without showing the rooms of the flat. Also a first look for people without a server.
 - [x] **Artwork disk cache.** The image proxy answers with `Cache-Control: max-age` of a year. QML's `Image` caches in memory only; a `QQmlNetworkAccessManagerFactory` with a `QNetworkDiskCache` (in the app's cache directory, e.g. 100 MB) in `harbour-tonarm.cpp` keeps covers across starts and saves mobile data. Check Harbour: `QNetworkDiskCache` is part of Qt5Network, so it should pass.
 - [x] **Server probe script.** Take over `scripts/ma-probe.mjs` from Tonarm (connect, hello, auth, `players/all`; token from `.env`, gitignored) for checking API shapes before writing QML, the discipline from KONZEPT sections 12 and 15.
-- [ ] **Previous restarts the track** a few seconds in (server behaviour, checked live): no code change, but MPRIS and the button should not try to be smarter.
+- [–] **Previous restarts the track** *(decided: server behaviour, left as is)* a few seconds in (server behaviour, checked live): no code change, but MPRIS and the button should not try to be smarter.
 
 Not applicable: Siri/App Intents, keyboard shortcuts and menu bar, iPhone Duo fold layout, iPad grids, Dynamic Type (Silica scales with the theme), TestFlight.
 
@@ -83,13 +136,13 @@ Heute spielt ein Hörbuch nur über das Kontextmenü. Die API-Fakten aus Tonarm 
 ## 5. Fernzugriff
 
 - [x] **Zweite Adresse ("unterwegs") mit Rückfall.** Tonarm hält Heim- und Unterwegs-Adresse desselben Servers (unterwegs z. B. `http://<host>.<tailnet>.ts.net:8095`) und probiert sie gestaffelt: die zuletzt funktionierende startet sofort, die nächste 0,5 s später, das erste `ServerInfo` gewinnt, der andere Socket wird geschlossen. Zu Hause antwortet das LAN in Millisekunden, die Unterwegs-Adresse wird also nie angefasst. Nach einem Netzwechsel wieder mit der Heimadresse beginnen. Auf Sailfish: zwei `WebSocket`-Objekte in `MassConnection`, Secrets-Eintrag `harbour-tonarm-awayUrl`; als Netzwechsel genügt für den Anfang `Qt.application.state` plus Reconnect. Braucht die Cover-Umschreibung aus Abschnitt 1.
-- [ ] **MAs eigener WebRTC-Fernzugriff bleibt Nicht-Ziel.** Tonarm hat gezeigt, dass er funktioniert (Remote-ID, Signaling-Server, `http_proxy`-Datenkanal für Cover, Prüfung des DTLS-Fingerabdrucks), aber er braucht libwebrtc, das weder zu Harbours erlaubten Bibliotheken gehört noch sinnvoll in ein RPM passt. VPN/Tailscale bleibt der Weg (KONZEPT Abschnitt 2 gilt weiter).
+- [–] **MAs eigener WebRTC-Fernzugriff bleibt Nicht-Ziel.** *(entschieden, nichts zu tun)* Tonarm hat gezeigt, dass er funktioniert (Remote-ID, Signaling-Server, `http_proxy`-Datenkanal für Cover, Prüfung des DTLS-Fingerabdrucks), aber er braucht libwebrtc, das weder zu Harbours erlaubten Bibliotheken gehört noch sinnvoll in ein RPM passt. VPN/Tailscale bleibt der Weg (KONZEPT Abschnitt 2 gilt weiter).
 
 ## 6. Store, Tests, Werkzeuge
 
 - [x] **Demomodus.** Tonarm hat einen MA-Server im Speicher (vier erfundene Räume, Bibliothek, Gruppen, ein Hörbuch, Radio) hinter derselben Transport-Schnittstelle. Hier wäre das ein `DemoConnection.qml` mit derselben API wie `MassConnection` (`sendCommand`, `serverEvent`, `ready`). Das löst, was `store/README.md` offen lässt: Bildschirmfotos von Player-Liste, Now Playing und Warteschlange, ohne die Räume der Wohnung zu zeigen. Dazu ein erster Blick für Leute ohne Server.
 - [x] **Cover-Cache auf der Platte.** Der Bildproxy antwortet mit `Cache-Control: max-age` von einem Jahr. QMLs `Image` cacht nur im Speicher; eine `QQmlNetworkAccessManagerFactory` mit `QNetworkDiskCache` (im Cache-Verzeichnis der App, z. B. 100 MB) in `harbour-tonarm.cpp` behält Cover über Neustarts und spart Mobilfunkdaten. Harbour prüfen: `QNetworkDiskCache` gehört zu Qt5Network, sollte also durchgehen.
 - [x] **Server-Probe-Skript.** `scripts/ma-probe.mjs` aus Tonarm übernehmen (verbinden, hello, auth, `players/all`; Token aus `.env`, gitignored), um API-Formen zu prüfen, bevor QML entsteht -- die Disziplin aus KONZEPT Abschnitt 12 und 15.
-- [ ] **Zurück startet den Titel neu**, wenn er schon einige Sekunden läuft (Serververhalten, live geprüft): keine Codeänderung, aber MPRIS und der Knopf sollten nicht klüger sein wollen.
+- [–] **Zurück startet den Titel neu** *(entschieden: Serververhalten, bleibt so)*, wenn er schon einige Sekunden läuft (Serververhalten, live geprüft): keine Codeänderung, aber MPRIS und der Knopf sollten nicht klüger sein wollen.
 
 Nicht übertragbar: Siri/App Intents, Tastenkürzel und Menüleiste, Falz-Layout des iPhone Duo, iPad-Raster, Dynamic Type (Silica skaliert mit dem Theme), TestFlight.
