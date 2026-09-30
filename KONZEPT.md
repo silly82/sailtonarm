@@ -1784,3 +1784,18 @@ zeigt erst der Gebrauch.
 Nebenbei gelernt: `qmllint` meldet Syntaxfehler, endet aber mit Status 0.
 Die Build-Skripte prüfen deshalb seine Ausgabe, nicht den Status -- ein
 fehlerhafter Testbuild war sonst schon einmal auf dem Telefon gelandet.
+
+### Nachtrag 2026-09-30: mit Ton geprüft
+
+Mit Zustimmung (niemand im Haus) auf einem Lautsprecher bei 15 %:
+
+- **Durchsage** über die Oberfläche: nach etwa 25 s erscheint "Durchsage auf
+  … gesprochen" -- die Korrektur aus v0.28 (Rückruf nach zerstörtem
+  Kontextmenü) wirkt. Laut Home Assistant stellt der Server erst 15 % ein,
+  spielt Gong und Text (7 s) und stellt dann die vorige Lautstärke wieder
+  her. Danach meldet der Sonos-Lautsprecher allerdings seine AirPlay-Sitzung
+  weiter als "playing -- Announcement" (ohne Warteschlange); stoppen liess
+  sie sich nur an der AirPlay-Entität selbst, nicht über Music Assistant.
+  Hörbar war dabei nichts mehr; für Tonarm ohne Folgen, aber gut zu wissen.
+- **Cover-Farben** bei echter Wiedergabe: sichtbar (bei einem
+  Schwarz-Weiss-Cover ein grauer statt violetter Verlauf).
