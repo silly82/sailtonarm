@@ -49,7 +49,7 @@ Item {
     function sendCommand(command, args, callback, timeoutMs) {
         if (connectionState !== "ready") {
             if (callback) {
-                callback({ hint: "Keine Verbindung", detail: "Demo", offline: true }, null)
+                callback({ hint: qsTr("Keine Verbindung"), detail: "Demo", offline: true }, null)
             }
             return -1
         }
@@ -603,7 +603,7 @@ Item {
             qid = _queueId(args.queue_id)
             q = _queues[qid]
             if (!q.current_item) {
-                throw "Warteschlange leer"
+                throw qsTr("Warteschlange leer")
             }
             _setState(qid, q.state === "playing" ? "paused" : "playing")
             _changed()
@@ -947,6 +947,17 @@ Item {
                 }
             }
             return own
+        case "music/artists/top_tracks":
+            // Wie auf dem echten Server: gemischt, mit einer Dublette, die die
+            // App zusammenfassen muss.
+            own = []
+            for (i = 0; i < _data.albums.length; i++) {
+                if (_data.albums[i].artists[0].item_id === args.item_id) {
+                    own = own.concat(_data.tracksByAlbum[_data.albums[i].item_id])
+                }
+            }
+            own = own.slice().reverse()
+            return own.length > 0 ? own.concat([own[0]]) : []
         case "music/artists/similar_artists":
             // Alle anderen, dazu der eine aus dem "Streaming-Katalog" --
             // wie auf dem echten Server gemischt.
@@ -1018,6 +1029,6 @@ Item {
             item.resume_position_ms = 0
             return null
         }
-        throw "Im Demomodus nicht verfügbar: " + command
+        throw qsTr("Im Demomodus nicht verfügbar: %1").arg(command)
     }
 }

@@ -125,10 +125,6 @@
         <translation>Error</translation>
     </message>
     <message>
-        <source>Titel</source>
-        <translation>Tracks</translation>
-    </message>
-    <message>
         <source>Beliebte Titel</source>
         <translation>Popular tracks</translation>
     </message>
@@ -175,6 +171,10 @@
     <message>
         <source>Lade weitere …</source>
         <translation>Loading more …</translation>
+    </message>
+    <message>
+        <source>In der Bibliothek</source>
+        <translation>In your library</translation>
     </message>
 </context>
 <context>
@@ -307,6 +307,18 @@
     <message>
         <source>Bibliothek</source>
         <translation>Library</translation>
+    </message>
+    <message>
+        <source>Keine Verbindung</source>
+        <translation>No connection</translation>
+    </message>
+    <message>
+        <source>Warteschlange leer</source>
+        <translation>Queue is empty</translation>
+    </message>
+    <message>
+        <source>Im Demomodus nicht verfügbar: %1</source>
+        <translation>Not available in demo mode: %1</translation>
     </message>
 </context>
 <context>
@@ -467,6 +479,157 @@
     </message>
 </context>
 <context>
+    <name>LinerNotesPage</name>
+    <message>
+        <source>Erster Kontakt</source>
+        <translation>First Contact</translation>
+    </message>
+    <message>
+        <source>Fernbedienung</source>
+        <translation>Remote Control</translation>
+    </message>
+    <message>
+        <source>Die Warteschlange fährt selbst</source>
+        <translation>The Queue Drives Itself</translation>
+    </message>
+    <message>
+        <source>Aus der Zeile gefallen</source>
+        <translation>Out of Line</translation>
+    </message>
+    <message>
+        <source>Cover-Version</source>
+        <translation>Cover Version</translation>
+    </message>
+    <message>
+        <source>Bibliothek bei Nacht</source>
+        <translation>Library by Night</translation>
+    </message>
+    <message>
+        <source>Was noch kommt</source>
+        <translation>What Comes Next</translation>
+    </message>
+    <message>
+        <source>Überlänge</source>
+        <translation>Extended Play</translation>
+    </message>
+    <message>
+        <source>Sperrbildschirm-Blues</source>
+        <translation>Lock Screen Blues</translation>
+    </message>
+    <message>
+        <source>Sailjail Rock</source>
+        <translation>Sailjail Rock</translation>
+    </message>
+    <message>
+        <source>Tausendmal zu lang</source>
+        <translation>A Thousand Times Too Long</translation>
+    </message>
+    <message>
+        <source>Knöpfe ohne Wirkung</source>
+        <translation>Buttons That Did Nothing</translation>
+    </message>
+    <message>
+        <source>Fürs Protokoll</source>
+        <translation>For the Record</translation>
+    </message>
+    <message>
+        <source>Alle zusammen</source>
+        <translation>All Together Now</translation>
+    </message>
+    <message>
+        <source>Auch auf Englisch</source>
+        <translation>Now in English</translation>
+    </message>
+    <message>
+        <source>Das Token bleibt geheim</source>
+        <translation>The Token Stays Secret</translation>
+    </message>
+    <message>
+        <source>Zuletzt gehört</source>
+        <translation>Last Heard</translation>
+    </message>
+    <message>
+        <source>Spieldauer eines Hörbuchs</source>
+        <translation>Running Time of an Audiobook</translation>
+    </message>
+    <message>
+        <source>Live</source>
+        <translation>Live</translation>
+    </message>
+    <message>
+        <source>Leiser, schon beim Ziehen</source>
+        <translation>Quieter While You Drag</translation>
+    </message>
+    <message>
+        <source>Nur was mir gehört</source>
+        <translation>Only What Is Mine</translation>
+    </message>
+    <message>
+        <source>Unterwegs</source>
+        <translation>On the Road</translation>
+    </message>
+    <message>
+        <source>Fünf erfundene Räume</source>
+        <translation>Five Imaginary Rooms</translation>
+    </message>
+    <message>
+        <source>Im Zwischenspeicher</source>
+        <translation>In the Cache</translation>
+    </message>
+    <message>
+        <source>Zeile für Zeile</source>
+        <translation>Line by Line</translation>
+    </message>
+    <message>
+        <source>Mehr davon</source>
+        <translation>More of That</translation>
+    </message>
+    <message>
+        <source>Achtung, eine Durchsage</source>
+        <translation>Attention, Please</translation>
+    </message>
+    <message>
+        <source>Neue Folge</source>
+        <translation>New Episode</translation>
+    </message>
+    <message>
+        <source>Farben aus dem Cover</source>
+        <translation>Colours of the Sleeve</translation>
+    </message>
+    <message>
+        <source>Ein Tonarm für Tonarm (Hidden Track)</source>
+        <translation>A Tone Arm for Tonarm (Hidden Track)</translation>
+    </message>
+    <message>
+        <source>Liner Notes</source>
+        <translation>Liner Notes</translation>
+    </message>
+    <message>
+        <source>DOPPELALBUM · STEREO · 33⅓ U/MIN</source>
+        <translation>DOUBLE ALBUM · STEREO · 33⅓ RPM</translation>
+    </message>
+    <message>
+        <source>Seite %1 · %2</source>
+        <translation>Side %1 · %2</translation>
+    </message>
+    <message>
+        <source>Mitwirkende</source>
+        <translation>Credits</translation>
+    </message>
+    <message>
+        <source>Diese Aufnahme spielt keinen einzigen Ton selbst. Für beste Ergebnisse Lautsprecher anschliessen.</source>
+        <translation>This recording does not play a single note by itself. For best results, connect speakers.</translation>
+    </message>
+    <message>
+        <source>Produziert von silly82
+Die Musik kommt von Music Assistant
+Aufgenommen mit Sailfish Silica auf einem Jolla Phone</source>
+        <translation>Produced by silly82
+Music by Music Assistant
+Recorded with Sailfish Silica on a Jolla Phone</translation>
+    </message>
+</context>
+<context>
     <name>LyricsPage</name>
     <message>
         <source>Songtext</source>
@@ -499,6 +662,76 @@
     <message>
         <source>Der Server fragt seine Quellen — beim ersten Mal kann das eine halbe Minute dauern.</source>
         <translation>The server is asking its sources — the first time this can take half a minute.</translation>
+    </message>
+</context>
+<context>
+    <name>MassApi</name>
+    <message>
+        <source>Keine Serveradresse angegeben</source>
+        <translation>No server address given</translation>
+    </message>
+    <message>
+        <source>Antwort war kein gültiges JSON</source>
+        <translation>The answer was not valid JSON</translation>
+    </message>
+    <message>
+        <source>Server nicht erreichbar</source>
+        <translation>Server not reachable</translation>
+    </message>
+    <message>
+        <source>Zeitüberschreitung</source>
+        <translation>Timed out</translation>
+    </message>
+    <message>
+        <source>Token ungültig oder abgelaufen</source>
+        <translation>Token invalid or expired</translation>
+    </message>
+    <message>
+        <source>Anmeldung erforderlich</source>
+        <translation>Sign-in required</translation>
+    </message>
+    <message>
+        <source>Fehlercode %1</source>
+        <translation>Error code %1</translation>
+    </message>
+    <message>
+        <source>Server spricht API-Schema %1, dieser Client erwartet mindestens %2.</source>
+        <translation>The server speaks API schema %1; this client needs at least %2.</translation>
+    </message>
+    <message>
+        <source>Der Server verlangt mindestens API-Schema %1, dieser Client ist gegen %2 gebaut.</source>
+        <translation>The server requires at least API schema %1; this client is built for %2.</translation>
+    </message>
+</context>
+<context>
+    <name>MassConnection</name>
+    <message>
+        <source>Keine Verbindung</source>
+        <translation>No connection</translation>
+    </message>
+    <message>
+        <source>Verbindung wird neu aufgebaut</source>
+        <translation>Reconnecting</translation>
+    </message>
+    <message>
+        <source>Verbindung getrennt</source>
+        <translation>Disconnected</translation>
+    </message>
+    <message>
+        <source>Verbindung abgebrochen</source>
+        <translation>Connection lost</translation>
+    </message>
+    <message>
+        <source>Unlesbare Nachricht vom Server</source>
+        <translation>Unreadable message from the server</translation>
+    </message>
+    <message>
+        <source>Zeitüberschreitung beim Verbinden</source>
+        <translation>Timed out while connecting</translation>
+    </message>
+    <message>
+        <source>Zeitüberschreitung</source>
+        <translation>Timed out</translation>
     </message>
 </context>
 <context>
@@ -764,6 +997,14 @@
     <message>
         <source>Zu „%1“ hinzugefügt</source>
         <translation>Added to “%1”</translation>
+    </message>
+    <message>
+        <source>Aufgelegt. 33⅓ Umdrehungen pro Minute.</source>
+        <translation>On the turntable. 33⅓ revolutions per minute.</translation>
+    </message>
+    <message>
+        <source>Zurück in die Hülle.</source>
+        <translation>Back in the sleeve.</translation>
     </message>
 </context>
 <context>
@@ -1597,6 +1838,10 @@
     <message>
         <source>„Läuft gerade“ färbt den Hintergrund passend zum Cover ein.</source>
         <translation>“Now playing” tints the background to match the artwork.</translation>
+    </message>
+    <message>
+        <source>Tonarm %1</source>
+        <translation>Tonarm %1</translation>
     </message>
 </context>
 <context>

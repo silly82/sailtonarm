@@ -1,13 +1,13 @@
 # Tonarm – Development
 
 For anyone building on Tonarm. This document condenses what
-[`../KONZEPT.md`](../KONZEPT.md) spreads over 34 sections (in German): how the
+[`../KONZEPT.md`](../KONZEPT.md) spreads over 36 sections (in German): how the
 app is built, what the Music Assistant server **actually** returns (measured,
 not taken from its documentation), how to test on the device, the release
 procedure and the pitfalls. Where the two disagree, KONZEPT.md wins; it says
 for each finding when and how it was checked.
 
-State: v0.30, measured against Music Assistant 2.10.4 (API schema 65).
+State: v0.31, measured against Music Assistant 2.10.4 (API schema 65).
 
 ---
 
@@ -48,6 +48,11 @@ Principles that proved themselves:
 - **German is the source language**, English is the `.ts`. So no `%n` plural
   forms for German texts (they would only help English); the singular is
   spelled out in code ("1 Eintrag").
+- **Texts in `.pragma library` files** (`MassApi.js`) use
+  `qsTranslate("MassApi", …)`: there is no QML context for `qsTr()` to take
+  its context from. It is evaluated at call time, after the translator is
+  installed, and lupdate picks it up. Use `.replace("%1", …)` there rather
+  than `.arg()`.
 - Comments explain the *why*, ideally with the finding that led to it.
   Source comments, KONZEPT.md and the changelog are in German; the user and
   developer guides exist in English.
@@ -90,7 +95,9 @@ readable without a token.
 | `music/search` keys radio as `radio`, the library prefix is `radios`; `library_only` is deprecated, use `providers: ["library"]` | both handled |
 | Favourites: `add_item(uri)` works for anything, `remove_item(media_type, library_item_id)` only for library items; no event | offer removal only for `provider === "library"` |
 | `similar_tracks` returns only 2 tracks here | "Play similar" = `play_media` with `radio_mode: true` (Endless Mix; switches shuffle on) |
-| `artist_tracks`: service → most popular first (slow, >10 s), library → alphabetical | "Popular tracks" section only for services |
+| `artist_tracks`: service → most popular first (slow, >10 s), library → alphabetical | "In your library" section for library artists; fallback only for services |
+| `top_tracks`: popular tracks for library *and* service artists, mixed, with duplicates; first call 10–15 s, then cached | "Popular tracks", `Models.uniqueTracksByName` (library entry wins) |
+| `top_albums`: always empty here (Apple Music) | not used |
 | Lyrics: `metadata/get_track_lyrics({track: full media_item})` → `[plain, lrc]`; only LRC here; first request >30 s | 120 s deadline, LRC parser |
 | `metadata/get_image_palette(image_id)` → six colours as `[r,g,b]`; `null` for playlist images | gradient only when there is a colour |
 | Playlists: `add_playlist_tracks`/`remove_playlist_tracks` are background tasks; `position` starts at 1 | reload after removing |
@@ -238,7 +245,11 @@ Checklist per version:
 
 1. `qmllint` on changed files -- **look at its output**: qmllint exits with
    status 0 even on syntax errors.
-2. Version and `%changelog` in `rpm/harbour-tonarm.spec` (German).
+2. Version and `%changelog` in `rpm/harbour-tonarm.spec` (German). The
+   version reaches the app from there (`qmake VERSION=` → `APP_VERSION` →
+   `Qt.application.version`); a plain local qmake run shows "dev". Add the new
+   version as a track on side D of `qml/pages/LinerNotesPage.qml` (easter egg,
+   KONZEPT.md section 35).
 3. Build; lupdate reports new texts → translate them in
    `translations/harbour-tonarm-en.ts` and remove `type="unfinished"` (also for
    entries lupdate copied from another context -- otherwise `lrelease
@@ -273,6 +284,8 @@ Checklist per version:
 | Announcements, audiobook cover | 32 |
 | Podcasts like a podcatcher | 33 |
 | Playlists, library, stations, cover colours | 34 |
+| App version, easter eggs | 35 |
+| Top tracks, translated error texts | 36 |
 
 The concept for stage 5 (Sendspin, the phone as a speaker) is on the
 `sendspin-player` branch in `KONZEPT-ENDPOINT.md`.

@@ -6,7 +6,7 @@ App spielt selbst keine Musik ab: sie steuert die Lautsprecher, die an deinem
 Server hängen (Sonos, AirPlay, Chromecast, DLNA und was Music Assistant sonst
 kennt), und zeigt, was dort läuft.
 
-Stand: Version 0.30. *English version: [USER_GUIDE.md](USER_GUIDE.md).*
+Stand: Version 0.31. *English version: [USER_GUIDE.md](USER_GUIDE.md).*
 
 ---
 
@@ -120,9 +120,11 @@ Anzahl: Interpreten, Alben, Titel, Playlists, Radio, Podcasts, Hörbücher.
 
 - Jede Liste lädt beim Scrollen nach und hat oben ein Suchfeld.
 - Im Pulley-Menü einer Liste: *Nur Favoriten*, *Ziel-Player*, *Neu laden*.
-- **Interpreten** zeigen ihre Titel (bei einem Streamingdienst die
-  beliebtesten zuerst), Alben und **ähnliche Interpreten**; oben *Abspielen*
-  und *Ähnliches*.
+- **Interpreten** zeigen ihre **beliebten Titel** (auch bei Interpreten aus
+  der eigenen Bibliothek, gemischt mit dem Streamingdienst), darunter *In der
+  Bibliothek* die eigenen Titel, dann Alben und **ähnliche Interpreten**;
+  oben *Abspielen* und *Ähnliches*. Die beliebten Titel brauchen beim ersten
+  Mal bis zu zehn Sekunden.
 - Alben zeigen ihre Titel mit *Abspielen* und *Anhängen*, Playlists
   zusätzlich *Zufällig*.
 
@@ -275,6 +277,7 @@ Mal neu über das Netz -- das spart unterwegs Daten.
 | Benachrichtigungen | *Bei jedem Titelwechsel melden* |
 | Verbindung | Servername, Version, *Verbunden über*, *Angemeldet als* |
 | Zugangsdaten | *Zugangsdaten löschen*, *Jetzt neu verbinden* |
+| (unten) | die Version der App -- und für Neugierige vielleicht mehr |
 
 Ein leeres Tokenfeld lässt das gespeicherte Token unverändert; zum Entfernen
 *Zugangsdaten löschen* benutzen.

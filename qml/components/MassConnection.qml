@@ -107,7 +107,7 @@ Item {
     function sendCommand(command, args, callback, timeoutMs) {
         if (connectionState !== "ready") {
             if (callback) {
-                callback({ hint: "Keine Verbindung", detail: "Zustand: " + connectionState,
+                callback({ hint: qsTr("Keine Verbindung"), detail: connectionState,
                            offline: true }, null)
             }
             return -1
@@ -121,7 +121,7 @@ Item {
         reconnectTimer.stop()
         _backoffMs = 2000
         lastError = ""
-        _failAllPending({ hint: "Verbindung wird neu aufgebaut", detail: "", offline: true })
+        _failAllPending({ hint: qsTr("Verbindung wird neu aufgebaut"), detail: "", offline: true })
         _startAttempt()
     }
 
@@ -129,7 +129,7 @@ Item {
         reconnectTimer.stop()
         autoConnect = false
         _stopSockets()
-        _failAllPending({ hint: "Verbindung getrennt", detail: "" })
+        _failAllPending({ hint: qsTr("Verbindung getrennt"), detail: "" })
         connectionState = "idle"
     }
 
@@ -335,7 +335,7 @@ Item {
             lastError = reason
         }
         connectionState = configured ? "error" : "idle"
-        _failAllPending({ hint: "Verbindung abgebrochen", detail: lastError, offline: true })
+        _failAllPending({ hint: qsTr("Verbindung abgebrochen"), detail: lastError, offline: true })
         _scheduleReconnect(false)
     }
 
@@ -356,7 +356,7 @@ Item {
                 lastError = reason
             }
             connectionState = configured ? "error" : "idle"
-            _failAllPending({ hint: "Verbindung abgebrochen", detail: lastError, offline: true })
+            _failAllPending({ hint: qsTr("Verbindung abgebrochen"), detail: lastError, offline: true })
             _scheduleReconnect(wasReady)
             return
         }
@@ -383,7 +383,7 @@ Item {
         try {
             msg = JSON.parse(message)
         } catch (e) {
-            lastError = "Unlesbare Nachricht vom Server"
+            lastError = qsTr("Unlesbare Nachricht vom Server")
             return
         }
 
@@ -454,7 +454,7 @@ Item {
         interval: 10000
         onTriggered: {
             if (conn._winner === null) {
-                conn._attemptFailed("Zeitüberschreitung beim Verbinden")
+                conn._attemptFailed(qsTr("Zeitüberschreitung beim Verbinden"))
             }
         }
     }
@@ -532,7 +532,7 @@ Item {
                 var entry = conn._pending[keys[i]]
                 if (entry && entry.deadline <= now) {
                     delete conn._pending[keys[i]]
-                    entry.callback({ hint: "Zeitüberschreitung",
+                    entry.callback({ hint: qsTr("Zeitüberschreitung"),
                                      detail: entry.command }, null)
                 }
             }

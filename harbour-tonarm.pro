@@ -45,6 +45,7 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/components/TrackNotifier.qml \
     qml/components/VolumeSlider.qml \
     qml/components/DemoConnection.qml \
+    qml/components/VinylRecord.qml \
     qml/lib/MassApi.js \
     qml/lib/MassModels.js \
     qml/lib/Navigate.js \
@@ -63,6 +64,7 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/pages/AnnouncementDialog.qml \
     qml/pages/EpisodePage.qml \
     qml/pages/PlaylistPickerPage.qml \
+    qml/pages/LinerNotesPage.qml \
     qml/pages/RadioSearchPage.qml \
     qml/pages/AddRadioDialog.qml \
     qml/pages/RecentlyPlayedPage.qml \
@@ -78,6 +80,12 @@ DISTFILES += qml/harbour-tonarm.qml \
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
 
 CONFIG += sailfishapp_i18n
+
+# Version kommt beim Paketbau aus rpm/harbour-tonarm.spec (qmake VERSION=...);
+# ohne Angabe (lokaler qmake-Lauf) steht "dev" da.
+isEmpty(VERSION): APP_VERSION = dev
+else: APP_VERSION = $$VERSION
+DEFINES += APP_VERSION=\\\"$$APP_VERSION\\\"
 
 # Quelltext-Strings sind deutsch (siehe README, Abschnitt "Sprache"); die
 # englische Fassung ist die Übersetzung.

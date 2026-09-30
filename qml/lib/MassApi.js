@@ -143,7 +143,7 @@ function rebaseImageUrl(url, base) {
 function fetchServerInfo(baseUrl, timeoutMs, onSuccess, onError) {
     var url = normalizeBaseUrl(baseUrl)
     if (url.length === 0) {
-        onError({ hint: "Keine Serveradresse angegeben", detail: "" })
+        onError({ hint: qsTranslate("MassApi", "Keine Serveradresse angegeben"), detail: "" })
         return
     }
 
@@ -159,10 +159,10 @@ function fetchServerInfo(baseUrl, timeoutMs, onSuccess, onError) {
             try {
                 onSuccess(JSON.parse(xhr.responseText))
             } catch (e) {
-                onError({ hint: "Antwort war kein gültiges JSON", detail: String(e) })
+                onError({ hint: qsTranslate("MassApi", "Antwort war kein gültiges JSON"), detail: String(e) })
             }
         } else if (xhr.status === 0) {
-            onError({ hint: "Server nicht erreichbar", detail: url })
+            onError({ hint: qsTranslate("MassApi", "Server nicht erreichbar"), detail: url })
         } else {
             onError({ hint: "HTTP " + xhr.status, detail: xhr.responseText })
         }
@@ -182,7 +182,7 @@ function fetchServerInfo(baseUrl, timeoutMs, onSuccess, onError) {
             }
             finished = true
             xhr.abort()
-            onError({ hint: "Zeitüberschreitung", detail: url + " nach " + timeoutMs + " ms" })
+            onError({ hint: qsTranslate("MassApi", "Zeitüberschreitung"), detail: url + " (" + timeoutMs + " ms)" })
         }
     }
 }
@@ -224,21 +224,26 @@ function classify(msg) {
 // nach erfolgreicher Anmeldung in der Sprache des Clients -- genau diese
 // beiden Meldungen kommen also immer englisch an. Deshalb hier übersetzt;
 // alles andere wird durchgereicht.
+//
+// Übersetzt wird mit qsTranslate und festem Kontext "MassApi": in einer
+// .pragma-library-Datei gibt es keinen QML-Kontext, aus dem qsTr() seinen
+// ableiten könnte. Ausgewertet wird erst beim Aufruf, der Übersetzer ist dann
+// längst geladen.
 var ERROR_AUTH_REQUIRED = 20
 var ERROR_INVALID_TOKEN = 23
 
 function errorText(msg) {
     if (msg.error_code === ERROR_INVALID_TOKEN) {
-        return "Token ungültig oder abgelaufen"
+        return qsTranslate("MassApi", "Token ungültig oder abgelaufen")
     }
     if (msg.error_code === ERROR_AUTH_REQUIRED) {
-        return "Anmeldung erforderlich"
+        return qsTranslate("MassApi", "Anmeldung erforderlich")
     }
     var detail = msg.details || ""
     if (detail.length > 0) {
         return detail
     }
-    return "Fehlercode " + msg.error_code
+    return qsTranslate("MassApi", "Fehlercode %1").replace("%1", msg.error_code)
 }
 
 // Server zu alt/zu neu? Gibt "" zurück, wenn alles passt, sonst einen Text für
@@ -251,14 +256,13 @@ function compatibilityWarning(serverInfo) {
     }
     if (serverInfo.schema_version !== undefined
             && serverInfo.schema_version < MIN_SERVER_SCHEMA) {
-        return "Server spricht API-Schema " + serverInfo.schema_version
-                + ", dieser Client erwartet mindestens " + MIN_SERVER_SCHEMA + "."
+        return qsTranslate("MassApi", "Server spricht API-Schema %1, dieser Client erwartet mindestens %2.")
+                .replace("%1", serverInfo.schema_version).replace("%2", MIN_SERVER_SCHEMA)
     }
     if (serverInfo.min_supported_schema_version !== undefined
             && serverInfo.min_supported_schema_version > CLIENT_SCHEMA_VERSION) {
-        return "Der Server verlangt mindestens API-Schema "
-                + serverInfo.min_supported_schema_version
-                + ", dieser Client ist gegen " + CLIENT_SCHEMA_VERSION + " gebaut."
+        return qsTranslate("MassApi", "Der Server verlangt mindestens API-Schema %1, dieser Client ist gegen %2 gebaut.")
+                .replace("%1", serverInfo.min_supported_schema_version).replace("%2", CLIENT_SCHEMA_VERSION)
     }
     return ""
 }
