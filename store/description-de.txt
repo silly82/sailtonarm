@@ -1,24 +1,36 @@
-Steuere deinen eigenen Music-Assistant-Server von SailfishOS aus. Nicht mit dem Music-Assistant-Projekt verbunden — der Name gehört dessen Urhebern.
+Steuere deinen eigenen Music-Assistant-Server von SailfishOS aus — ohne Cloud. Nicht mit dem Music-Assistant-Projekt verbunden; der Name gehört dessen Urhebern.
 
-FUNKTIONEN
+FERNBEDIENUNG
 
-- Alle Player deiner Anlage auf einen Blick, mit dem was gerade läuft, Fortschrittsbalken und Play/Pause direkt in der Zeile. Nicht verfügbare Player bleiben sichtbar, nur ausgegraut.
-- Für jeden Player eine Seite mit Cover, Titel, Interpret, Album, Fortschrittsregler zum Springen, Weiter und Zurück, Lautstärke und Stummschaltung.
-- Bibliothek nach Interpreten, Alben, Titeln, Playlists und Radio, mit Anzahl je Bereich, seitenweise nachgeladen und je Liste durchsuchbar. Album- und Interpretenseiten mit Cover, Playlists mit ihren Titeln.
-- Suche über alle Medientypen auf einer Seite, nach Typ gruppiert, über Bibliothek und angebundene Anbieter.
-- Abspielen aus jeder Liste: jetzt spielen, als Nächstes einreihen oder anhängen. Auf welchem Player das landet, wählst du einmal aus.
-- Favoriten setzen und entfernen, als Stern in der Liste sichtbar; jede Liste lässt sich auf "Nur Favoriten" umstellen.
-- Warteschlange ansehen und bearbeiten: per Tippen zu einem Titel springen, Einträge nach oben, nach unten oder ans Ende schieben, einzeln entfernen. Zufällige Reihenfolge, Überblenden und Wiederholen. Die ganze Warteschlange an einen anderen Player übergeben, als Playlist speichern oder leeren.
-- Lautsprecher zusammenschalten: mehrere spielen synchron dasselbe, mit gemeinsamer Lautstärke. Angeboten werden nur Lautsprecher, die der Server auch wirklich synchronisieren kann.
-- Cover-Ansicht mit laufendem Titel, Albumbild und Play/Pause — bedienbar, ohne die App zu öffnen.
-- Sperrbildschirm und Medientasten steuern über MPRIS den entfernten Player. Titel, Interpret, Album, Cover und Spielzeit erscheinen dort; die App selbst gibt kein Audio aus.
-- Optionale Benachrichtigung bei Titelwechsel, standardmässig aus.
-- Alles aktualisiert sich über Server-Ereignisse, nicht durch Nachfragen: was anderswo geändert wird, ist sofort zu sehen.
-- Hochformat lässt sich festhalten.
+- Alle Player deiner Anlage auf einen Blick, mit laufendem Titel, Fortschritt und Play/Pause in der Zeile.
+- Für jeden Player eine Seite mit Cover, Titel, Fortschrittsregler, Weiter/Zurück und Lautstärke, die dem Finger folgt. Der Hintergrund nimmt die Farben des Covers auf.
+- Radio mit „Live"-Anzeige; Hörbücher und Podcasts mit Kapiteln, Sprüngen um −15 s/+30 s und Tempo.
+- Songtexte, die mit dem Lied mitlaufen, und ein Einschlaftimer, der auf dem Server läuft.
+- Warteschlange: springen, umsortieren, Zufall, Wiederholen, an einen anderen Player übergeben, als Playlist speichern.
+- Lautsprecher gruppieren, mit Gruppenlautstärke und Regler je Lautsprecher.
+- Durchsagen: einen Text eingeben, der Lautsprecher spricht ihn.
+- Cover-Ansicht und Sperrbildschirm steuern den Player, ohne die App zu öffnen.
+
+BIBLIOTHEK
+
+- Interpreten, Alben, Titel, Playlists, Radio, Podcasts und Hörbücher, durchsuchbar und nach Favoriten filterbar; dazu „Zuletzt gehört" und „Weiterhören".
+- Suche über Bibliothek und angebundene Dienste oder nur die Bibliothek.
+- Interpreten mit beliebten Titeln und ähnlichen Interpreten; „Ähnliches abspielen" legt eine endlose Folge passender Titel an.
+- Podcasts wie im Podcatcher: Datum, „neu", „43 % gehört", Beschreibung.
+- Hörbücher mit Fortschritt, Weiterhören oder von vorn, Kapitelliste.
+- Playlists bearbeiten, Treffer in die Bibliothek aufnehmen, Radiosender aus dem weltweiten Verzeichnis oder per Stream-Adresse hinzufügen.
+
+ALLTAG
+
+- Änderungen, die anderswo gemacht werden, sind sofort zu sehen.
+- Eine zweite Serveradresse für unterwegs (VPN, Tailscale, Reverse-Proxy); zu Hause wird sie nicht benutzt.
+- Cover werden auf dem Gerät zwischengespeichert und sparen unterwegs Daten.
+- Demomodus zum Ausprobieren ohne eigenen Server.
+- Deutsch und Englisch; Hochformat lässt sich festhalten.
 
 VORAUSSETZUNGEN
 
-- Ein erreichbarer Music-Assistant-Server im lokalen Netz (Standardport 8095). Läuft er als Home-Assistant-App, ist das die Adresse des HA-Rechners, nicht die Ingress-Adresse.
+- Ein erreichbarer Music-Assistant-Server (Standardport 8095). Läuft er als Home-Assistant-App, ist das die Adresse des HA-Rechners, nicht die Ingress-Adresse.
 - Ein Zugriffstoken, in der Music-Assistant-Oberfläche unter Einstellungen → Profil erzeugt.
 
 Adresse und Token liegen verschlüsselt in Sailfish Secrets und sind an die Gerätesperre gebunden.

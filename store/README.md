@@ -18,8 +18,9 @@ Hinweis, dass die App nicht mit dem Music-Assistant-Projekt verbunden ist.
 
 ## Details → Description
 
-`description-de.txt` / `description-en.txt` (2766 / 2436 Zeichen, unter der
-4000-Zeichen-Grenze). Ohne Wiederholung des App-Namens (steht schon im Feld
+`description-de.txt` / `description-en.txt` (2672 / 2471 Zeichen, unter der
+4000-Zeichen-Grenze; Stand v0.30, gegliedert in Fernbedienung, Bibliothek,
+Alltag). Ohne Wiederholung des App-Namens (steht schon im Feld
 Title) und ohne GitHub-Link (steht schon im Feld "Open source project URL").
 
 Beide Fassungen enthalten am Ende einen Absatz zur **Audio-Berechtigung**. Der
@@ -33,14 +34,15 @@ Für eine zweisprachige Anzeige im Formular "+ Add a language" benutzen.
 
 ## Details → Summary
 
-`summary-de.txt` / `summary-en.txt` (137 / 127 Zeichen, unter der
+`summary-de.txt` / `summary-en.txt` (133 / 134 Zeichen, unter der
 200-Zeichen-Grenze).
 
 ## Details → Recent changes
 
-Nicht vorbereitet — das Feld ist für Aktualisierungsmeldungen gedacht, und dies
-wäre die erste Einreichung. Der Änderungsverlauf steht im `%changelog` von
-`../rpm/harbour-tonarm.spec`, die ausführliche Fassung in `../KONZEPT.md`.
+Bei der ersten Einreichung leer lassen -- das Feld ist für Aktualisierungen
+gedacht. Für spätere Versionen: der Änderungsverlauf steht im `%changelog` von
+`../rpm/harbour-tonarm.spec`, zweisprachige Fassungen in den Release-Notizen
+auf GitHub, die ausführliche in `../KONZEPT.md`.
 
 ## Categorization → Category
 
@@ -69,9 +71,12 @@ Gegenteil -- das war falsch.)
 
 | Datei | Prüfung | Gerätetest |
 |---|---|---|
-| `harbour-tonarm-0.17-1.aarch64.rpm` | harbour: succeeded · rpmlint: 0/0/0 | **auf echter Hardware gelaufen** (Jolla Phone 2026) |
-| `harbour-tonarm-0.17-1.armv7hl.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter armv7hl-Hardware |
-| `harbour-tonarm-0.17-1.i486.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter i486-Hardware |
+| `harbour-tonarm-0.30-1.aarch64.rpm` | harbour: succeeded · rpmlint: 0/0/0 | **auf echter Hardware gelaufen** (Jolla Phone 2026) |
+| `harbour-tonarm-0.30-1.armv7hl.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter armv7hl-Hardware |
+| `harbour-tonarm-0.30-1.i486.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter i486-Hardware |
+
+Für die Einreichung die Pakete des neuesten Releases nehmen; jedes Release
+seit v0.17 hat alle drei, gebaut aus dem getaggten Commit.
 
 Alle drei liegen in `../RPMS/` (nicht im Repo -- `RPMS/` steht in
 `.gitignore`) und hängen am GitHub-Release.
