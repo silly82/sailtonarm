@@ -330,6 +330,29 @@
     </message>
 </context>
 <context>
+    <name>DemoData</name>
+    <message>
+        <source>Wohnzimmer</source>
+        <translation>Living room</translation>
+    </message>
+    <message>
+        <source>Esszimmer</source>
+        <translation>Dining room</translation>
+    </message>
+    <message>
+        <source>Küche</source>
+        <translation>Kitchen</translation>
+    </message>
+    <message>
+        <source>Arbeitszimmer</source>
+        <translation>Study</translation>
+    </message>
+    <message>
+        <source>Schlafzimmer</source>
+        <translation>Bedroom</translation>
+    </message>
+</context>
+<context>
     <name>EpisodePage</name>
     <message>
         <source>keiner</source>

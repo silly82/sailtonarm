@@ -1436,7 +1436,7 @@ Kapitelsprung und Tempo), die Warteschlange mit Springen, die Bibliothek, die
 Albumliste (Cover, Favoriten, zweizeiliger Titel), die Hörbuchseite und das
 App-Cover. Nach dem Ausschalten verband die App wieder mit dem echten Server,
 der gemerkte Player war unverändert, im Journal stand keine Warnung. Die
-Bilder 04 bis 07 in `store/screenshots/` stammen aus diesem Durchgang (seit
+Bilder 04 bis 07 im damaligen `store/screenshots/` stammten aus diesem Durchgang (seit
 v0.31 sind alle Store-Bilder aus dem Demomodus neu aufgenommen, siehe
 `store/README.md`).
 

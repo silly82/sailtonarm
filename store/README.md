@@ -136,8 +136,17 @@ App-Icon.
 
 ## Visual assets → Screenshots
 
-In `screenshots/`, vom echten Gerät aufgenommen (1032×2272, Jolla Phone 2026),
-Stand v0.31, **alle neun aus dem Demomodus**:
+In `screenshots/de/` und `screenshots/en/`, vom echten Gerät aufgenommen
+(1032×2272, Jolla Phone 2026), Stand v0.32, **alle aus dem Demomodus**, je
+neun Bilder in derselben Reihenfolge. Die deutschen heissen wie unten, die
+englischen `01-player`, `02-now-playing`, `03-library`, `04-artist`,
+`05-album`, `06-queue`, `07-audiobook`, `08-lyrics`, `09-podcast`.
+
+Für die englischen läuft die App mit `LANG=en_GB.utf8`: Bedienoberfläche und
+Raumnamen sind englisch (die Räume sind dafür in `DemoData.js` übersetzbar),
+Musik, Songtext und Podcast-Folgen bleiben erfundene deutsche Inhalte. Im
+Formular die englischen Bilder der englischen Sprachfassung zuordnen, sofern
+es das je Sprache erlaubt; sonst die englischen nehmen.
 
 - `01-player.png` — Player-Liste mit Gruppe und laufenden Titeln
 - `02-laeuft-gerade.png` — Läuft gerade: Cover, Fortschritt, Lautstärke,
@@ -162,7 +171,8 @@ keinem Bild.
 Aufgenommen wurde mit einem vorübergehenden Einstieg in
 `qml/harbour-tonarm.qml` (nicht eingecheckt), der nach dem Start je nach einem
 dconf-Schlüssel direkt die gewünschte Seite öffnet -- so ist jedes Bild ein
-frischer Start des Demomodus, ohne Tippen auf dem Telefon.
+frischer Start des Demomodus, ohne Tippen auf dem Telefon. Für Englisch
+dieselbe App mit `LANG=en_GB.utf8` vor `invoker` starten.
 
 Für Store-Bilder den Demomodus frisch einschalten (er beginnt dann immer beim
 selben Ausgangszustand) und danach wieder aus.
