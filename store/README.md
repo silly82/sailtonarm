@@ -71,9 +71,9 @@ Gegenteil -- das war falsch.)
 
 | Datei | Prüfung | Gerätetest |
 |---|---|---|
-| `harbour-tonarm-0.30-1.aarch64.rpm` | harbour: succeeded · rpmlint: 0/0/0 | **auf echter Hardware gelaufen** (Jolla Phone 2026) |
-| `harbour-tonarm-0.30-1.armv7hl.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter armv7hl-Hardware |
-| `harbour-tonarm-0.30-1.i486.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter i486-Hardware |
+| `harbour-tonarm-0.32-1.aarch64.rpm` | harbour: succeeded · rpmlint: 0/0/0 | **auf echter Hardware gelaufen** (Jolla Phone 2026) |
+| `harbour-tonarm-0.32-1.armv7hl.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter armv7hl-Hardware |
+| `harbour-tonarm-0.32-1.i486.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter i486-Hardware |
 
 Für die Einreichung die Pakete des neuesten Releases nehmen; jedes Release
 seit v0.17 hat alle drei, gebaut aus dem getaggten Commit.
@@ -136,23 +136,33 @@ App-Icon.
 
 ## Visual assets → Screenshots
 
-In `screenshots/`, vom echten Gerät aufgenommen (1032×2272, Jolla Phone 2026):
+In `screenshots/`, vom echten Gerät aufgenommen (1032×2272, Jolla Phone 2026),
+Stand v0.31, **alle neun aus dem Demomodus**:
 
-- `01-bibliothek.png` — Bibliotheksübersicht mit Anzahl je Bereich
-- `02-album.png` — Albumseite mit Cover und Titelliste
-- `03-titelliste.png` — Titelliste mit Suchfeld
-- `04-player.png` — Player-Liste *(Demomodus)*
-- `05-laeuft-gerade.png` — Läuft gerade mit Cover, Fortschritt, Lautstärke *(Demomodus)*
-- `06-warteschlange.png` — Warteschlange *(Demomodus)*
+- `01-player.png` — Player-Liste mit Gruppe und laufenden Titeln
+- `02-laeuft-gerade.png` — Läuft gerade: Cover, Fortschritt, Lautstärke,
+  Hintergrund in den Farben des Covers
+- `03-bibliothek.png` — Bibliotheksübersicht mit Anzahl je Bereich
+- `04-interpret.png` — Interpretenseite: beliebte Titel, darunter „In der
+  Bibliothek"
+- `05-album.png` — Albumseite mit Cover und Titelliste
+- `06-warteschlange.png` — Warteschlange mit Zufall, Überblenden, Wiederholen
 - `07-hoerbuch.png` — Läuft gerade bei einem Hörbuch: Kapitel, −15 s/+30 s,
-  Tempo *(Demomodus)*
+  Tempo
+- `08-songtext.png` — mitlaufender Songtext
+- `09-podcast.png` — Podcast mit Folgen, Datum, Dauer und Hörstand
 
-Die Bilder 04–07 kommen aus dem **Demomodus** (Einstellungen → Demo): fünf
-erfundene Räume, erfundene Musik, abstrakte Cover ohne Schrift oder Marken
-(`generate-demo-art.py`). Damit zeigen sie weder die Räume einer echten
-Wohnung noch deren Hörhistorie — genau das, was die Player-Liste, Läuft gerade
-und die Warteschlange früher von den Store-Bildern ausgeschlossen hatte. Die
-Player-Liste trägt oben den Hinweis "Demomodus"; das ist ehrlich und bleibt so.
+Der Demomodus (Einstellungen → Demo) zeigt fünf erfundene Räume, erfundene
+Musik und abstrakte Cover ohne Schrift oder Marken (`generate-demo-art.py`).
+Damit zeigen die Bilder weder die Räume einer echten Wohnung noch deren
+Hörhistorie, noch fremde Albumcover. Die Player-Liste trägt oben den Hinweis
+"Demomodus"; das ist ehrlich und bleibt so. Die Easter Eggs sind bewusst auf
+keinem Bild.
+
+Aufgenommen wurde mit einem vorübergehenden Einstieg in
+`qml/harbour-tonarm.qml` (nicht eingecheckt), der nach dem Start je nach einem
+dconf-Schlüssel direkt die gewünschte Seite öffnet -- so ist jedes Bild ein
+frischer Start des Demomodus, ohne Tippen auf dem Telefon.
 
 Für Store-Bilder den Demomodus frisch einschalten (er beginnt dann immer beim
 selben Ausgangszustand) und danach wieder aus.

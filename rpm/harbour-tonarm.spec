@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.31
+Version:    0.32
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -70,6 +70,11 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Thu Oct 01 2026 silly82 <siliwalker@gmail.com> - 0.32-1
+- "1 Album", "1 Titel" und "1 Folge" statt "1 Alben" usw. auf Interpreten-,
+  Album- und Podcastseite (auf Englisch "1 album" statt "1 albums").
+- Store-Bilder: neun neue Bildschirmfotos, alle aus dem Demomodus.
+
 * Wed Sep 30 2026 silly82 <siliwalker@gmail.com> - 0.31-1
 - Interpreten zeigen ihre beliebtesten Titel jetzt auch, wenn sie aus der
   eigenen Bibliothek stammen (gemischt mit dem Streamingdienst, Dubletten

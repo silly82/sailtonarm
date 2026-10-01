@@ -102,7 +102,7 @@ Page {
                         parts.push(page.album.year)
                     }
                     if (page.tracks.length > 0) {
-                        parts.push(qsTr("%1 Titel").arg(page.tracks.length))
+                        parts.push(page.tracks.length === 1 ? qsTr("1 Titel") : qsTr("%1 Titel").arg(page.tracks.length))
                     }
                     return parts.join(" · ")
                 }

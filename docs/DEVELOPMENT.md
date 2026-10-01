@@ -7,7 +7,7 @@ not taken from its documentation), how to test on the device, the release
 procedure and the pitfalls. Where the two disagree, KONZEPT.md wins; it says
 for each finding when and how it was checked.
 
-State: v0.31, measured against Music Assistant 2.10.4 (API schema 65).
+State: v0.32, measured against Music Assistant 2.10.4 (API schema 65).
 
 ---
 

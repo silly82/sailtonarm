@@ -199,7 +199,7 @@ Page {
             PageHeader {
                 title: page.artist ? page.artist.name : ""
                 description: page.albums.length > 0
-                             ? qsTr("%1 Alben").arg(page.albums.length) : ""
+                             ? (page.albums.length === 1 ? qsTr("1 Album") : qsTr("%1 Alben").arg(page.albums.length)) : ""
             }
 
             Image {
