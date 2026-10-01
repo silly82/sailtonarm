@@ -4,8 +4,9 @@
 #   python3 icons/source/generate-icon.py
 #
 # Motiv: Schallplatte mit Tonarm. Alles im 86x86-Raum gezeichnet und für die
-# anderen Grössen hochskaliert -- die Silhouette stammt aus Jollas offizieller
-# icon-launcher-template.svg, damit der Umriss zu den Systemicons passt.
+# anderen Grössen hochskaliert. Umriss: ein Tropfen, nur oben rechts eckig;
+# die Platte liegt konzentrisch in der Rundung, der Tonarm-Drehpunkt in der
+# spitzen Ecke.
 import math
 import os
 
@@ -13,19 +14,18 @@ import cairo
 
 SIZES = [86, 108, 128, 172]
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "icons")
+STORE_ICON = os.path.join(os.path.dirname(__file__), "..", "..", "store", "icon-172x172.png")
+
+# Mittelpunkt und Radius der Rundung; die Platte sitzt genau darin.
+CX, CY, R_OUTER = 43.0, 43.0, 42.7
 
 
 def sailfish_silhouette(ctx):
-    """Der organische Sailfish-Umriss, exakter Pfad aus der Vorlage (86x86)."""
-    ctx.move_to(84.277, 0.3)
-    ctx.line_to(43, 0.3)
-    ctx.curve_to(19.417, 0.3, 0.3, 19.418, 0.3, 43)
-    ctx.line_to(0.3, 84.277)
-    ctx.curve_to(0.3, 85.063, 0.937, 85.7, 1.723, 85.7)
-    ctx.line_to(43, 85.7)
-    ctx.curve_to(66.583, 85.7, 85.7, 66.582, 85.7, 43)
-    ctx.line_to(85.7, 1.723)
-    ctx.curve_to(85.7, 0.937, 85.063, 0.3, 84.277, 0.3)
+    """Tropfen: drei Ecken voll gerundet (ein Kreis um die Mitte), nur oben
+    rechts eine spitze Ecke."""
+    ctx.move_to(85.7, 0.3)
+    ctx.line_to(CX, 0.3)
+    ctx.arc_negative(CX, CY, R_OUTER, -math.pi / 2, 0)
     ctx.close_path()
 
 
@@ -43,20 +43,21 @@ def draw(size):
 
     ctx.set_source_rgb(1, 1, 1)
 
-    # Platte: zwei Rillen als Ringe, dazu das Mittelloch ausgespart.
-    cx, cy, r = 40.0, 49.0, 22.5
+    # Platte: konzentrisch in der Rundung, zwei Rillen als Ringe, dazu das
+    # Mittelloch.
+    r = 25.0
     ctx.set_line_width(3.0)
-    ctx.arc(cx, cy, r, 0, 2 * math.pi)
+    ctx.arc(CX, CY, r, 0, 2 * math.pi)
     ctx.stroke()
     ctx.set_line_width(1.6)
-    ctx.arc(cx, cy, r * 0.62, 0, 2 * math.pi)
+    ctx.arc(CX, CY, r * 0.6, 0, 2 * math.pi)
     ctx.stroke()
-    ctx.arc(cx, cy, 2.6, 0, 2 * math.pi)
+    ctx.arc(CX, CY, 2.6, 0, 2 * math.pi)
     ctx.fill()
 
-    # Tonarm: Drehpunkt oben rechts, Rohr schräg zur Platte, Tonabnehmer am Ende.
-    pivot_x, pivot_y = 69.0, 20.0
-    head_x, head_y = 44.0, 41.0
+    # Tonarm: Drehpunkt in der spitzen Ecke, Nadel in den Rillen der Platte.
+    pivot_x, pivot_y = 72.0, 14.0
+    head_x, head_y = 58.0, 31.5
     ctx.arc(pivot_x, pivot_y, 4.6, 0, 2 * math.pi)
     ctx.fill()
 
@@ -78,6 +79,9 @@ def draw(size):
     out_path = os.path.join(OUT_DIR, "%dx%d" % (size, size), "harbour-tonarm.png")
     surface.write_to_png(out_path)
     print(out_path)
+    if size == 172:
+        surface.write_to_png(STORE_ICON)
+        print(STORE_ICON)
 
 
 if __name__ == "__main__":

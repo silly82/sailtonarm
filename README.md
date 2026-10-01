@@ -7,7 +7,7 @@ die WebSocket-API des Servers direkt an.
 Nicht mit dem Music-Assistant-Projekt verbunden. Der Name "Music Assistant"
 gehört dessen Urhebern; diese App heisst deshalb Tonarm.
 
-**Stand: v0.32** (September 2026). Pakete für aarch64, armv7hl und i486 unter
+**Stand: v0.33** (September 2026). Pakete für aarch64, armv7hl und i486 unter
 [Releases](https://github.com/silly82/sailtonarm/releases); alle bestehen
 `sfdk check` (harbour und rpmlint, je ohne Befund). Geprüft auf einem Jolla
 Phone (2026) gegen einen echten Server (Music Assistant 2.10.4, Apple Music,

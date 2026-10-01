@@ -6,7 +6,7 @@ App spielt selbst keine Musik ab: sie steuert die Lautsprecher, die an deinem
 Server hängen (Sonos, AirPlay, Chromecast, DLNA und was Music Assistant sonst
 kennt), und zeigt, was dort läuft.
 
-Stand: Version 0.32. *English version: [USER_GUIDE.md](USER_GUIDE.md).*
+Stand: Version 0.33. *English version: [USER_GUIDE.md](USER_GUIDE.md).*
 
 ---
 
