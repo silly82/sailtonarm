@@ -71,9 +71,9 @@ Gegenteil -- das war falsch.)
 
 | Datei | Prüfung | Gerätetest |
 |---|---|---|
-| `harbour-tonarm-0.32-1.aarch64.rpm` | harbour: succeeded · rpmlint: 0/0/0 | **auf echter Hardware gelaufen** (Jolla Phone 2026) |
-| `harbour-tonarm-0.32-1.armv7hl.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter armv7hl-Hardware |
-| `harbour-tonarm-0.32-1.i486.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter i486-Hardware |
+| `harbour-tonarm-0.33-1.aarch64.rpm` | harbour: succeeded · rpmlint: 0/0/0 | **auf echter Hardware gelaufen** (Jolla Phone 2026) |
+| `harbour-tonarm-0.33-1.armv7hl.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter armv7hl-Hardware |
+| `harbour-tonarm-0.33-1.i486.rpm` | harbour: succeeded · rpmlint: 0/0/0 | nie auf echter i486-Hardware |
 
 Für die Einreichung die Pakete des neuesten Releases nehmen; jedes Release
 seit v0.17 hat alle drei, gebaut aus dem getaggten Commit.
@@ -125,9 +125,12 @@ Phone. Auf einem Tablet-Formfaktor nie geprüft.
 
 ## Visual assets → Icon
 
-`icon-172x172.png` — Kopie von `../icons/172x172/harbour-tonarm.png`, passt
-genau auf die vom Formular verlangten 172×172 Pixel. Neu erzeugen mit
-`python3 icons/source/generate-icon.py` (braucht python3-cairo).
+`icon-172x172.png` — dasselbe Bild wie `../icons/172x172/harbour-tonarm.png`,
+passt genau auf die vom Formular verlangten 172×172 Pixel. Seit v0.33 ein
+Tropfen: drei Ecken voll gerundet, nur oben rechts eckig; die Platte liegt
+konzentrisch in der Rundung, der Tonarm-Drehpunkt in der spitzen Ecke. Neu
+erzeugen mit `python3 icons/source/generate-icon.py` (braucht python3-cairo);
+das Skript schreibt die App-Icons und diese Datei.
 
 ## Visual assets → Cover
 

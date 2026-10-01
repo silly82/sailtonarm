@@ -663,6 +663,10 @@ Recorded with Sailfish Silica on a Jolla Phone</translation>
         <source>Ein Album, nicht Alben</source>
         <translation>One Album, Not Albums</translation>
     </message>
+    <message>
+        <source>Tropfenform</source>
+        <translation>Teardrop</translation>
+    </message>
 </context>
 <context>
     <name>LyricsPage</name>

@@ -1,4 +1,4 @@
-# Stand und offene Punkte (v0.32, 1.10.2026)
+# Stand und offene Punkte (v0.33, 1.10.2026)
 
 Die Liste unten ("Erkenntnisse aus der iOS-App") ist **vollständig
 abgearbeitet**; zwei Punkte sind bewusst entschieden statt umgesetzt. Danach
@@ -14,6 +14,7 @@ geprüft (Details je Version in `KONZEPT.md`):
 | v0.30 | Playlists bearbeiten, Bibliothek pflegen, Sender hinzufügen, Farben aus dem Cover |
 | v0.31 | Beliebte Titel auch für Bibliotheks-Interpreten (`top_tracks`; `top_albums` liefert hier nichts), Fehlermeldungen übersetzt, App-Version in den Einstellungen |
 | v0.32 | Einzahl-Korrekturen ("1 Album"), neun neue Store-Bilder aus dem Demomodus |
+| v0.33 | Neues Icon (Tropfen, Platte mittig), Store-Bilder auf Englisch |
 
 ## Offen
 

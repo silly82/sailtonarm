@@ -34,18 +34,18 @@ ctx.translate(badge_x, badge_y)
 ctx.scale(scale, scale)
 ctx.set_source_rgba(1, 1, 1, 0.92)
 
-cx, cy, r = 40.0, 49.0, 22.5
+cx, cy, r = 43.0, 43.0, 25.0
 ctx.set_line_width(3.0)
 ctx.arc(cx, cy, r, 0, 2 * math.pi)
 ctx.stroke()
 ctx.set_line_width(1.6)
-ctx.arc(cx, cy, r * 0.62, 0, 2 * math.pi)
+ctx.arc(cx, cy, r * 0.6, 0, 2 * math.pi)
 ctx.stroke()
 ctx.arc(cx, cy, 2.6, 0, 2 * math.pi)
 ctx.fill()
 
-pivot_x, pivot_y = 69.0, 20.0
-head_x, head_y = 44.0, 41.0
+pivot_x, pivot_y = 72.0, 14.0
+head_x, head_y = 58.0, 31.5
 ctx.arc(pivot_x, pivot_y, 4.6, 0, 2 * math.pi)
 ctx.fill()
 ctx.set_line_width(3.2)

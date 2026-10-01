@@ -1,7 +1,7 @@
 Name:       harbour-tonarm
 
 Summary:    Fernbedienung für einen Music-Assistant-Server
-Version:    0.32
+Version:    0.33
 Release:    1
 License:    MIT
 URL:        https://github.com/silly82/sailtonarm
@@ -70,6 +70,14 @@ desktop-file-install --delete-original       \
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
+* Thu Oct 01 2026 silly82 <siliwalker@gmail.com> - 0.33-1
+- Neues App-Icon: Tropfenform, nur oben rechts eckig; die Platte sitzt
+  mittig in der Rundung, der Tonarm-Drehpunkt in der Ecke. Store-Icon und
+  Store-Cover passend dazu.
+- Demomodus: die Raumnamen erscheinen auf einem englischen Telefon
+  englisch.
+- Store-Bilder auch auf Englisch.
+
 * Thu Oct 01 2026 silly82 <siliwalker@gmail.com> - 0.32-1
 - "1 Album", "1 Titel" und "1 Folge" statt "1 Alben" usw. auf Interpreten-,
   Album- und Podcastseite (auf Englisch "1 album" statt "1 albums").
