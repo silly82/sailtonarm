@@ -219,12 +219,14 @@ function build(artBase) {
     }
 
     // --- Räume ------------------------------------------------------------
+    // Die Raumnamen sind übersetzt (englische Store-Bilder); Musik, Podcasts
+    // und Songtexte bleiben erfundene Inhalte und damit, wie sie sind.
     var roomDefs = [
-        ["demo-wohnzimmer", "Wohnzimmer", 32],
-        ["demo-esszimmer", "Esszimmer", 24],
-        ["demo-kueche", "Küche", 40],
-        ["demo-arbeitszimmer", "Arbeitszimmer", 18],
-        ["demo-schlafzimmer", "Schlafzimmer", 12]
+        ["demo-wohnzimmer", qsTranslate("DemoData", "Wohnzimmer"), 32],
+        ["demo-esszimmer", qsTranslate("DemoData", "Esszimmer"), 24],
+        ["demo-kueche", qsTranslate("DemoData", "Küche"), 40],
+        ["demo-arbeitszimmer", qsTranslate("DemoData", "Arbeitszimmer"), 18],
+        ["demo-schlafzimmer", qsTranslate("DemoData", "Schlafzimmer"), 12]
     ]
     var players = []
     var allIds = []
