@@ -66,6 +66,10 @@
         <source>keiner</source>
         <translation>none</translation>
     </message>
+    <message>
+        <source>1 Titel</source>
+        <translation>1 track</translation>
+    </message>
 </context>
 <context>
     <name>AnnouncementDialog</name>
@@ -175,6 +179,10 @@
     <message>
         <source>In der Bibliothek</source>
         <translation>In your library</translation>
+    </message>
+    <message>
+        <source>1 Album</source>
+        <translation>1 album</translation>
     </message>
 </context>
 <context>
@@ -627,6 +635,10 @@ Aufgenommen mit Sailfish Silica auf einem Jolla Phone</source>
         <translation>Produced by silly82
 Music by Music Assistant
 Recorded with Sailfish Silica on a Jolla Phone</translation>
+    </message>
+    <message>
+        <source>Ein Album, nicht Alben</source>
+        <translation>One Album, Not Albums</translation>
     </message>
 </context>
 <context>
@@ -1304,6 +1316,10 @@ Recorded with Sailfish Silica on a Jolla Phone</translation>
     <message>
         <source>neu</source>
         <translation>new</translation>
+    </message>
+    <message>
+        <source>1 Folge</source>
+        <translation>1 episode</translation>
     </message>
 </context>
 <context>

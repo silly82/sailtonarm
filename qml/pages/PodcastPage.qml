@@ -145,7 +145,7 @@ Page {
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryColor
                 visible: page.episodes.length > 0
-                text: qsTr("%1 Folgen").arg(page.episodes.length)
+                text: page.episodes.length === 1 ? qsTr("1 Folge") : qsTr("%1 Folgen").arg(page.episodes.length)
             }
 
             Row {

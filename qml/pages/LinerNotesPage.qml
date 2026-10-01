@@ -64,7 +64,8 @@ Page {
             { n: 28, v: "0.28", title: QT_TR_NOOP("Achtung, eine Durchsage") },
             { n: 29, v: "0.29", title: QT_TR_NOOP("Neue Folge") },
             { n: 30, v: "0.30", title: QT_TR_NOOP("Farben aus dem Cover") },
-            { n: 31, v: "0.31", title: QT_TR_NOOP("Ein Tonarm für Tonarm (Hidden Track)") }
+            { n: 31, v: "0.31", title: QT_TR_NOOP("Ein Tonarm für Tonarm (Hidden Track)") },
+            { n: 32, v: "0.32", title: QT_TR_NOOP("Ein Album, nicht Alben") }
         ] }
     ]
 

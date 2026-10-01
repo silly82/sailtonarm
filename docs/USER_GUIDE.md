@@ -6,7 +6,7 @@ app plays no music itself: it controls the speakers connected to your server
 (Sonos, AirPlay, Chromecast, DLNA and whatever else Music Assistant supports)
 and shows what they are playing.
 
-Version 0.31. *Deutsche Fassung: [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md).*
+Version 0.32. *Deutsche Fassung: [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md).*
 
 ---
 

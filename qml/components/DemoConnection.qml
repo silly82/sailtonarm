@@ -956,7 +956,7 @@ Item {
                     own = own.concat(_data.tracksByAlbum[_data.albums[i].item_id])
                 }
             }
-            own = own.slice().reverse()
+            own = own.slice().reverse().slice(0, 4)
             return own.length > 0 ? own.concat([own[0]]) : []
         case "music/artists/similar_artists":
             // Alle anderen, dazu der eine aus dem "Streaming-Katalog" --
