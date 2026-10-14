@@ -1661,6 +1661,29 @@ Recorded with Sailfish Silica on a Jolla Phone</translation>
     </message>
 </context>
 <context>
+    <name>SendspinTestPage</name>
+    <message>
+        <source>Erneut versuchen</source>
+        <translation>Try again</translation>
+    </message>
+    <message>
+        <source>Sendspin-Test</source>
+        <translation>Sendspin test</translation>
+    </message>
+    <message>
+        <source>Verschlüsselt verbunden mit „%1“.</source>
+        <translation>Connected to “%1”, encrypted.</translation>
+    </message>
+    <message>
+        <source>Fehlgeschlagen: %1</source>
+        <translation>Failed: %1</translation>
+    </message>
+    <message>
+        <source>Verbinde …</source>
+        <translation>Connecting …</translation>
+    </message>
+</context>
+<context>
     <name>SettingsPage</name>
     <message>
         <source>Bitte zuerst eine Adresse eintragen.</source>
@@ -1885,6 +1908,14 @@ Recorded with Sailfish Silica on a Jolla Phone</translation>
     <message>
         <source>Tonarm %1</source>
         <translation>Tonarm %1</translation>
+    </message>
+    <message>
+        <source>Sendspin</source>
+        <translation>Sendspin</translation>
+    </message>
+    <message>
+        <source>Verbindung testen</source>
+        <translation>Test connection</translation>
     </message>
 </context>
 <context>

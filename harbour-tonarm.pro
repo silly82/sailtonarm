@@ -35,6 +35,19 @@ HEADERS += \
     src/covercache.h \
     src/credentials.h
 
+# OpenRepos-Variante mit Sendspin (KONZEPT.md Abschnitt 38): qmake
+# CONFIG+=sendspin, beim Paketbau "sfdk build ... -- --with sendspin". Die
+# Harbour-Variante baut und linkt davon nichts.
+sendspin {
+    DEFINES += TONARM_SENDSPIN
+    QT += websockets
+    PKGCONFIG += libcrypto
+    SOURCES += src/sendspin/noisesession.cpp \
+        src/sendspin/sendspinclient.cpp
+    HEADERS += src/sendspin/noisesession.h \
+        src/sendspin/sendspinclient.h
+}
+
 DISTFILES += qml/harbour-tonarm.qml \
     qml/cover/CoverPage.qml \
     qml/components/MassConnection.qml \
@@ -65,6 +78,7 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/pages/EpisodePage.qml \
     qml/pages/PlaylistPickerPage.qml \
     qml/pages/LinerNotesPage.qml \
+    qml/pages/SendspinTestPage.qml \
     qml/pages/RadioSearchPage.qml \
     qml/pages/AddRadioDialog.qml \
     qml/pages/RecentlyPlayedPage.qml \

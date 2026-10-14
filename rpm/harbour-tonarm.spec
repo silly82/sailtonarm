@@ -1,5 +1,10 @@
 Name:       harbour-tonarm
 
+# OpenRepos-Variante mit Sendspin (das Telefon als Lautsprecher, KONZEPT.md
+# Abschnitt 38): "sfdk build ... -- --with sendspin". Ohne den Schalter
+# entsteht die Harbour-Variante, unverändert reine Fernbedienung.
+%bcond_with sendspin
+
 Summary:    Fernbedienung für einen Music-Assistant-Server
 Version:    0.33
 Release:    1
@@ -27,6 +32,10 @@ BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(sailfishsecrets)
 BuildRequires:  desktop-file-utils
+%if %{with sendspin}
+BuildRequires:  pkgconfig(libcrypto)
+BuildRequires:  pkgconfig(Qt5WebSockets)
+%endif
 
 %description
 Inoffizieller SailfishOS-Client für Music-Assistant-Server. Fernbedienung
@@ -46,7 +55,7 @@ Bibliothek, Suche und Warteschlange folgen in den nächsten Ausbaustufen
 
 # Die Version aus diesem Paket landet als Qt.application.version in der App
 # (Einstellungen, Liner Notes).
-%qmake5 VERSION=%{version}
+%qmake5 VERSION=%{version} %{?with_sendspin:CONFIG+=sendspin}
 
 %make_build
 

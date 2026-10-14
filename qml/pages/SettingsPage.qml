@@ -450,6 +450,19 @@ Page {
                 }
             }
 
+            // Nur in der OpenRepos-Variante (KONZEPT.md Abschnitt 38).
+            SectionHeader {
+                text: qsTr("Sendspin")
+                visible: SendspinAvailable
+            }
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Verbindung testen")
+                visible: SendspinAvailable
+                enabled: Credentials.baseUrl.length > 0
+                onClicked: pageStack.push(Qt.resolvedUrl("SendspinTestPage.qml"))
+            }
+
             Item { width: 1; height: Theme.paddingLarge }
 
             // Die eigene Version. Siebenmal tippen öffnet die Liner Notes

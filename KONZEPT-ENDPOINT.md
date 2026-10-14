@@ -1,6 +1,11 @@
 # Konzept: das Telefon als Wiedergabegerät (Sendspin)
 
-Stand: 2026-09-22 · Branch `sendspin-player` · **Konzept, kein Code**
+Stand: 2026-10-14 · Branch `sendspin-player` · **Stufe 5a erledigt** (Abschnitt 9)
+
+**Nur in der OpenRepos-Variante** (KONZEPT.md Abschnitt 38): Die
+Harbour-Version bleibt Fernbedienung. Damit dürften FLAC/Opus und
+`libsamplerate` verwendet werden; Abschnitt 4 ("nur PCM") gilt nur noch, falls
+Sendspin doch einmal in die Harbour-Variante soll.
 
 Ausbaustufe 5 aus [`KONZEPT.md`](KONZEPT.md): Tonarm nicht nur als
 Fernbedienung, sondern als eigener Lautsprecher in der Anlage. Music Assistant
@@ -268,3 +273,51 @@ Wer wissen will, ob es geht, baut den Handshake und weiß es danach.
 - **Die Audio-Berechtigung ist bereits erteilt** -- sie war für MPRIS ohnehin
   nötig (siehe `KONZEPT.md` Abschnitt 19). Für einmal ist ihr Name dann sogar
   zutreffend.
+
+## 9. Stufe 5a erledigt (2026-10-14)
+
+Der verschlüsselte Handshake steht, gegen den echten Server MA 2.10.4, vom
+Rechner (i486-Bauziel) und vom Telefon (aarch64, Sailfish OS 5.2). Ablauf:
+`client/init` → `server/init` → Noise-Nachricht 1 → Nachricht 2 mit dem
+Sentinel-PSK → `server/hello` entschlüsselt → `client/goodbye`
+(`user_request`). Ohne `client/hello` meldet sich das Telefon nicht als Player
+an, und es wurde nichts abgespielt.
+
+**Code** (`src/sendspin/`, nur mit `CONFIG+=sendspin` gebaut):
+
+- `NoiseSession` -- KKpsk2 in der Rolle des Responders, nur aus `libcrypto`
+  (X25519, HMAC-SHA-256, ChaCha20-Poly1305, AES-256-GCM), rund 300 Zeilen
+  statt der geschätzten 500-800.
+- `SendspinClient` -- WebSocket, Init, Handshake, Transportmodus, Protokoll
+  für die Testseite. Der eigene Schlüssel liegt vorerst als Datei (nur für den
+  Besitzer lesbar) im Datenverzeichnis der App; mit dem Pairing (5b) ziehen
+  Schlüssel und langfristiger PSK nach Sailfish Secrets um.
+- Testseite in den Einstellungen ("Sendspin → Verbindung testen"), nur in der
+  OpenRepos-Variante.
+
+**Geprüft:** `tests/sendspin/tst_noise.cpp` vergleicht beide Cipher-Suites
+byte-genau mit einem Mitschnitt der Python-Bibliothek `noiseprotocol` (die
+aiosendspin verwendet), dazu zwei Gegenproben (falscher Prolog, Wiederholung).
+Alle 22 Prüfungen bestanden auf Anhieb.
+
+**Gemessen, abweichend von der Spezifikation:**
+
+- MA 2.10.4 schickt in Noise-Nachricht 1 nur `psk_id`, **ohne
+  `psk_category`** -- eine ältere Fassung der Spezifikation. Der Client lässt
+  die fehlende Kategorie zu; eine vorhandene, aber unbekannte bleibt ein
+  Fehler.
+- Die `psk_id` ist die des Sentinels, wie in Abschnitt 8 vermutet.
+- Nach `server/hello` kommt innerhalb von 1,5 s nichts weiter; der Server
+  wartet auf `client/hello`, bevor er `server/activate` schickt.
+
+**Bibliotheken:** Auf dem Telefon und im SDK hängt `libQt5Network` noch an
+OpenSSL 1.1 (`libcrypto.so.1.1`), Tonarm linkt OpenSSL 3. Der Linker warnt vor
+einem möglichen Konflikt; beide Bibliotheken versionieren ihre Symbole, und
+der Handshake läuft mit beiden geladen. X25519 aus OpenSSL 3 ist damit auf dem
+Gerät bestätigt (erste offene Frage aus Abschnitt 8).
+
+**Nächster Schritt: 5b (Pairing)** -- oder, weil Sendspin nur noch in der
+OpenRepos-Variante kommt, zuerst prüfen, ob MA 2.10.4 eine Sentinel-Sitzung
+ohne Pairing überhaupt als Player annimmt ("unpaired access"). Dann käme 5c
+(Ton) vor 5b.
+

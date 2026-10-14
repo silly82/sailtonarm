@@ -171,6 +171,24 @@ sh tests/run.sh     # all tests; status 0 only if all pass
 sh tests/lint.sh    # Qt 5.6 qmllint over qml/ and tests/
 ```
 
+The Sendspin code (`src/sendspin/`, OpenRepos variant only, see section 5)
+has C++ tests in `tests/sendspin/`. `tst_noise.cpp` checks the Noise
+handshake byte for byte against vectors from the Python library
+`noiseprotocol`, which aiosendspin uses (`make_vectors.py` regenerates them;
+it needs `noiseprotocol` on the Python path). `probe.pro` builds a small
+command-line client that runs the real handshake against a server and says
+goodbye right after `server/hello` -- it plays nothing and does not register
+as a player:
+
+```sh
+# once: headers into the i486 target (and into the aarch64 target for the probe on the phone)
+sfdk engine exec sb2 -t SailfishOS-5.1.0.11-i486 -m sdk-install -R \
+     zypper -n in openssl-devel qt5-qtwebsockets-devel
+sh tests/sendspin/run.sh    # status 0 only if all pass
+# probe: qmake + make tests/sendspin/probe.pro inside the target, then
+#   probe ws://<server>:8927/sendspin <key file outside the repo>
+```
+
 New helpers get a test there. Only made-up addresses in tests
 (`musicassistant.local`, `192.0.2.x`) -- the repository is public. The SDK
 targets are also handy for looking up Silica itself: each one is a full root
@@ -264,6 +282,24 @@ for arch in aarch64 armv7hl i486; do
 done
 # packages: build-tonarm/<arch>/RPMS/
 ```
+
+**Two variants** (KONZEPT.md section 38). The plain build is the Harbour
+variant, a remote control and nothing else. `-- --with sendspin` builds the
+OpenRepos variant from the same sources: it adds `src/sendspin/` (links
+`libcrypto.so.3` and Qt WebSockets) and a test page under Settings. Same
+package name, so only one of them is installed at a time. Build it in its own
+directory:
+
+```sh
+mkdir -p build-tonarm/aarch64-5.2-sendspin && (cd build-tonarm/aarch64-5.2-sendspin && \
+  sfdk -c target=SailfishOS-5.2.0.20-aarch64 -c specfile=../../sailtonarm/rpm/harbour-tonarm.spec \
+       -c no-fix-version build ../../sailtonarm -- --with sendspin)
+```
+
+The linker warns that `libQt5Network` needs `libcrypto.so.1.1` and "may
+conflict" with `libcrypto.so.3`. Both carry versioned symbols, and the
+handshake works on the phone with both loaded; the warning is expected.
+Run the Harbour check on the plain build only.
 
 **One `sfdk` at a time.** Two `sfdk` commands started together (two builds, or
 a build plus `sfdk tools list`) each start the SDK maintenance tool, and the

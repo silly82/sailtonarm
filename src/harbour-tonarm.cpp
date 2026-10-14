@@ -4,6 +4,9 @@
 
 #include "covercache.h"
 #include "credentials.h"
+#ifdef TONARM_SENDSPIN
+#include "sendspin/sendspinclient.h"
+#endif
 
 #include <sailfishapp.h>
 #include <QGuiApplication>
@@ -30,6 +33,17 @@ int main(int argc, char *argv[])
     // bereitgestellt: in QML einfach `Credentials.baseUrl` / `Credentials.token`.
     Credentials credentials;
     view->rootContext()->setContextProperty(QStringLiteral("Credentials"), &credentials);
+
+    // Sendspin gibt es nur in der OpenRepos-Variante (KONZEPT.md Abschnitt
+    // 38). SendspinAvailable steht in beiden, damit QML fragen kann, ohne an
+    // einer fehlenden Kontext-Property zu scheitern.
+#ifdef TONARM_SENDSPIN
+    SendspinClient sendspin;
+    view->rootContext()->setContextProperty(QStringLiteral("Sendspin"), &sendspin);
+    view->rootContext()->setContextProperty(QStringLiteral("SendspinAvailable"), true);
+#else
+    view->rootContext()->setContextProperty(QStringLiteral("SendspinAvailable"), false);
+#endif
 
     view->setSource(SailfishApp::pathTo(QStringLiteral("qml/harbour-tonarm.qml")));
     view->show();
