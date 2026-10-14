@@ -156,6 +156,27 @@ Test device: Jolla Phone (2026), aarch64, reachable over USB networking and
 SSH (`defaultuser@<phone>`, `devel-su` for root). The phone runs under heavy
 load all the time (load around 13) -- that shapes the method.
 
+### Tests on the computer
+
+The pure helpers in `qml/lib/MassModels.js` and `MassApi.js` have QML tests in
+`tests/tst_*.qml` (Qt Test `TestCase`). They run with `qmltestrunner` in the
+**i486 target** -- the only architecture the build engine executes directly,
+no phone or emulator needed:
+
+```sh
+# once: qmltestrunner (and Qt 5.6's qmllint) into the i486 target
+sfdk engine exec sb2 -t SailfishOS-5.1.0.11-i486 -m sdk-install -R \
+     zypper -n in qt5-qtdeclarative-devel-tools
+sh tests/run.sh     # all tests; status 0 only if all pass
+sh tests/lint.sh    # Qt 5.6 qmllint over qml/ and tests/
+```
+
+New helpers get a test there. Only made-up addresses in tests
+(`musicassistant.local`, `192.0.2.x`) -- the repository is public. The SDK
+targets are also handy for looking up Silica itself: each one is a full root
+file system under `~/SailfishOS/mersdk/targets/<target>.default/`, where the
+Silica components are plain QML.
+
 ### Install and start
 
 ```sh
@@ -225,26 +246,60 @@ before repeating it.
 
 ## 5. Build, check, release
 
+Build **outside the source tree**, one directory per architecture next to the
+repository. `sfdk build <source-dir>` then writes Makefile, objects and RPMs
+there; the repository stays clean, and objects of one architecture can never
+end up in another's package. Pass target and spec file **per command**
+(`sfdk -c ...`), never with `sfdk config`: that setting is global and shared
+with every other project and session on the machine.
+
 ```sh
-# per architecture, clean up every time first:
+# from the directory that contains sailtonarm/
 for arch in aarch64 armv7hl i486; do
-  rm -f harbour-tonarm *.o moc_*.cpp moc_*.h Makefile .qmake.stash RPMS/*.rpm
-  sfdk config target=SailfishOS-5.1.0.11-$arch \
-    && sfdk config specfile=rpm/harbour-tonarm.spec \
-    && sfdk config no-fix-version \
-    && sfdk build
-  cp RPMS/harbour-tonarm-*-1.$arch.rpm <collection-dir>/
+  target=SailfishOS-5.1.0.11-$arch
+  [ $arch = aarch64 ] && target=SailfishOS-5.2.0.20-aarch64   # see below
+  mkdir -p build-tonarm/$arch && (cd build-tonarm/$arch && \
+    sfdk -c target=$target -c specfile=../../sailtonarm/rpm/harbour-tonarm.spec \
+         -c no-fix-version build ../../sailtonarm)
 done
+# packages: build-tonarm/<arch>/RPMS/
+```
+
+**One `sfdk` at a time.** Two `sfdk` commands started together (two builds, or
+a build plus `sfdk tools list`) each start the SDK maintenance tool, and the
+second one hangs for good -- including another project's build. If a build
+sits still for minutes, look for a stuck `SDKMaintenanceTool` process.
+
+**Sailfish OS 5.2.** Jolla has not published a 5.2 SDK target yet (the newest
+is 5.1.0.11). `SailfishOS-5.2.0.20-aarch64` is a local copy of the 5.1 target
+moved to the public 5.2.0.20 repositories (KONZEPT.md section 37):
+
+```sh
+sfdk engine exec sdk-assistant -y clone SailfishOS-5.1.0.11-aarch64 SailfishOS-5.2.0.20-aarch64
+sfdk engine exec sb2 -t SailfishOS-5.2.0.20-aarch64 -m sdk-install -R sh -c \
+  'ssu re 5.2.0.20 && zypper -n --gpg-auto-import-keys ref && zypper -n dup --allow-vendor-change'
+```
+
+Without `-y`, `sdk-assistant` waits for a confirmation that never reaches it
+through `sfdk`. 5.2 has only been released for the Jolla Phone (aarch64), so
+armv7hl and i486 stay on 5.1. A package built against 5.2 needs the same
+glibc symbols (up to 2.34) as one built against 5.1 (check with
+`readelf -V build-tonarm/<arch>/harbour-tonarm`), so it still installs on
+older releases.
+
 # check:
-sfdk check -s harbour,rpmlint <package>      # expected: succeeded, 0/0/0
+sfdk -c target=<target> -c specfile=sailtonarm/rpm/harbour-tonarm.spec \
+     check -s harbour,rpmlint <package>      # expected: succeeded, 0/0/0
+# the 5.2 target carries the newer Harbour validator (1.111)
 # binary architecture inside the package (ELF e_machine: b7 aarch64, 28 arm, 03 x86):
 rpm2cpio <package> | cpio -id ./usr/bin/harbour-tonarm && od -An -tx1 -j18 -N2 usr/bin/harbour-tonarm
 ```
 
 Checklist per version:
 
-1. `qmllint` on changed files -- **look at its output**: qmllint exits with
-   status 0 even on syntax errors.
+1. `sh tests/lint.sh` and `sh tests/run.sh` (section 4, "Tests on the
+   computer"). The PC's own `qmllint` is no substitute: it exits with status
+   0 even on syntax errors.
 2. Version and `%changelog` in `rpm/harbour-tonarm.spec` (German). The
    version reaches the app from there (`qmake VERSION=` → `APP_VERSION` →
    `Qt.application.version`); a plain local qmake run shows "dev". Add the new

@@ -1896,3 +1896,41 @@ Server: `errorText({error_code: 23})` → "Token invalid or expired",
 unbekannter Code → "Error code 99", `fetchServerInfo("")` → "No server
 address given". Interpretenseite Queen: "Popular tracks" (14, ohne
 Dubletten), "Show all 14 tracks", "In your library" mit den eigenen Titeln.
+
+## 37. Update 2026-10-14: Sailfish OS 5.2, Build-Ordner, Tests
+
+**Sailfish OS 5.2.0.20 "Finlayson"** läuft auf dem Jolla Phone. Für Tonarm
+ändert sich nichts Wesentliches: weiter Qt 5.6.3, Silica 1.2.157, dieselben
+Sailjail-Berechtigungen; die App startet ohne Warnungen. Musik bei Anrufen
+pausieren bleibt für Harbour unmöglich: dafür bräuchte es die Berechtigung
+`Phone`, und die steht nicht auf der Liste der erlaubten
+(`allowed_permissions.conf` im Harbour-Validator, Stand Oktober 2026).
+
+**5.2-Bauziel.** Jolla hat (Stand 14.10.2026) kein 5.2-SDK-Bauziel
+veröffentlicht, das neueste ist 5.1.0.11. Die öffentlichen
+5.2.0.20-Paketquellen (jolla, sdk, hotfixes, adaptation-common, apps)
+existieren aber für alle drei Architekturen. Deshalb: das 5.1-aarch64-Ziel
+mit `sdk-assistant -y clone` kopiert, in der Kopie `ssu re 5.2.0.20` und
+`zypper dup` (578 Pakete, darunter der Harbour-Validator 1.111). Das Ergebnis
+hat dieselben Paketversionen wie das Telefon. Stolperstein: ohne `-y` wartet
+`sdk-assistant` auf eine Bestätigung, die über `sfdk` nie ankommt -- der
+erste Versuch stand so 23 Minuten. Ein gegen 5.2 gebautes Binary verlangt
+dieselben glibc-Symbole (bis 2.34) wie das gegen 5.1 gebaute, läuft also auch
+auf älteren Geräten. Es besteht `sfdk check` mit dem 5.2-Validator (0/0/0)
+und läuft auf dem Telefon.
+
+**Build-Ordner und `sfdk -c`** (angeregt durch
+github.com/teekesti/sailfish-agent-skills): je Architektur ein Ordner neben
+dem Repo, `sfdk build <quellordner>`; Ziel und Spec per `-c` je Befehl statt
+`sfdk config`, das global gilt und mit anderen Projekten kollidierte (eine
+parallele Sitzung stellte es mehrfach auf ihr eigenes Spec-File um). Zwei
+gleichzeitige `sfdk`-Befehle starten je ein SDKMaintenanceTool, das zweite
+hängt dann dauerhaft -- deshalb nacheinander bauen.
+
+**Tests.** `tests/tst_massmodels.qml` und `tests/tst_massapi.qml` (47 Fälle:
+Dubletten, Zeit, Kapitel-Sprünge, LRC, Hörstand, Adressbau, Fehlertexte)
+laufen mit `qmltestrunner` im i486-Bauziel (`tests/run.sh`); i486 führt der
+Build-Engine direkt aus. `tests/lint.sh` prüft alle QML/JS mit dem qmllint
+von Qt 5.6 aus demselben Ziel, der -- anders als der des PCs -- bei Fehlern
+auch mit Fehlerstatus endet. Beide Skripte wurden mit einem absichtlich
+falschen Test bzw. einer kaputten Datei gegengeprüft.

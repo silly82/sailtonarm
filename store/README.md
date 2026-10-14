@@ -88,36 +88,17 @@ dem sie geprüft ist.
 
 ### Bauen aller drei
 
-**Zwischen den Architekturen zwingend aufräumen**, sonst relinkt der
-In-Place-Build die Objektdateien der vorherigen Architektur still in das neue
-Paket. Und `no-fix-version` setzen, sobald ein Git-Tag existiert: sfdk leitet
-sonst eine Schnappschussversion aus dem Git-Zustand ab
-(`0.17+master.20260921182521.2366326-1`), und die Pakete hätten
-uneinheitliche Versionen.
+Steht ausführlich in `../docs/DEVELOPMENT.md` Abschnitt 5: je Architektur ein
+eigener Build-Ordner neben dem Repo (`sfdk build ../../sailtonarm`), Ziel und
+Spec je Befehl mit `sfdk -c`, nie gleichzeitig zwei `sfdk`. aarch64 wird gegen
+das lokal nachgezogene 5.2.0.20-Bauziel gebaut, armv7hl und i486 gegen
+5.1.0.11. Weil jede Architektur ihren eigenen Ordner hat, kann nichts mehr
+von einer Architektur ins Paket einer anderen geraten; das frühere Aufräumen
+zwischen den Durchgängen entfällt.
 
-```sh
-for arch in aarch64 armv7hl i486; do
-  rm -f harbour-tonarm *.o moc_*.cpp moc_*.h Makefile .qmake.stash
-  sfdk config target=SailfishOS-5.1.0.11-$arch \
-    && sfdk config specfile=rpm/harbour-tonarm.spec \
-    && sfdk config no-fix-version \
-    && sfdk build
-done
-```
-
-**`sfdk build` räumt dabei ältere Pakete aus `RPMS/` weg** -- die fertigen
-also nach jedem Durchgang wegkopieren und am Ende wieder zusammenlegen.
-
-Gegenprobe, dass im Paket wirklich das richtige Binary steckt (auf dem Host
-fehlt `rpm2cpio`, deshalb in der Build-Umgebung):
-
-```sh
-sfdk tools exec SailfishOS-5.1.0.11-aarch64 sh -c \
-  "cd $PWD && rpm2cpio RPMS/harbour-tonarm-<v>-1.<arch>.rpm \
-   | cpio -i --to-stdout ./usr/bin/harbour-tonarm > /tmp/b; file /tmp/b"
-```
-
-Erwartet: `ARM aarch64` / `ARM, EABI5` / `Intel 80386`.
+Gegenprobe, dass im Paket wirklich das richtige Binary steckt: im Build-Ordner
+liegt es direkt, `file build-tonarm/<arch>/harbour-tonarm` -- erwartet
+`ARM aarch64` / `ARM, EABI5` / `Intel 80386`.
 
 ## Compatibility → Device type
 
