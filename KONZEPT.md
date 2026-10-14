@@ -1934,3 +1934,39 @@ Build-Engine direkt aus. `tests/lint.sh` prüft alle QML/JS mit dem qmllint
 von Qt 5.6 aus demselben Ziel, der -- anders als der des PCs -- bei Fehlern
 auch mit Fehlerstatus endet. Beide Skripte wurden mit einem absichtlich
 falschen Test bzw. einer kaputten Datei gegengeprüft.
+
+## 38. Entscheidung 2026-10-14: zwei Varianten
+
+**Harbour bleibt Fernbedienung.** Die Store-Version von Tonarm macht weiter,
+was sie heute tut: Music Assistant steuern, selbst nichts abspielen. Sendspin
+(Stufe 5, das Telefon als Lautsprecher) kommt nur in eine **zweite Variante
+für OpenRepos**.
+
+Grund: Für Harbour ginge Sendspin zwar (`libcrypto.so.3`, `libpulse.so.0` und
+die Berechtigung `Audio` sind erlaubt, gegen den Validator von Oktober 2026
+geprüft), aber nur mit PCM (≈1,4 Mbit/s), selbst geschriebenem Noise und
+selbst geschriebenem Resampling. Ohne Harbour dürfen `libFLAC`/`libopus`,
+`libsamplerate` und eine fertige Noise-Bibliothek verwendet werden, und die
+Berechtigung `Phone` erlaubt dort auch das Pausieren bei Anrufen. Was gleich
+schwer bleibt: der Gleichlauf mit anderen Lautsprechern (Fall B in
+`KONZEPT-ENDPOINT.md`) und das Verhalten bei Bildschirm aus und
+Kopfhörerwechsel.
+
+Leitlinien für die Umsetzung:
+
+- **Eine Codebasis.** Die OpenRepos-Variante ist die Harbour-Variante plus
+  Zusätze, eingeschaltet beim Bauen. Alles Sendspin-Spezifische steht in
+  eigenen Dateien; die Harbour-Variante baut und linkt davon nichts, damit
+  ihre Prüfung unverändert durchgeht.
+- **Gleicher Paketname** `harbour-tonarm`: Zugangsdaten in Secrets und
+  Einstellungen in dconf bleiben beim Wechsel zwischen den Varianten erhalten.
+  Es ist immer nur eine installiert.
+- **Nur in der OpenRepos-Variante:** Sendspin-Player, FLAC/Opus, Pausieren
+  bei Anrufen (`Phone`).
+- Reihenfolge unverändert: zuerst **5a**, der verschlüsselte Handshake ohne
+  Ton. Scheitert er, gibt es keine zweite Variante.
+
+Der Branch `sendspin-player` stammt von v0.16 und wird vor der Arbeit auf den
+aktuellen Stand gebracht; `KONZEPT-ENDPOINT.md` Abschnitt 4 ("nur PCM") gilt
+dann nur noch für den Fall, dass Sendspin doch einmal in die Harbour-Variante
+soll.

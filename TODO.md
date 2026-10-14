@@ -28,11 +28,13 @@ geprüft (Details je Version in `KONZEPT.md`):
   (`music/browse`), **Genres** (`music/genres/*`).
 - [ ] **Hörprobe** (`music/tracks/preview`), **Titelversionen**
   (`track_versions`), **Party-Modus** (`party/*`).
-- [ ] **Musik bei einem Anruf pausieren** -- erst klären, ob Sailjail das
-  Abhören von Anrufen erlaubt.
+- [ ] **Musik bei einem Anruf pausieren** -- für Harbour nicht möglich
+  (Berechtigung `Phone` nicht erlaubt); kommt in die OpenRepos-Variante.
 - [ ] **Mehrere Server** (Profile).
-- [ ] **Stufe 5: Sendspin** -- das Telefon als Lautsprecher; Konzept auf dem
-  Branch `sendspin-player`, bewusst zurückgestellt.
+- [ ] **Stufe 5: Sendspin** -- das Telefon als Lautsprecher, nur in einer
+  zweiten Variante für OpenRepos; die Harbour-Version bleibt Fernbedienung
+  (KONZEPT Abschnitt 38). Konzept auf dem Branch `sendspin-player`; erster
+  Schritt 5a, der verschlüsselte Handshake ohne Ton.
 
 ## Bekannte Eigenheiten (kein Fehler der App)
 
