@@ -183,7 +183,7 @@ as a player:
 ```sh
 # once: headers into the i486 target (and into the aarch64 target for the probe on the phone)
 sfdk engine exec sb2 -t SailfishOS-5.1.0.11-i486 -m sdk-install -R \
-     zypper -n in openssl-devel qt5-qtwebsockets-devel
+     zypper -n in openssl-devel qt5-qtwebsockets-devel pulseaudio-devel
 sh tests/sendspin/run.sh    # status 0 only if all pass
 # probe: qmake + make tests/sendspin/probe.pro inside the target, then
 #   probe ws://<server>:8927/sendspin <key file outside the repo>
@@ -286,7 +286,7 @@ done
 **Two variants** (KONZEPT.md section 38). The plain build is the Harbour
 variant, a remote control and nothing else. `-- --with sendspin` builds the
 OpenRepos variant from the same sources: it adds `src/sendspin/` (links
-`libcrypto.so.3` and Qt WebSockets) and a test page under Settings. Same
+`libcrypto.so.3`, `libpulse-simple` and Qt WebSockets) and a test page under Settings. Same
 package name, so only one of them is installed at a time. Build it in its own
 directory:
 

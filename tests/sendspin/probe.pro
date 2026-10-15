@@ -4,6 +4,9 @@ TEMPLATE = app
 TARGET = probe
 QT = core network websockets
 CONFIG += console c++11 link_pkgconfig
-PKGCONFIG += libcrypto
-SOURCES += probe.cpp ../../src/sendspin/noisesession.cpp ../../src/sendspin/sendspinclient.cpp
-HEADERS += ../../src/sendspin/noisesession.h ../../src/sendspin/sendspinclient.h
+CONFIG += thread
+PKGCONFIG += libcrypto libpulse-simple
+SOURCES += probe.cpp ../../src/sendspin/noisesession.cpp ../../src/sendspin/sendspinclient.cpp \
+    ../../src/sendspin/timefilter.cpp ../../src/sendspin/audiooutput.cpp
+HEADERS += ../../src/sendspin/noisesession.h ../../src/sendspin/sendspinclient.h \
+    ../../src/sendspin/timefilter.h ../../src/sendspin/audiooutput.h

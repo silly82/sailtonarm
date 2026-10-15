@@ -356,3 +356,35 @@ nimmt Namen und Dauer als weitere Argumente.
 **Bleibt im Server:** Music Assistant merkt sich angemeldete Player auch nach
 dem Abmelden. Testnamen lassen sich in Music Assistant unter Einstellungen →
 Player wieder entfernen.
+
+## 11. Stufe 5c: Ton (2026-10-15, im Bau)
+
+**Code:**
+
+- `TimeFilter` -- der Kalman-Filter aus aiosendspin (Apache 2.0, Herkunft im
+  Kopf der Datei), für den Uhrabgleich über `client/time`/`server/time`.
+  Abstand wie dort: alle 200 ms, bis der Filter steht, dann je nach Fehler bis
+  3 s.
+- `AudioOutput` -- PulseAudio (`libpulse-simple`, nur OpenRepos-Variante) in
+  einem eigenen Thread, Blöcke zu 10 ms, `media.role=music`. Korrektur nach der
+  Vorlage der Spezifikation: höchstens ein Frame je Block weglassen oder
+  verdoppeln (0,2 %), ab 5 ms einmalig neu ausrichten (Stille oder
+  überspringen). Lautstärke als Amplitude (v/100)^1,5.
+- Verfügbar meldet sich der Player nur mit dem Schalter "Als Lautsprecher
+  verfügbar" und erst nach fünf Uhrmessungen. Angeboten wird nur PCM 48 kHz
+  stereo 16 Bit; andere Raten rechnet der Server um.
+
+**Ältere Fassung, weitere Unterschiede bei MA 2.10.4:**
+
+- Audio-Kopf 9 Bytes (Typ, Zeitstempel) statt 13 (dazu `send_ahead`). Erkannt
+  an der fehlenden `psk_category` im Handshake.
+- `supported_commands` in `client/state` darf dort nur `set_static_delay`
+  enthalten; mit `volume` schliesst der Server die Verbindung. `volume` und
+  `mute` stehen deshalb in `client/hello`.
+
+**Gemessen** (Probe vom Rechner, WLAN/LAN): Filter nach 2 Messungen
+abgeglichen, Fehler danach 0,6-0,7 ms.
+
+**Offen:** Wiedergabe auf dem Telefon (braucht eine ausdrückliche Zustimmung zum
+Test mit Ton), Genauigkeit der Latenzangabe von PulseAudio, Verhalten bei
+Anruf, Kopfhörerwechsel und Bildschirm aus.

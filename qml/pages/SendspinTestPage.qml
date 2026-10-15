@@ -4,8 +4,9 @@ import Nemo.Configuration 1.0
 
 // Nur in der OpenRepos-Variante (KONZEPT.md Abschnitt 38): verschlüsselter
 // Sendspin-Handshake und Anmeldung als Player unter dem eingestellten Namen.
-// Noch ohne Ton (Stufe 5c), deshalb meldet sich der Player als nicht
-// verfügbar. Die Verbindung bleibt, solange die Seite offen ist.
+// Mit dem Schalter meldet sich der Player verfügbar, sobald die Uhr
+// abgeglichen ist, und spielt, was Music Assistant schickt (Stufe 5c).
+// Die Verbindung bleibt, solange die Seite offen ist.
 Page {
     id: page
 
@@ -19,12 +20,16 @@ Page {
 
     function connect() {
         Sendspin.close()
+        Sendspin.playbackEnabled = false
         Sendspin.playerName = nameSetting.value
         Sendspin.openForServer(Credentials.baseUrl)
     }
 
     Component.onCompleted: connect()
-    Component.onDestruction: Sendspin.close()
+    Component.onDestruction: {
+        Sendspin.playbackEnabled = false
+        Sendspin.close()
+    }
 
     SilicaFlickable {
         anchors.fill: parent
@@ -50,7 +55,7 @@ Page {
                 wrapMode: Text.Wrap
                 color: Theme.highlightColor
                 text: page.registered
-                      ? qsTr("Als Player „%1“ bei „%2“ angemeldet. Noch ohne Ton; der Player bleibt nicht verfügbar.")
+                      ? qsTr("Als Player „%1“ bei „%2“ angemeldet.")
                         .arg(Sendspin.playerName.length > 0 ? Sendspin.playerName : Sendspin.defaultPlayerName)
                         .arg(Sendspin.serverName)
                       : Sendspin.serverName.length > 0
@@ -68,6 +73,31 @@ Page {
                 color: Theme.secondaryHighlightColor
                 visible: page.registered
                 text: qsTr("Beim Verlassen der Seite meldet sich das Telefon wieder ab.")
+            }
+
+            TextSwitch {
+                visible: page.registered
+                text: qsTr("Als Lautsprecher verfügbar")
+                description: Sendspin.available
+                             ? (Sendspin.streaming ? qsTr("Spielt, Lautstärke %1 %%2").arg(Sendspin.volume)
+                                                     .arg(Sendspin.muted ? qsTr(", stumm") : "")
+                                                   : qsTr("Verfügbar. In Music Assistant auswählen, dann spielt das Telefon."))
+                             : Sendspin.playbackEnabled ? qsTr("Uhr wird abgeglichen …")
+                                                        : qsTr("Aus: Music Assistant schickt keinen Ton.")
+                checked: Sendspin.playbackEnabled
+                automaticCheck: false
+                onClicked: Sendspin.playbackEnabled = !checked
+            }
+
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * Theme.horizontalPageMargin
+                wrapMode: Text.WrapAnywhere
+                font.pixelSize: Theme.fontSizeExtraSmall
+                font.family: "Monospace"
+                color: Theme.highlightColor
+                visible: text.length > 0
+                text: Sendspin.syncText
             }
 
             Label {

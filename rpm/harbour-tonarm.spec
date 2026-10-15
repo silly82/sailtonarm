@@ -34,6 +34,7 @@ BuildRequires:  pkgconfig(sailfishsecrets)
 BuildRequires:  desktop-file-utils
 %if %{with sendspin}
 BuildRequires:  pkgconfig(libcrypto)
+BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(Qt5WebSockets)
 %endif
 

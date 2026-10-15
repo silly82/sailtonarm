@@ -1,6 +1,7 @@
 // Sendspin-Probe: Handshake mit einem echten Sendspin-Server, server/hello
-// lesen, als Player anmelden (client/hello, nicht verfügbar), einige Sekunden
-// verbunden bleiben und mit client/goodbye verabschieden. Spielt nichts ab.
+// lesen, als Player anmelden (client/hello, nicht verfügbar), die Uhr
+// abgleichen, einige Sekunden verbunden bleiben und mit client/goodbye
+// verabschieden. Meldet sich nie verfügbar, spielt also nichts ab.
 //
 //   probe ws://<server>:8927/sendspin <schlüsseldatei> [name] [sekunden]
 //
@@ -52,6 +53,10 @@ int main(int argc, char **argv)
             client.close();
             QTimer::singleShot(500, &app, &QCoreApplication::quit);
         });
+    });
+    QObject::connect(&client, &SendspinClient::syncTextChanged, [&]() {
+        std::printf("%s\n", qPrintable(client.syncText()));
+        std::fflush(stdout);
     });
     QObject::connect(&client, &SendspinClient::stateChanged, [&]() {
         if (client.state() == SendspinClient::Failed)

@@ -4,7 +4,7 @@
 #
 # Einmalig nötig: Header im Bauziel installieren
 #   sfdk engine exec sb2 -t <ziel> -m sdk-install -R \
-#       zypper -n in openssl-devel qt5-qtwebsockets-devel
+#       zypper -n in openssl-devel qt5-qtwebsockets-devel pulseaudio-devel
 #
 # Aufruf aus dem Projektverzeichnis:  sh tests/sendspin/run.sh [ziel]
 # Endet mit Status 0 nur, wenn alle Tests bestehen.

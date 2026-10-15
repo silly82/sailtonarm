@@ -41,11 +41,15 @@ HEADERS += \
 sendspin {
     DEFINES += TONARM_SENDSPIN
     QT += websockets
-    PKGCONFIG += libcrypto
+    PKGCONFIG += libcrypto libpulse-simple
     SOURCES += src/sendspin/noisesession.cpp \
-        src/sendspin/sendspinclient.cpp
+        src/sendspin/sendspinclient.cpp \
+        src/sendspin/timefilter.cpp \
+        src/sendspin/audiooutput.cpp
     HEADERS += src/sendspin/noisesession.h \
-        src/sendspin/sendspinclient.h
+        src/sendspin/sendspinclient.h \
+        src/sendspin/timefilter.h \
+        src/sendspin/audiooutput.h
 }
 
 DISTFILES += qml/harbour-tonarm.qml \

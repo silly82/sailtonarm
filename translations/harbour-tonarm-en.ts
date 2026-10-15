@@ -1683,12 +1683,36 @@ Recorded with Sailfish Silica on a Jolla Phone</translation>
         <translation>Connecting …</translation>
     </message>
     <message>
-        <source>Als Player „%1“ bei „%2“ angemeldet. Noch ohne Ton; der Player bleibt nicht verfügbar.</source>
-        <translation>Registered as player “%1” with “%2”. No audio yet, so the player stays unavailable.</translation>
-    </message>
-    <message>
         <source>Beim Verlassen der Seite meldet sich das Telefon wieder ab.</source>
         <translation>Leaving this page unregisters the phone again.</translation>
+    </message>
+    <message>
+        <source>Als Player „%1“ bei „%2“ angemeldet.</source>
+        <translation>Registered as player “%1” with “%2”.</translation>
+    </message>
+    <message>
+        <source>Als Lautsprecher verfügbar</source>
+        <translation>Available as speaker</translation>
+    </message>
+    <message>
+        <source>Spielt, Lautstärke %1 %%2</source>
+        <translation>Playing, volume %1 %%2</translation>
+    </message>
+    <message>
+        <source>, stumm</source>
+        <translation>, muted</translation>
+    </message>
+    <message>
+        <source>Verfügbar. In Music Assistant auswählen, dann spielt das Telefon.</source>
+        <translation>Available. Select it in Music Assistant and the phone plays.</translation>
+    </message>
+    <message>
+        <source>Uhr wird abgeglichen …</source>
+        <translation>Synchronising clock …</translation>
+    </message>
+    <message>
+        <source>Aus: Music Assistant schickt keinen Ton.</source>
+        <translation>Off: Music Assistant sends no audio.</translation>
     </message>
 </context>
 <context>
