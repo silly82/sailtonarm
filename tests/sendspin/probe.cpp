@@ -1,8 +1,8 @@
-// Stufe-5a-Probe: Handshake mit einem echten Sendspin-Server, server/hello
-// lesen, mit client/goodbye verabschieden. Spielt nichts ab und meldet sich
-// nicht als Player an.
+// Sendspin-Probe: Handshake mit einem echten Sendspin-Server, server/hello
+// lesen, als Player anmelden (client/hello, nicht verfügbar), einige Sekunden
+// verbunden bleiben und mit client/goodbye verabschieden. Spielt nichts ab.
 //
-//   probe ws://<server>:8927/sendspin <schlüsseldatei>
+//   probe ws://<server>:8927/sendspin <schlüsseldatei> [name] [sekunden]
 //
 // Die Schlüsseldatei hält den privaten X25519-Schlüssel (32 Bytes) und wird
 // beim ersten Lauf angelegt -- ausserhalb des Repos ablegen.
@@ -17,8 +17,8 @@
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
-    if (argc != 3) {
-        std::fprintf(stderr, "Aufruf: %s ws://<server>:8927/sendspin <schlüsseldatei>\n", argv[0]);
+    if (argc < 3 || argc > 5) {
+        std::fprintf(stderr, "Aufruf: %s ws://<server>:8927/sendspin <schlüsseldatei> [name] [sekunden]\n", argv[0]);
         return 2;
     }
     QFile keyFile(QString::fromLocal8Bit(argv[2]));
@@ -36,6 +36,9 @@ int main(int argc, char **argv)
     }
 
     SendspinClient client;
+    if (argc > 3)
+        client.setPlayerName(QString::fromLocal8Bit(argv[3]));
+    const int stayMs = argc > 4 ? QByteArray(argv[4]).toInt() * 1000 : 1500;
     int result = 1;
     QObject::connect(&client, &SendspinClient::log, [](const QString &line) {
         std::printf("%s\n", qPrintable(line));
@@ -44,8 +47,8 @@ int main(int argc, char **argv)
     QObject::connect(&client, &SendspinClient::serverHelloReceived, [&](const QJsonObject &) {
         std::printf("ERFOLG: server/hello von \"%s\"\n", qPrintable(client.serverName()));
         result = 0;
-        // Kurz warten, ob noch etwas kommt (z. B. server/activate), dann gehen.
-        QTimer::singleShot(1500, [&]() {
+        // Verbunden bleiben (server/activate, Player in MA sichtbar), dann gehen.
+        QTimer::singleShot(stayMs, [&]() {
             client.close();
             QTimer::singleShot(500, &app, &QCoreApplication::quit);
         });
@@ -54,7 +57,7 @@ int main(int argc, char **argv)
         if (client.state() == SendspinClient::Failed)
             QTimer::singleShot(0, &app, &QCoreApplication::quit);
     });
-    QTimer::singleShot(40000, &app, &QCoreApplication::quit);
+    QTimer::singleShot(40000 + stayMs, &app, &QCoreApplication::quit);
     client.open(QUrl(QString::fromLocal8Bit(argv[1])), key);
     app.exec();
     return result;

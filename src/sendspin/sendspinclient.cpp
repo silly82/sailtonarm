@@ -2,7 +2,9 @@
 
 #include <QDir>
 #include <QFile>
+#include <QJsonArray>
 #include <QJsonDocument>
+#include <QSettings>
 #include <QStandardPaths>
 
 namespace {
@@ -13,6 +15,10 @@ const char SentinelLabel[] = "sendspin-sentinel-psk-v1";
 const char PskIdLabel[] = "sendspin-psk-id-v1";
 // Frist je erwarteter Handshake-Nachricht; die Spezifikation schlägt 30 s vor.
 const int HandshakeTimeoutMs = 30000;
+// Grenze für ausstehende Audio-Chunks (player@v1, buffer_capacity). Solange
+// noch nichts abgespielt wird (bis Stufe 5c), nur ein vernünftiger Wert.
+const int BufferCapacity = 1024 * 1024;
+const char PlayerRole[] = "player@v1";
 
 QByteArray compact(const QJsonObject &obj)
 {
@@ -41,6 +47,8 @@ void SendspinClient::open(const QUrl &url, const QByteArray &privateKey)
     m_privateKey = privateKey;
     m_noise.reset();
     m_serverName.clear();
+    m_activeRoles.clear();
+    m_droppedChunks = 0;
     setState(Connecting);
     emit log(QStringLiteral("verbinde mit %1").arg(url.toString()));
     m_timeout.start();
@@ -79,6 +87,31 @@ void SendspinClient::openForServer(const QString &maBaseUrl)
     open(url, key);
 }
 
+void SendspinClient::setPlayerName(const QString &name)
+{
+    const QString trimmed = name.trimmed();
+    if (trimmed == m_playerName)
+        return;
+    m_playerName = trimmed;
+    emit playerNameChanged();
+}
+
+QString SendspinClient::effectivePlayerName() const
+{
+    return m_playerName.isEmpty() ? defaultPlayerName() : m_playerName;
+}
+
+QString SendspinClient::defaultPlayerName()
+{
+    // Gerätename aus /etc/hw-release, z. B. NAME="Jolla Jolla Phone"; das
+    // doppelte Herstellerwort fällt weg.
+    QSettings hw(QStringLiteral("/etc/hw-release"), QSettings::IniFormat);
+    QStringList words = hw.value(QStringLiteral("NAME")).toString().split(QLatin1Char(' '), QString::SkipEmptyParts);
+    if (words.size() > 1 && words.at(0) == words.at(1))
+        words.removeFirst();
+    return words.isEmpty() ? QStringLiteral("Sailfish OS") : words.join(QLatin1Char(' '));
+}
+
 void SendspinClient::close(const QString &reason)
 {
     if (m_state == Encrypted && m_noise) {
@@ -92,6 +125,10 @@ void SendspinClient::close(const QString &reason)
     }
     m_timeout.stop();
     m_socket.close();
+    if (!m_activeRoles.isEmpty()) {
+        m_activeRoles.clear();
+        emit activated();
+    }
     setState(Idle);
 }
 
@@ -136,6 +173,10 @@ void SendspinClient::onDisconnected()
              : m_socket.closeReason());
     else if (m_state == Encrypted)
         setState(Idle);
+    if (!m_activeRoles.isEmpty()) {
+        m_activeRoles.clear();
+        emit activated();
+    }
     emit log(QStringLiteral("getrennt (Code %1)").arg(int(m_socket.closeCode())));
 }
 
@@ -219,20 +260,112 @@ void SendspinClient::onBinary(const QByteArray &data)
         fail(QStringLiteral("Entschlüsselung fehlgeschlagen"));
         return;
     }
-    // Typ 0: JSON. Fragmente (1) und Rollen-Daten kommen ab Stufe 5c.
+    // Typ 0: JSON. Alles andere sind Rollen-Daten (Audio-Chunks usw.) oder
+    // Fragmente; bis Stufe 5c nur zählen und verwerfen, nicht abspielen.
     if (plain.at(0) != 0) {
-        emit log(QStringLiteral("<- Binärtyp %1, %2 Bytes").arg(int(quint8(plain.at(0)))).arg(plain.size()));
+        if (m_droppedChunks++ == 0)
+            emit log(QStringLiteral("<- Binärtyp %1, wird verworfen (noch kein Ton)").arg(int(quint8(plain.at(0)))));
         return;
     }
     const QJsonObject msg = QJsonDocument::fromJson(plain.mid(1)).object();
+    emit log(QStringLiteral("<- %1 (verschlüsselt): %2").arg(msg.value(QStringLiteral("type")).toString(),
+                                                            QString::fromUtf8(plain.mid(1))));
+    handleMessage(msg);
+    emit message(msg);
+}
+
+void SendspinClient::handleMessage(const QJsonObject &msg)
+{
     const QString type = msg.value(QStringLiteral("type")).toString();
-    emit log(QStringLiteral("<- %1 (verschlüsselt): %2").arg(type, QString::fromUtf8(plain.mid(1))));
+    const QJsonObject payload = msg.value(QStringLiteral("payload")).toObject();
     if (type == QLatin1String("server/hello")) {
         m_timeout.stop();
-        m_serverName = msg.value(QStringLiteral("payload")).toObject().value(QStringLiteral("name")).toString();
-        emit serverHelloReceived(msg.value(QStringLiteral("payload")).toObject());
+        m_serverName = payload.value(QStringLiteral("name")).toString();
+        emit serverHelloReceived(payload);
+        sendHello();
+    } else if (type == QLatin1String("server/activate")) {
+        // active_roles bleibt bestehen, wenn eine spätere Aktivierung es weglässt.
+        if (payload.contains(QStringLiteral("active_roles"))) {
+            m_activeRoles.clear();
+            for (const QJsonValue &role : payload.value(QStringLiteral("active_roles")).toArray())
+                m_activeRoles.append(role.toString());
+        }
+        emit log(QStringLiteral("aktive Rollen: %1").arg(m_activeRoles.isEmpty()
+                 ? QStringLiteral("keine") : m_activeRoles.join(QStringLiteral(", "))));
+        emit activated();
+        if (!m_activeRoles.isEmpty())
+            sendState();
+    } else if (type == QLatin1String("stream/start") || type == QLatin1String("stream/end")) {
+        if (m_droppedChunks > 0)
+            emit log(QStringLiteral("%1 Binärnachrichten verworfen").arg(m_droppedChunks));
+        m_droppedChunks = 0;
     }
-    emit message(msg);
+}
+
+void SendspinClient::sendHello()
+{
+    QJsonObject device;
+    device.insert(QStringLiteral("product_name"), defaultPlayerName());
+#ifdef APP_VERSION
+    device.insert(QStringLiteral("software_version"), QStringLiteral("Tonarm " APP_VERSION));
+#endif
+
+    QJsonObject pcm;
+    pcm.insert(QStringLiteral("codec"), QStringLiteral("pcm"));
+    pcm.insert(QStringLiteral("channels"), 2);
+    pcm.insert(QStringLiteral("sample_rate"), 48000);
+    pcm.insert(QStringLiteral("bit_depth"), 16);
+    QJsonObject pcm44 = pcm;
+    pcm44.insert(QStringLiteral("sample_rate"), 44100);
+    QJsonObject player;
+    player.insert(QStringLiteral("supported_formats"), QJsonArray { pcm, pcm44 });
+    player.insert(QStringLiteral("buffer_capacity"), BufferCapacity);
+    // Ältere Fassung (aiosendspin 9.1.1 in MA 2.10.4) verlangt das Feld hier;
+    // neuere Server lesen es noch als Altlast.
+    player.insert(QStringLiteral("supported_commands"), QJsonArray());
+
+    // Pflichtangabe; das Pairing selbst kommt erst mit Stufe 5b. Als Liste in
+    // der älteren Form: MA 2.10.4 kennt nur sie, neuere Server nehmen beide.
+    QJsonObject pairingPsk;
+    pairingPsk.insert(QStringLiteral("method"), QStringLiteral("pairing_psk"));
+    const QJsonArray pairMethods { pairingPsk };
+    QJsonObject unpaired;
+    unpaired.insert(QStringLiteral("enabled"), true);
+
+    QJsonObject payload;
+    payload.insert(QStringLiteral("name"), effectivePlayerName());
+    payload.insert(QStringLiteral("device_info"), device);
+    payload.insert(QStringLiteral("supported_roles"), QJsonArray { QLatin1String(PlayerRole) });
+    payload.insert(QStringLiteral("player@v1_support"), player);
+    payload.insert(QStringLiteral("supported_pair_methods"), pairMethods);
+    payload.insert(QStringLiteral("unpaired_access"), unpaired);
+    QJsonObject hello;
+    hello.insert(QStringLiteral("type"), QStringLiteral("client/hello"));
+    hello.insert(QStringLiteral("payload"), payload);
+    sendJson(hello);
+    emit log(QStringLiteral("client/hello als „%1“").arg(effectivePlayerName()));
+}
+
+void SendspinClient::sendState()
+{
+    QJsonObject player;
+    player.insert(QStringLiteral("volume"), 100);
+    player.insert(QStringLiteral("muted"), false);
+    // static_delay_ms ist der ältere Name von output_delay_ms; MA 2.10.4
+    // kennt nur ihn, neuere Server übersetzen ihn.
+    player.insert(QStringLiteral("static_delay_ms"), 0);
+    player.insert(QStringLiteral("required_lead_time_ms"), 500);
+    player.insert(QStringLiteral("min_buffer_ms"), 500);
+    QJsonObject payload;
+    // Bis Stufe 5c gibt es keinen Ton, also auch nicht verfügbar: so schickt
+    // Music Assistant keine Musik an einen stummen Player.
+    payload.insert(QStringLiteral("available"), false);
+    payload.insert(QStringLiteral("player"), player);
+    QJsonObject state;
+    state.insert(QStringLiteral("type"), QStringLiteral("client/state"));
+    state.insert(QStringLiteral("payload"), payload);
+    sendJson(state);
+    emit log(QStringLiteral("client/state (nicht verfügbar, noch kein Ton)"));
 }
 
 void SendspinClient::setState(State state)
@@ -249,6 +382,10 @@ void SendspinClient::fail(const QString &why)
     m_lastError = why;
     emit lastErrorChanged();
     emit log(QStringLiteral("Fehler: %1").arg(why));
+    if (!m_activeRoles.isEmpty()) {
+        m_activeRoles.clear();
+        emit activated();
+    }
     setState(Failed);
     m_socket.abort();
 }

@@ -455,12 +455,32 @@ Page {
                 text: qsTr("Sendspin")
                 visible: SendspinAvailable
             }
+            TextField {
+                id: sendspinNameField
+                width: parent.width
+                visible: SendspinAvailable
+                label: qsTr("Name als Player")
+                placeholderText: SendspinAvailable ? Sendspin.defaultPlayerName : ""
+                description: qsTr("So erscheint das Telefon in Music Assistant. Leer lassen für den Gerätenamen.")
+                text: sendspinNameSetting.value
+                EnterKey.iconSource: "image://theme/icon-m-enter-close"
+                EnterKey.onClicked: focus = false
+                onActiveFocusChanged: if (!activeFocus) sendspinNameSetting.value = text.trim()
+            }
+            ConfigurationValue {
+                id: sendspinNameSetting
+                key: "/apps/harbour-tonarm/sendspinName"
+                defaultValue: ""
+            }
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: qsTr("Verbindung testen")
+                text: qsTr("Als Player anmelden")
                 visible: SendspinAvailable
                 enabled: Credentials.baseUrl.length > 0
-                onClicked: pageStack.push(Qt.resolvedUrl("SendspinTestPage.qml"))
+                onClicked: {
+                    sendspinNameSetting.value = sendspinNameField.text.trim()
+                    pageStack.push(Qt.resolvedUrl("SendspinTestPage.qml"))
+                }
             }
 
             Item { width: 1; height: Theme.paddingLarge }

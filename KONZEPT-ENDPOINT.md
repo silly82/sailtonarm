@@ -321,3 +321,38 @@ OpenRepos-Variante kommt, zuerst prüfen, ob MA 2.10.4 eine Sentinel-Sitzung
 ohne Pairing überhaupt als Player annimmt ("unpaired access"). Dann käme 5c
 (Ton) vor 5b.
 
+
+## 10. Registrierung als Player (2026-10-15)
+
+**Ja, MA 2.10.4 nimmt eine Sentinel-Sitzung ohne Pairing als Player an.** Damit
+kommt 5c (Ton) vor 5b (Pairing).
+
+Ablauf: nach `server/hello` schickt das Telefon `client/hello` mit dem Namen aus
+den Einstellungen ("Name als Player", leer heisst Gerätename aus
+`/etc/hw-release`), der Rolle `player@v1` (PCM 16 Bit stereo, 48 und 44,1 kHz)
+und `unpaired_access.enabled: true`. Der Server antwortet zuerst mit
+`server/activate` ohne Rollen, kurz darauf mit `active_roles: ["player@v1"]`.
+Das Telefon meldet `client/state` mit `available: false`: Solange es keinen Ton
+gibt, soll Music Assistant keine Musik an einen stummen Player schicken. In
+Music Assistant erscheint der Player unter dem gewählten Namen und wird beim
+Abmelden "nicht verfügbar". Audio-Chunks, die trotzdem kämen, werden gezählt
+und verworfen.
+
+**Ältere Fassung des Protokolls:** MA 2.10.4 bringt aiosendspin 9.1.1 mit. Der
+erste Versuch nach der aktuellen Spezifikation scheiterte mit "Malformed
+client/hello". Drei Felder haben dort noch die ältere Form, und neuere Server
+nehmen sie weiterhin an (als Altlast markiert):
+
+| Feld | aktuelle Spezifikation | MA 2.10.4 (gesendet) |
+|---|---|---|
+| `supported_pair_methods` | Objekt, nach Methode | Liste von `{method: …}` |
+| `player@v1_support.supported_commands` | gehört in `client/state` | Pflicht in `client/hello` |
+| Verzögerung in `client/state` | `output_delay_ms` | `static_delay_ms` |
+
+In der App: Einstellungen → Sendspin → "Als Player anmelden". Die Verbindung
+bleibt, solange die Seite offen ist. Die Probe (`tests/sendspin/probe.cpp`)
+nimmt Namen und Dauer als weitere Argumente.
+
+**Bleibt im Server:** Music Assistant merkt sich angemeldete Player auch nach
+dem Abmelden. Testnamen lassen sich in Music Assistant unter Einstellungen →
+Player wieder entfernen.

@@ -1682,6 +1682,14 @@ Recorded with Sailfish Silica on a Jolla Phone</translation>
         <source>Verbinde …</source>
         <translation>Connecting …</translation>
     </message>
+    <message>
+        <source>Als Player „%1“ bei „%2“ angemeldet. Noch ohne Ton; der Player bleibt nicht verfügbar.</source>
+        <translation>Registered as player “%1” with “%2”. No audio yet, so the player stays unavailable.</translation>
+    </message>
+    <message>
+        <source>Beim Verlassen der Seite meldet sich das Telefon wieder ab.</source>
+        <translation>Leaving this page unregisters the phone again.</translation>
+    </message>
 </context>
 <context>
     <name>SettingsPage</name>
@@ -1914,8 +1922,16 @@ Recorded with Sailfish Silica on a Jolla Phone</translation>
         <translation>Sendspin</translation>
     </message>
     <message>
-        <source>Verbindung testen</source>
-        <translation>Test connection</translation>
+        <source>Name als Player</source>
+        <translation>Player name</translation>
+    </message>
+    <message>
+        <source>So erscheint das Telefon in Music Assistant. Leer lassen für den Gerätenamen.</source>
+        <translation>How the phone shows up in Music Assistant. Leave empty to use the device name.</translation>
+    </message>
+    <message>
+        <source>Als Player anmelden</source>
+        <translation>Register as player</translation>
     </message>
 </context>
 <context>

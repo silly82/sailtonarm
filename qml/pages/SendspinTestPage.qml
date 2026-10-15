@@ -1,30 +1,29 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
+import Nemo.Configuration 1.0
 
-// Stufe 5a, nur in der OpenRepos-Variante (KONZEPT.md Abschnitt 38): der
-// verschlüsselte Sendspin-Handshake mit dem Server, ohne Ton. Zeigt das
-// Protokoll der Verbindung; am Ende verabschiedet sich die App wieder.
+// Nur in der OpenRepos-Variante (KONZEPT.md Abschnitt 38): verschlüsselter
+// Sendspin-Handshake und Anmeldung als Player unter dem eingestellten Namen.
+// Noch ohne Ton (Stufe 5c), deshalb meldet sich der Player als nicht
+// verfügbar. Die Verbindung bleibt, solange die Seite offen ist.
 Page {
     id: page
 
-    property bool done: false
+    readonly property bool registered: Sendspin.activeRoles.indexOf("player@v1") >= 0
 
-    Connections {
-        target: Sendspin
-        onServerHelloReceived: closeTimer.start()
+    ConfigurationValue {
+        id: nameSetting
+        key: "/apps/harbour-tonarm/sendspinName"
+        defaultValue: ""
     }
 
-    // Kurz verbunden bleiben, falls der Server noch etwas schickt, dann gehen.
-    Timer {
-        id: closeTimer
-        interval: 1500
-        onTriggered: {
-            Sendspin.close()
-            page.done = true
-        }
+    function connect() {
+        Sendspin.close()
+        Sendspin.playerName = nameSetting.value
+        Sendspin.openForServer(Credentials.baseUrl)
     }
 
-    Component.onCompleted: Sendspin.openForServer(Credentials.baseUrl)
+    Component.onCompleted: connect()
     Component.onDestruction: Sendspin.close()
 
     SilicaFlickable {
@@ -34,11 +33,7 @@ Page {
         PullDownMenu {
             MenuItem {
                 text: qsTr("Erneut versuchen")
-                onClicked: {
-                    page.done = false
-                    Sendspin.close()
-                    Sendspin.openForServer(Credentials.baseUrl)
-                }
+                onClicked: page.connect()
             }
         }
 
@@ -54,11 +49,25 @@ Page {
                 width: parent.width - 2 * Theme.horizontalPageMargin
                 wrapMode: Text.Wrap
                 color: Theme.highlightColor
-                text: Sendspin.serverName.length > 0
-                      ? qsTr("Verschlüsselt verbunden mit „%1“.").arg(Sendspin.serverName)
-                      : Sendspin.state === 4 /* Failed */
-                        ? qsTr("Fehlgeschlagen: %1").arg(Sendspin.lastError)
-                        : qsTr("Verbinde …")
+                text: page.registered
+                      ? qsTr("Als Player „%1“ bei „%2“ angemeldet. Noch ohne Ton; der Player bleibt nicht verfügbar.")
+                        .arg(Sendspin.playerName.length > 0 ? Sendspin.playerName : Sendspin.defaultPlayerName)
+                        .arg(Sendspin.serverName)
+                      : Sendspin.serverName.length > 0
+                        ? qsTr("Verschlüsselt verbunden mit „%1“.").arg(Sendspin.serverName)
+                        : Sendspin.state === 4 /* Failed */
+                          ? qsTr("Fehlgeschlagen: %1").arg(Sendspin.lastError)
+                          : qsTr("Verbinde …")
+            }
+
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * Theme.horizontalPageMargin
+                wrapMode: Text.Wrap
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryHighlightColor
+                visible: page.registered
+                text: qsTr("Beim Verlassen der Seite meldet sich das Telefon wieder ab.")
             }
 
             Label {
