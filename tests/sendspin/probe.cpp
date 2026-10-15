@@ -1,7 +1,8 @@
 // Sendspin-Probe: Handshake mit einem echten Sendspin-Server, server/hello
 // lesen, als Player anmelden (client/hello, nicht verfügbar), die Uhr
 // abgleichen, einige Sekunden verbunden bleiben und mit client/goodbye
-// verabschieden. Meldet sich nie verfügbar, spielt also nichts ab.
+// verabschieden. Meldet sich nur mit SENDSPIN_PLAY=1 verfügbar und spielt dann,
+// was der Server schickt; SENDSPIN_AUDIO_TRACE=1 protokolliert die Ausgabe.
 //
 //   probe ws://<server>:8927/sendspin <schlüsseldatei> [name] [sekunden]
 //
@@ -39,6 +40,8 @@ int main(int argc, char **argv)
     SendspinClient client;
     if (argc > 3)
         client.setPlayerName(QString::fromLocal8Bit(argv[3]));
+    // SENDSPIN_PLAY=1: als Lautsprecher verfügbar melden und abspielen.
+    client.setPlaybackEnabled(qEnvironmentVariableIsSet("SENDSPIN_PLAY"));
     const int stayMs = argc > 4 ? QByteArray(argv[4]).toInt() * 1000 : 1500;
     int result = 1;
     QObject::connect(&client, &SendspinClient::log, [](const QString &line) {

@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
 #include <ctime>
 #include <vector>
@@ -12,13 +13,23 @@
 namespace {
 
 const int BlockMs = 10;
-// Innerhalb dieses Bands bleibt die Ausgabe unverändert (Vorlage: ~100 µs).
-const double DeadBandUs = 100.0;
-// Darüber wird nicht mehr Frame für Frame korrigiert, sondern einmalig.
-const double ResyncUs = 5000.0;
-// Glättung der gemessenen Abweichung; die Latenz von PulseAudio schwankt
-// von Block zu Block um einige 100 µs.
-const double Smoothing = 0.05;
+// Innerhalb dieses Bands bleibt die Ausgabe unverändert. Die Vorlage nimmt
+// ~100 µs; hier pendelte die geglättete Abweichung dann ständig über die
+// Grenze und es wurde rund 50-mal je Sekunde ein Frame korrigiert.
+const double DeadBandUs = 1000.0;
+// Liegt die geglättete Abweichung darüber, wird nicht mehr Frame für Frame
+// korrigiert, sondern einmalig neu ausgerichtet (mit hörbarem Sprung).
+const double ResyncUs = 50000.0;
+// Glättung der gemessenen Abweichung, je Block (Zeitkonstante etwa 10 s).
+// Auf sink.deep_buffer driftet die von PulseAudio gemeldete Latenz um etwa
+// 2 ms/s und springt alle paar Sekunden um rund 13 ms zurück; der Lautsprecher
+// selbst läuft gleichmäßig. Erst über mehrere solcher Zyklen gemittelt
+// bleibt die echte Abweichung übrig.
+const double Smoothing = 0.001;
+
+// Mit SENDSPIN_AUDIO_TRACE=1 schreibt die Ausgabe je Block eine Zeile nach
+// stderr (nur für die Probe, zur Fehlersuche).
+const bool Trace = std::getenv("SENDSPIN_AUDIO_TRACE") != nullptr;
 
 } // namespace
 
@@ -195,37 +206,24 @@ void AudioOutput::fill(qint16 *out, int frames, qint64 playAtUs)
 
         const qint64 here = playAtUs + qint64(written) * 1000000 / m_rate;
         const double error = double(scheduledUs() - here); // + zu früh
-        if (!m_synced || std::fabs(error) > ResyncUs) {
-            if (m_synced)
-                ++m_stats.resyncs;
-            const int skip = usToFrames(-error);
-            if (skip > 0) {
-                // Zu spät: vorne überspringen, dann neu messen.
-                m_pos += skip;
-                m_synced = false;
-                continue;
-            }
-            m_synced = true;
-            m_smoothedError = 0.0;
-            measured = true;
-            const int silence = std::min(frames - written, usToFrames(error));
-            if (silence > 0) {
-                // Zu früh: Stille bis zum Termin.
-                written += silence;
-                continue;
-            }
-        } else if (!measured) {
+        if (m_synced && !measured) {
             // Einmal je Block messen und höchstens um einen Frame korrigieren:
             // 0,2 %, unter der Grenze von 0,5 % aus der Spezifikation.
             measured = true;
             m_smoothedError += Smoothing * (error - m_smoothedError);
-            if (m_smoothedError < -DeadBandUs) {
+            if (Trace)
+                std::fprintf(stderr, "T %lld lat=%lld err=%.0f sm=%.0f q=%d\n",
+                             (long long)nowUs(), (long long)(playAtUs - nowUs()), error,
+                             m_smoothedError, int(m_queue.size()));
+            if (std::fabs(m_smoothedError) > ResyncUs) {
+                ++m_stats.resyncs;
+                m_synced = false;
+            } else if (m_smoothedError < -DeadBandUs) {
                 ++m_pos;            // zu spät: einen Frame weglassen
                 ++m_stats.dropped;
                 m_smoothedError += 1000000.0 / m_rate;
                 continue;
-            }
-            if (m_smoothedError > DeadBandUs) {
+            } else if (m_smoothedError > DeadBandUs) {
                 // zu früh: den nächsten Frame doppelt ausgeben
                 const qint16 *src = reinterpret_cast<const qint16 *>(m_queue.front().pcm.constData())
                         + m_pos * ch;
@@ -234,6 +232,29 @@ void AudioOutput::fill(qint16 *out, int frames, qint64 playAtUs)
                 ++m_stats.duplicated;
                 m_smoothedError -= 1000000.0 / m_rate;
             }
+        }
+        if (!m_synced) {
+            // Nach Start, Leerlauf oder großer Abweichung: Lage neu festlegen.
+            if (Trace)
+                std::fprintf(stderr, "R %lld err=%.0f\n", (long long)nowUs(), error);
+            const int skip = usToFrames(-error);
+            if (skip > 0) {
+                // Zu spät: vorne überspringen, dann neu messen.
+                m_pos += skip;
+                continue;
+            }
+            const int silence = usToFrames(error);
+            if (silence > 0) {
+                // Zu früh: Stille bis zum Termin. Reicht der Block dafür nicht,
+                // bleibt die Lage offen und der nächste Block misst neu.
+                const int n = std::min(frames - written, silence);
+                written += n;
+                if (n < silence)
+                    return;
+            }
+            m_synced = true;
+            m_smoothedError = 0.0;
+            measured = true;
         }
 
         const Chunk &c = m_queue.front();

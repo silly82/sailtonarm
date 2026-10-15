@@ -1,4 +1,4 @@
-# Stufe-5a-Probe, nur für den Rechner (i486-Bauziel), nicht Teil der App.
+# Sendspin-Probe für Rechner (i486) oder Telefon (aarch64), nicht Teil der App.
 # Bauen: siehe Kopf von probe.cpp und docs/DEVELOPMENT.md.
 TEMPLATE = app
 TARGET = probe

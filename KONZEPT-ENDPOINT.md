@@ -357,7 +357,7 @@ nimmt Namen und Dauer als weitere Argumente.
 dem Abmelden. Testnamen lassen sich in Music Assistant unter Einstellungen →
 Player wieder entfernen.
 
-## 11. Stufe 5c: Ton (2026-10-15, im Bau)
+## 11. Stufe 5c: Ton (2026-10-15)
 
 **Code:**
 
@@ -368,8 +368,8 @@ Player wieder entfernen.
 - `AudioOutput` -- PulseAudio (`libpulse-simple`, nur OpenRepos-Variante) in
   einem eigenen Thread, Blöcke zu 10 ms, `media.role=music`. Korrektur nach der
   Vorlage der Spezifikation: höchstens ein Frame je Block weglassen oder
-  verdoppeln (0,2 %), ab 5 ms einmalig neu ausrichten (Stille oder
-  überspringen). Lautstärke als Amplitude (v/100)^1,5.
+  verdoppeln (0,2 %), bei grosser Abweichung einmalig neu ausrichten (Stille
+  oder überspringen). Lautstärke als Amplitude (v/100)^1,5.
 - Verfügbar meldet sich der Player nur mit dem Schalter "Als Lautsprecher
   verfügbar" und erst nach fünf Uhrmessungen. Angeboten wird nur PCM 48 kHz
   stereo 16 Bit; andere Raten rechnet der Server um.
@@ -385,6 +385,26 @@ Player wieder entfernen.
 **Gemessen** (Probe vom Rechner, WLAN/LAN): Filter nach 2 Messungen
 abgeglichen, Fehler danach 0,6-0,7 ms.
 
-**Offen:** Wiedergabe auf dem Telefon (braucht eine ausdrückliche Zustimmung zum
-Test mit Ton), Genauigkeit der Latenzangabe von PulseAudio, Verhalten bei
-Anruf, Kopfhörerwechsel und Bildschirm aus.
+**Auf dem Telefon** (Jolla Phone, SFOS 5.2): Ton läuft und klingt sauber.
+PulseAudio legt den Strom auf `sink.deep_buffer`; dessen Latenzangabe ist ein
+Sägezahn um 200-290 ms, Daten nimmt er in Schüben von etwa 85 ms an. Die
+Abweichung je Block schwankt dadurch um ±25 ms, obwohl der Lautsprecher
+gleichmässig läuft. Folgerungen für `AudioOutput`:
+
+- Abweichung über etwa 10 s mitteln (0,001 je Block), Totband 1 ms, neu
+  ausrichten erst ab 50 ms gemittelt. Mit den Werten der Vorlage (100 µs,
+  5 ms, schnelle Glättung) knackte es: rund einmal je Sekunde neu
+  ausgerichtet.
+- Fehler der ersten Fassung: Stille zum Ausrichten wurde nur bis zum Ende des
+  Blocks (10 ms) eingefügt und die Lage trotzdem als fest betrachtet. Bei
+  mehr nötiger Stille folgte Block für Block die nächste Ausrichtung, also
+  eine Kette kurzer Lücken.
+- Ergebnis über 40 s: 0 Ausrichtungen, gemittelte Abweichung unter 0,5 ms.
+
+Zur Fehlersuche lässt sich die Probe fürs Telefon bauen (aarch64-Ziel) und
+dort ausführen: `SENDSPIN_PLAY=1` meldet sie verfügbar, mit
+`SENDSPIN_AUDIO_TRACE=1` schreibt `AudioOutput` je Block eine Zeile nach
+stderr.
+
+**Offen:** Verhalten bei Anruf, Kopfhörerwechsel und Bildschirm aus;
+Abspielen ausserhalb der Testseite.
