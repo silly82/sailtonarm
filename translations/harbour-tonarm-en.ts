@@ -1707,8 +1707,8 @@ Recorded with Sailfish Silica on a Jolla Phone</translation>
         <translation>Available as speaker</translation>
     </message>
     <message>
-        <source>Spielt, Lautstärke %1 %%2</source>
-        <translation>Playing, volume %1 %%2</translation>
+        <source>Spielt, Lautstärke %1 %%2. Die Lautstärketasten stellen sie.</source>
+        <translation>Playing, volume %1 %%2. The volume keys adjust it.</translation>
     </message>
     <message>
         <source>, stumm</source>

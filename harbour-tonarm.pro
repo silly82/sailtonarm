@@ -63,6 +63,7 @@ DISTFILES += qml/harbour-tonarm.qml \
     qml/components/VolumeSlider.qml \
     qml/components/DemoConnection.qml \
     qml/components/VinylRecord.qml \
+    qml/components/SendspinVolumeKeys.qml \
     qml/lib/MassApi.js \
     qml/lib/MassModels.js \
     qml/lib/Navigate.js \

@@ -25,6 +25,13 @@ Page {
         Sendspin.openForServer(Credentials.baseUrl)
     }
 
+    // Per URL geladen, damit die Seite selbst nichts aus Nemo.Policy importiert.
+    Loader {
+        active: Sendspin.streaming
+        source: "../components/SendspinVolumeKeys.qml"
+        onLoaded: item.active = true
+    }
+
     Component.onCompleted: connect()
     Component.onDestruction: {
         Sendspin.playbackEnabled = false
@@ -79,7 +86,7 @@ Page {
                 visible: page.registered
                 text: qsTr("Als Lautsprecher verfügbar")
                 description: Sendspin.available
-                             ? (Sendspin.streaming ? qsTr("Spielt, Lautstärke %1 %%2").arg(Sendspin.volume)
+                             ? (Sendspin.streaming ? qsTr("Spielt, Lautstärke %1 %%2. Die Lautstärketasten stellen sie.").arg(Sendspin.volume)
                                                      .arg(Sendspin.muted ? qsTr(", stumm") : "")
                                                    : qsTr("Verfügbar. In Music Assistant auswählen, dann spielt das Telefon."))
                              : Sendspin.playbackEnabled ? qsTr("Uhr wird abgeglichen …")

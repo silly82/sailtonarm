@@ -69,6 +69,12 @@ Bibliothek, Suche und Warteschlange folgen in den nächsten Ausbaustufen
 # Harbours rpmlint über ein ungestripptes Binary.
 %{__strip} %{buildroot}%{_bindir}/%{name}
 
+# Die Lautstärketasten brauchen Nemo.Policy, das Harbour nicht erlaubt; die
+# Datei wird nur von der Sendspin-Testseite geladen.
+%if %{without sendspin}
+rm %{buildroot}%{_datadir}/%{name}/qml/components/SendspinVolumeKeys.qml
+%endif
+
 desktop-file-install --delete-original       \
   --dir %{buildroot}%{_datadir}/applications             \
    %{buildroot}%{_datadir}/applications/*.desktop
