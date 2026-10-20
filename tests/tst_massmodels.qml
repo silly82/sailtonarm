@@ -94,6 +94,7 @@ TestCase {
         return [
             { tag: "FLAC", f: fmt("flac", 96000, 24), out: "FLAC · 24 bit · 96 kHz" },
             { tag: "ALAC Komma", f: fmt("m4a", 44100, 16, 0, "alac"), dp: ",", out: "ALAC · 16 bit · 44,1 kHz" },
+            { tag: "Ausgabe mit ?", f: fmt("flac", 96000, 24, 3442, "?"), out: "FLAC · 24 bit · 96 kHz" },
             { tag: "PCM", f: fmt("pcm_s16le", 44100, 16), out: "PCM · 16 bit · 44.1 kHz" },
             { tag: "AAC", f: fmt("aac", 44100, 16, 288), out: "AAC · 288 kbit/s" },
             { tag: "unbekannt", f: fmt("unknown", 44100, 16), out: "" }
