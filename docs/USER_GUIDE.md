@@ -94,6 +94,11 @@ play-pause / next and the volume. The volume changes while you drag.
   previous within the first five seconds of a chapter goes to the one before.
 - The background takes on the **colours of the artwork** (can be switched
   off).
+- Below the title is the **sound quality** that reaches the speaker:
+  *Hi-Res* (lossless, more than 16 bit or 48 kHz), *Lossless*, *HQ* (lossy
+  from 256 kbit/s) or *LQ*. Tap it to see the source format and what the
+  server sends to the speaker; AirPlay, for example, converts Hi-Res down to
+  16 bit / 44.1 kHz.
 
 In the **pulley menu**:
 

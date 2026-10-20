@@ -1045,6 +1045,18 @@ Recorded with Sailfish Silica on a Jolla Phone</translation>
         <source>Zurück in die Hülle.</source>
         <translation>Back in the sleeve.</translation>
     </message>
+    <message>
+        <source>Quelle: %1</source>
+        <translation>Source: %1</translation>
+    </message>
+    <message>
+        <source>Zum Lautsprecher: %1</source>
+        <translation>To the speaker: %1</translation>
+    </message>
+    <message>
+        <source>Zum Lautsprecher: keine Angabe vom Server</source>
+        <translation>To the speaker: not reported by the server</translation>
+    </message>
 </context>
 <context>
     <name>PlayerPickerPage</name>

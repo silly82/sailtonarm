@@ -19,6 +19,10 @@ Page {
     readonly property var queue: store ? store.queueOf(playerId) : null
     readonly property var track: Models.nowPlaying(player, queue, mass ? mass.activeBaseUrl : "")
     readonly property bool playing: Models.isPlaying(player)
+    // Klangqualität dessen, was bei diesem Lautsprecher ankommt; null ohne
+    // Angaben vom Server.
+    readonly property var quality: Models.audioQuality(queue ? queue.current_item : null, playerId)
+    property bool qualityDetails: false
 
     allowedOrientations: defaultAllowedOrientations
 
@@ -368,6 +372,55 @@ Page {
                     color: Theme.secondaryColor
                     visible: page.track && page.track.album.length > 0
                     text: page.track ? page.track.album : ""
+                }
+
+                // Qualität als kleines Schild; Antippen zeigt Quelle und
+                // Ausgabe des Servers für diesen Player.
+                Rectangle {
+                    id: qualityBadge
+                    visible: page.quality !== null
+                    width: qualityLabel.implicitWidth + 2 * Theme.paddingSmall
+                    height: qualityLabel.implicitHeight + Theme.paddingSmall
+                    radius: Theme.paddingSmall / 2
+                    color: "transparent"
+                    border.width: Math.max(1, Math.round(Theme.pixelRatio))
+                    border.color: qualityLabel.color
+
+                    Label {
+                        id: qualityLabel
+                        anchors.centerIn: parent
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        font.bold: true
+                        color: qualityArea.pressed ? Theme.highlightColor
+                             : (page.quality && (page.quality.level === "hires" || page.quality.level === "lossless"))
+                               ? Theme.highlightColor : Theme.secondaryColor
+                        text: page.quality ? page.quality.label : ""
+                    }
+
+                    MouseArea {
+                        id: qualityArea
+                        anchors { fill: parent; margins: -Theme.paddingMedium }
+                        onClicked: page.qualityDetails = !page.qualityDetails
+                    }
+                }
+
+                Label {
+                    width: parent.width
+                    wrapMode: Text.Wrap
+                    font.pixelSize: Theme.fontSizeExtraSmall
+                    color: Theme.secondaryColor
+                    visible: page.quality !== null && page.qualityDetails
+                    text: {
+                        if (!page.quality) {
+                            return ""
+                        }
+                        var dp = Qt.locale().decimalPoint
+                        var lines = [qsTr("Quelle: %1").arg(Models.formatAudioFormat(page.quality.source, dp))]
+                        lines.push(page.quality.output
+                                   ? qsTr("Zum Lautsprecher: %1").arg(Models.formatAudioFormat(page.quality.output, dp))
+                                   : qsTr("Zum Lautsprecher: keine Angabe vom Server"))
+                        return lines.join("\n")
+                    }
                 }
             }
 

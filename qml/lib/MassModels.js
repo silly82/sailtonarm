@@ -589,3 +589,134 @@ function uniqueTracksByName(tracks) {
     }
     return out
 }
+
+// --- Klangqualität -----------------------------------------------------------
+
+// Stufen von schlecht nach gut. Die Anzeige zeigt, was beim Lautsprecher
+// ankommt: die Quelle, aber höchstens so gut wie das, was der Server für
+// diesen Player daraus macht (AirPlay etwa rechnet FLAC 24/96 auf 16 bit /
+// 44,1 kHz herunter).
+var QUALITY_LEVELS = ["lq", "hq", "lossless", "hires"]
+var QUALITY_LABELS = { lq: "LQ", hq: "HQ", lossless: "Lossless", hires: "Hi-Res" }
+// Verlustbehaftet gilt ab dieser Bitrate (kbit/s, Stereo) als HQ.
+var HQ_MIN_KBPS = 256
+
+var LOSSLESS_TYPES = ["flac", "alac", "wav", "aiff", "dsf", "wavpack", "tak", "ape", "truehd"]
+
+function isLosslessType(type) {
+    var t = String(type || "").toLowerCase()
+    return t.indexOf("pcm") === 0 || t.indexOf("dsd") === 0 || LOSSLESS_TYPES.indexOf(t) >= 0
+}
+
+// Codec eines `AudioFormat`; der sagt mehr als der Behälter (m4a enthält ALAC
+// oder AAC).
+function codecOf(fmt) {
+    var codec = String(fmt.codec_type || "")
+    return (codec && codec !== "unknown") ? codec : String(fmt.content_type || "")
+}
+
+// Stufe eines `AudioFormat` aus MA (content_type, codec_type, sample_rate,
+// bit_depth, bit_rate in kbit/s); "" wenn sie sich nicht bestimmen lässt.
+// Dieselben Grenzen wie der Server (get_audio_quality in MA 2.10).
+function formatQualityLevel(fmt) {
+    if (!fmt || codecOf(fmt) === "" || codecOf(fmt) === "unknown") {
+        return ""
+    }
+    if (isLosslessType(codecOf(fmt))) {
+        return (fmt.sample_rate > 48000 || fmt.bit_depth > 16) ? "hires" : "lossless"
+    }
+    var kbps = fmt.bit_rate > 10000 ? fmt.bit_rate / 1000 : fmt.bit_rate
+    if (!kbps || kbps <= 0) {
+        return ""
+    }
+    return kbps >= HQ_MIN_KBPS ? "hq" : "lq"
+}
+
+// MAs eigene Einstufung (AudioFidelity.quality) auf dieselben Stufen.
+function fidelityLevel(fidelity) {
+    var q = fidelity ? fidelity.quality : ""
+    return { hi_res: "hires", lossless: "lossless", standard: "hq", low: "lq" }[q] || ""
+}
+
+function worseLevel(a, b) {
+    if (!a) {
+        return b
+    }
+    if (!b) {
+        return a
+    }
+    return QUALITY_LEVELS.indexOf(a) <= QUALITY_LEVELS.indexOf(b) ? a : b
+}
+
+// Ausgabeweg des Servers für diesen Player (streamdetails.audio_processing,
+// ab MA 2.10); bei nur einem Ausgabeweg ohne Player-Liste eben dieser.
+function audioOutputFor(streamdetails, playerId) {
+    var chain = streamdetails ? streamdetails.audio_processing : null
+    var outputs = (chain && chain.outputs) ? chain.outputs : []
+    for (var i = 0; i < outputs.length; i++) {
+        if ((outputs[i].player_ids || []).indexOf(playerId) >= 0) {
+            return outputs[i]
+        }
+    }
+    return (outputs.length === 1 && !(outputs[0].player_ids || []).length) ? outputs[0] : null
+}
+
+// Qualität dessen, was auf diesem Player läuft, aus `queue.current_item`.
+// Liefert null ohne Angaben, sonst
+//   { level, label, source, output }
+// mit source/output als AudioFormat (output null, wenn der Server für diesen
+// Player kein Ausgabeformat meldet -- dann gilt die Quelle).
+function audioQuality(queueItem, playerId) {
+    var sd = queueItem ? queueItem.streamdetails : null
+    if (!sd) {
+        return null
+    }
+    var source = sd.audio_format || null
+    var sourceLevel = formatQualityLevel(source)
+    if (!sourceLevel && sd.audio_processing) {
+        sourceLevel = fidelityLevel(sd.audio_processing.input_fidelity)
+    }
+    var out = audioOutputFor(sd, playerId)
+    var output = (out && out.output_format) ? out.output_format : null
+    // Der Server stuft die Ausgabe selbst ein, schon mit der Quelle
+    // verrechnet; nur ohne diese Angabe wird hier gerechnet.
+    var level = out ? fidelityLevel(out.fidelity) : ""
+    if (!level) {
+        level = worseLevel(sourceLevel, output ? formatQualityLevel(output) : "")
+    }
+    if (!level) {
+        return null
+    }
+    return { level: level, label: QUALITY_LABELS[level], source: source, output: output }
+}
+
+// "FLAC · 24 bit · 96 kHz" oder "AAC · 288 kbit/s"; decimalPoint für
+// "44,1 kHz".
+function formatAudioFormat(fmt, decimalPoint) {
+    if (!fmt) {
+        return ""
+    }
+    var type = codecOf(fmt)
+    if (type.length === 0 || type === "unknown") {
+        return ""
+    }
+    var lossless = isLosslessType(type)
+    if (type.indexOf("pcm") === 0) {
+        type = "PCM"
+    }
+    var parts = [type.toUpperCase()]
+    if (lossless) {
+        if (fmt.bit_depth) {
+            parts.push(fmt.bit_depth + " bit")
+        }
+        if (fmt.sample_rate) {
+            parts.push(String(fmt.sample_rate / 1000).replace(".", decimalPoint || ".") + " kHz")
+        }
+    } else {
+        var kbps = fmt.bit_rate > 10000 ? fmt.bit_rate / 1000 : fmt.bit_rate
+        if (kbps > 0) {
+            parts.push(Math.round(kbps) + " kbit/s")
+        }
+    }
+    return parts.join(" · ")
+}
