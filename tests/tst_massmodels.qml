@@ -7,6 +7,102 @@ import "../qml/lib/MassModels.js" as Models
 TestCase {
     name: "MassModels"
 
+    // --- Klangqualität -----------------------------------------------------
+
+    function fmt(type, rate, bits, kbps, codec) {
+        return { content_type: type, codec_type: codec || type, sample_rate: rate,
+                 bit_depth: bits, bit_rate: kbps }
+    }
+
+    function test_formatQualityLevel_data() {
+        return [
+            { tag: "FLAC 24/96", f: fmt("flac", 96000, 24), out: "hires" },
+            { tag: "FLAC 24/48", f: fmt("flac", 48000, 24), out: "hires" },
+            { tag: "FLAC 16/44.1", f: fmt("flac", 44100, 16), out: "lossless" },
+            { tag: "ALAC in m4a", f: fmt("m4a", 44100, 16, 0, "alac"), out: "lossless" },
+            { tag: "PCM 16/44.1", f: fmt("pcm_s16le", 44100, 16), out: "lossless" },
+            { tag: "AAC 288", f: fmt("aac", 44100, 16, 288), out: "hq" },
+            { tag: "AAC in m4a 256", f: fmt("m4a", 44100, 16, 256, "aac"), out: "hq" },
+            { tag: "AAC 188 (Radio)", f: fmt("aac", 48000, 16, 188), out: "lq" },
+            { tag: "MP3 in bit/s", f: fmt("mp3", 44100, 16, 320000), out: "hq" },
+            { tag: "verlustbehaftet ohne Bitrate", f: fmt("mp3", 44100, 16), out: "" },
+            { tag: "nichts", f: null, out: "" }
+        ]
+    }
+    function test_formatQualityLevel(d) {
+        compare(Models.formatQualityLevel(d.f), d.out)
+    }
+
+    function test_audioQuality_airplayCapsHiRes() {
+        var item = { streamdetails: {
+            audio_format: fmt("flac", 96000, 24),
+            audio_processing: { outputs: [
+                { player_ids: ["kueche"], output_format: fmt("pcm_s16le", 44100, 16) },
+                { player_ids: ["r410"], output_format: fmt("flac", 96000, 24) }
+            ] }
+        } }
+        var k = Models.audioQuality(item, "kueche")
+        compare(k.level, "lossless")
+        compare(k.label, "Lossless")
+        compare(k.output.sample_rate, 44100)
+        compare(Models.audioQuality(item, "r410").label, "Hi-Res")
+    }
+
+    function test_audioQuality_prefersServerOutputFidelity() {
+        var item = { streamdetails: {
+            audio_format: fmt("flac", 96000, 24),
+            audio_processing: { outputs: [
+                { player_ids: ["cast"], output_format: fmt("flac", 96000, 24),
+                  fidelity: { quality: "lossless" } }
+            ] }
+        } }
+        compare(Models.audioQuality(item, "cast").label, "Lossless")
+    }
+
+    function test_audioQuality_lossySourceStaysLossy() {
+        var item = { streamdetails: {
+            audio_format: fmt("aac", 44100, 16, 288),
+            audio_processing: { outputs: [
+                { player_ids: ["kueche"], output_format: fmt("pcm_s16le", 44100, 16) }
+            ] }
+        } }
+        compare(Models.audioQuality(item, "kueche").label, "HQ")
+    }
+
+    function test_audioQuality_withoutOutputUsesSource() {
+        var item = { streamdetails: { audio_format: fmt("aac", 48000, 16, 188) } }
+        var q = Models.audioQuality(item, "wc")
+        compare(q.label, "LQ")
+        compare(q.output, null)
+    }
+
+    function test_audioQuality_fallsBackToServerFidelity() {
+        var item = { streamdetails: {
+            audio_format: fmt("mp3", 44100, 16),
+            audio_processing: { input_fidelity: { quality: "standard" }, outputs: [] }
+        } }
+        compare(Models.audioQuality(item, "x").label, "HQ")
+    }
+
+    function test_audioQuality_none() {
+        compare(Models.audioQuality(null, "x"), null)
+        compare(Models.audioQuality({}, "x"), null)
+        compare(Models.audioQuality({ streamdetails: { audio_format: fmt("mp3", 44100, 16) } }, "x"), null)
+    }
+
+    function test_formatAudioFormat_data() {
+        return [
+            { tag: "FLAC", f: fmt("flac", 96000, 24), out: "FLAC · 24 bit · 96 kHz" },
+            { tag: "ALAC Komma", f: fmt("m4a", 44100, 16, 0, "alac"), dp: ",", out: "ALAC · 16 bit · 44,1 kHz" },
+            { tag: "PCM", f: fmt("pcm_s16le", 44100, 16), out: "PCM · 16 bit · 44.1 kHz" },
+            { tag: "AAC", f: fmt("aac", 44100, 16, 288), out: "AAC · 288 kbit/s" },
+            { tag: "unbekannt", f: fmt("unknown", 44100, 16), out: "" }
+        ]
+    }
+    function test_formatAudioFormat(d) {
+        compare(Models.formatAudioFormat(d.f, d.dp), d.out)
+    }
+
     // --- Interpret ----------------------------------------------------------
 
     function test_uniqueTracksByName_keepsFirstPosition() {

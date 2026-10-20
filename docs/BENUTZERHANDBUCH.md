@@ -96,6 +96,11 @@ schon beim Ziehen.
   Kapiteln; Zurück innerhalb der ersten fünf Sekunden eines Kapitels geht ins
   vorige.
 - Der Hintergrund nimmt die **Farben des Covers** auf (abschaltbar).
+- Unter dem Titel steht die **Klangqualität**, die beim Lautsprecher ankommt:
+  *Hi-Res* (verlustfrei, mehr als 16 bit oder 48 kHz), *Lossless*, *HQ*
+  (verlustbehaftet ab 256 kbit/s) oder *LQ*. Ein Tippen darauf zeigt das
+  Format der Quelle und das, was der Server an den Lautsprecher schickt;
+  AirPlay etwa rechnet Hi-Res auf 16 bit / 44,1 kHz herunter.
 
 Im **Pulley-Menü**:
 
