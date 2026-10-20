@@ -611,8 +611,9 @@ function isLosslessType(type) {
 // Codec eines `AudioFormat`; der sagt mehr als der Behälter (m4a enthält ALAC
 // oder AAC).
 function codecOf(fmt) {
+    // Für Ausgabeformate meldet der Server oft "?" statt eines Codecs.
     var codec = String(fmt.codec_type || "")
-    return (codec && codec !== "unknown") ? codec : String(fmt.content_type || "")
+    return (codec && codec !== "unknown" && codec !== "?") ? codec : String(fmt.content_type || "")
 }
 
 // Stufe eines `AudioFormat` aus MA (content_type, codec_type, sample_rate,
